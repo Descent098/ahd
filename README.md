@@ -1,3 +1,5 @@
+![ahd-logo](https://raw.githubusercontent.com/Descent098/ahd/master/docs/img/ahd-logo.png)
+
 # ahd; Ad-Hoc Dispatcher
 
 *Create ad-hoc commands to be dispatched within their own namespace.*

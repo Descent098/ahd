@@ -35,4 +35,4 @@ Now to run the command you use the form ```ahd <name>```, so in this case:
 
 
 
-This will effectively run ```cd ~/tmp && rm *``` then cd back to your current directory. Although this is a toy example it allows you to specify the execution of what would normally be tedius commands from anywhere. If you are looking for some more robust examples check out the [usage](/usage) section.
+This will effectively run ```cd ~/tmp && rm *``` then cd back to your current directory. Although this is a toy example it allows you to specify the execution of what would normally be tedius commands from anywhere. If you are looking for some more robust examples check out the [usage](/en/latest/usage) section.

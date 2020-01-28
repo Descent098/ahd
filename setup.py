@@ -18,26 +18,19 @@ def get_content(*filename):
     return content
 
 setuptools.setup(
-    name = "", # TODO: Give the package a name
-    version = "0.0.1", # I recommend every 2nd decimal release for big releases and 3rd for bug fixes.
-    author = "", # TODO: Add your name
-    author_email = "", # TODO: Add your email
-    description = "", # TODO: Give the package a description
+    name = "ahd",
+    version = "0.1.0",
+    author = "Kieran Wood",
+    author_email = "kieran@canadiancoding.ca",
+    description = "Create ad-hoc commands to be dispatched in their own namespace.",
     long_description = get_content("README.md", "CHANGELOG.md"),
     long_description_content_type = "text/markdown",
-    url = "", # TODO: Put github link if applicable
+    url = "https://github.com/Descent098/ahd",
     include_package_data = True,
     packages = setuptools.find_packages(),
-
-    # The code below is used to define entrypoints, if you don't know what this is then:
-    # SEE: https://canadiancoding.ca/posts/post/python/script-entrypoints/
-
-    
-    # entry_points = { 
-    #        'console_scripts': ['... = ...']
-    #    },
-    
-
+    entry_points = { 
+           'console_scripts': ['ahd = ahd.cli:main']
+       },
     install_requires = [
     "docopt", # Used for argument parsing
       ],

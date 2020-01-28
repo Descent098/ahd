@@ -6,7 +6,7 @@
 
 ## TODO
 
-- [ ] Replace all instances of package_name in this file
+- [x] Replace all instances of ahd in this file
 - [ ] Fill out all the sections in this file with your own information
 - [ ] The [development guide](#development-contribution-guide) below will help you use the advanced features of this template
     - [ ] Finish creating setup.py
@@ -18,16 +18,20 @@
 
 ## Quick-start
 
-*Include how people can get started using your project in the shortest time possible*
-
-
-
 ### Installation
+
+#### From Pypi
+
+Run ```pip install ahd``` or ```sudo pip3 install ahd```
+
+
 
 #### From source
 
-1. Clone this repo: (put github/source code link here)
+1. Clone this repo: (https://github.com/Descent098/ahd)
 2. Run ```pip install .``` or ```sudo pip3 install .```in the root directory
+
+
 
 
 
@@ -45,19 +49,17 @@
 
 ## Additional Documentation
 
-*If you have any supplementary documentation elsewhere (i.e. https://readthedocs.org/) include references to it here.*
+Additional documentation will be available at [https://ahd.readthedocs.io](https://ahd.readthedocs.io)
 
 
 
 ## Development-Contribution guide
 
-*If you have any useful information that may be pertinent to people beginning to help develop the project put it here*
-
 
 
 ### Installing development dependencies
 
-There are a few dependencies you will need to use this package fully, they are specified in the extras require parameter in setup.py but you can install them manually:
+There are a few dependencies you will need to begin development, you can install them by using ```pip install adh[dev]``` or just install them manually:
 
 ```
 nox   	# Used to run automated processes
@@ -75,9 +77,9 @@ Just go through and run ```pip install <name>``` or ```sudo pip3 install <name>`
 
 
 
-#### /package_name
+#### /ahd
 
-*Contains all the first party modules used in package_name*
+*Contains all the first party modules used in ahd*
 
 
 
@@ -85,15 +87,11 @@ Just go through and run ```pip install <name>``` or ```sudo pip3 install <name>`
 
 *Contains markdown source files to be used with [mkdocs](https://www.mkdocs.org/) to create html/pdf documentation.* 
 
-**Before you can use this you will need to setup the mkdocs.yml file **
-
 
 
 #### /tests
 
 *Contains tests to be run before release* 
-
-**Before you can use this you will need to create tests, for more details take a look at [pytest](https://docs.pytest.org/en/latest/) **
 
 
 
@@ -135,12 +133,6 @@ There are 4 main sessions built into the noxfile and they can be run using ```no
 
 
 **.gitignore**: A preconfigured gitignore file (info on .gitignore files can be found here: https://www.atlassian.com/git/tutorials/saving-changes/gitignore)
-
-
-
-## Additional Information
-
-*If your module is complex enough, sometimes additional resources (papers, etc.) are useful to include here.*
 
 
 

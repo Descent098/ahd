@@ -1,18 +1,6 @@
-# Python Package Template
+# ahd; Ad-Hoc Dispatcher
 
-*A generic python project template. Replace this line with a project description*
-
-
-
-## TODO
-
-- [x] Replace all instances of ahd in this file
-- [ ] Fill out all the sections in this file with your own information
-- [ ] The [development guide](#development-contribution-guide) below will help you use the advanced features of this template
-    - [ ] Finish creating setup.py
-    - [ ] Update mkdocs.yml
-- [ ] Create the actual package code
-- [ ] Create tests
+*Create ad-hoc commands to be dispatched within their own namespace.*
 
 
 
@@ -33,23 +21,64 @@ Run ```pip install ahd``` or ```sudo pip3 install ahd```
 
 
 
+### Usage
+
+```bash
+Usage: 
+
+    ahd [-h] [-v] [-d]
+
+    ahd register <name> [<command>] [<paths>]
+
+    ahd <name> [<command>] [<paths>]
 
 
-#### Usage
 
-*Include how to use your package as an API (if that's what you're going for)*
+Options:
+
+-h, --help        show this help message and exit
+
+-v, --version     show program's version number and exit
+
+-l, --log         If present will output logs to sys.stdout
+
+-d, --doc         If present will open up the ahd docs
+```
+
+
+
+#### Example
+
+Here is a quick example of creating a command that runs ```sudo apt-get update && sudo apt-get upgrade```:
+
+1. Register the command as the name "update": ```ahd register update "sudo apt-get update && sudo apt-get upgrade"```
+2. Run the command using the name "update": ```ahd update```
+
+
+
+This example was somewhat trivial but keep in mind this effectively means you can replace any short bash scripts you are using to do things like updating multiple git repos, executing a sequence of commands to sort your downloads folder etc.
 
 
 
 #### Arguments
 
-*If you are writing a script, include some helpful/often used arguments here. If you decide to use [docopt](http://docopt.org/) the usage string should do.* 
+##### Register
+
+The register command allows you to register a name to be used later on. For example if I wanted to create a command that dispatched running git pull in several of my directories that is activated when I type ```ahd git-upt``` then I can just run ```ahd register git-upt "git pull" "~/path/to/project, ~/path/to/project-2, ~/path/to/project-3```
+
+
+
+##### \<name\>
+
+This is a placeholder value for the name of a command you have registered. Once the command is registered you can run it by using ```ahd <name>```, additionally you can override the default set commands or paths, details can be found at [https://ahd.readthedocs.io/usage#overriding](https://ahd.readthedocs.io/usage#overriding).
+
+
 
 
 
 ## Additional Documentation
 
-Additional documentation will be available at [https://ahd.readthedocs.io](https://ahd.readthedocs.io)
+Additional user documentation will be available at [https://ahd.readthedocs.io](https://ahd.readthedocs.io).
 
 
 

@@ -28,7 +28,7 @@ import subprocess                     # Used to run the dispatched commands
 from configparser import ConfigParser # Used to serialize and de-serialize config files
 
 # Internal dependencies
-#from .autocomplete import command, generate_bash_autocomplete
+from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
@@ -54,10 +54,10 @@ usage = """Add-hoc dispatcher
                           imports the configuration file
     """
 
-# commands =  [ # Used for autocompletion generation
-#     command("docs", ["-a", "--api", "-o", "--offline"]),
-#     command("register", [])
-# ]
+commands =  [ # Used for autocompletion generation
+    command("docs", ["-a", "--api", "-o", "--offline"]),
+    command("register", [])
+]
 
 
 config = ConfigParser() # Global configuration parser

@@ -1,4 +1,31 @@
-# Details
+*Go through and fill out either the feature request, or bug fix sections and delete the other. Then check off the checklist and submit.*
+
+# Feature request
+*Fill out below fields*
+
+Issue number : *add reference to issue number (if applicable)*
+
+If you filled out the issue number move on to the checklist sectionm if not fill in these deatils:
+
+**Description of functionality**
+*Add a bit of infomation about what you intend for this feature to do*
+
+**Current behaviour**
+A clear and concise description of what currently happens.
+
+**Desired behavior**
+A clear and concise description of what you want to happen.
+
+**Desktop (please complete the following information):**
+ - OS: [e.g. iOS]
+ - Browser [e.g. chrome, safari]
+ - Version [e.g. 22]
+
+---
+
+# Bug Fix
+
+## Details
 
 *Fill out below fields*
 
@@ -26,6 +53,8 @@ A clear and concise description of what you expected to happen.
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
  - Version [e.g. 22]
+
+---
 
 # Checklist
 

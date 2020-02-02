@@ -27,6 +27,9 @@ import webbrowser                     # Used to auto-launch the documentation li
 import subprocess                     # Used to run the dispatched commands
 from configparser import ConfigParser # Used to serialize and de-serialize config files
 
+# Internal dependencies
+from .autocomplete import command, generate_bash_autocomplete
+
 # Third-party dependencies
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
 
@@ -36,14 +39,22 @@ usage = """Add-hoc dispatcher
 
     Usage: 
         ahd [-h] [-v] [-d]
+        ahd docs [-a] [-o]
         ahd register <name> [<command>] [<paths>]
         ahd <name> [<command>] [<paths>]
 
     Options:
     -h, --help            show this help message and exit
     -v, --version         show program's version number and exit
-    -d, --doc             If present will open up the ahd docs
+    -a, --api             shows the local API docs
+    -o, --offline         shows the local User docs instead of live ones
     """
+
+commands =  [ # Used for autocompletion generation
+    command("docs", ["-a", "--api", "-o", "--offline"]),
+    command("register", [])
+]
+
 
 config = ConfigParser() # Global configuration parser
 
@@ -76,7 +87,7 @@ def main():
     
     # Begin argument parsing
 
-    if arguments["--doc"]:
+    if arguments["docs"]:
         webbrowser.open_new("https://ahd.readthedocs.io")
         exit()
 
@@ -96,6 +107,17 @@ def main():
             "command": arguments["<command>"],
             "paths": arguments["<paths>"],
         }
+
+        if not os.name == "nt": # Generate bash autocomplete
+            for index, custom_command in enumerate(config):
+                if not index == 0: # for some reason the first thing in config object is garbage
+                    commands.append(command(custom_command, []))
+
+            autocomplete_file_text = generate_bash_autocomplete(commands)
+            with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
+                autocomplete_file.write(autocomplete_file_text)
+            print(autocomplete_file_text)
+
 
         with open(CONFIG_FILE_PATH, "w") as config_file:
             config.write(config_file)

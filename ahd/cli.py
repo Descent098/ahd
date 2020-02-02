@@ -28,7 +28,7 @@ import subprocess                     # Used to run the dispatched commands
 from configparser import ConfigParser # Used to serialize and de-serialize config files
 
 # Internal dependencies
-from .autocomplete import command, generate_bash_autocomplete
+#from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
@@ -40,6 +40,7 @@ usage = """Add-hoc dispatcher
     Usage: 
         ahd [-h] [-v] [-d]
         ahd docs [-a] [-o]
+        ahd config [-e] [-i CONFIG_FILE_PATH]
         ahd register <name> [<command>] [<paths>]
         ahd <name> [<command>] [<paths>]
 
@@ -48,12 +49,15 @@ usage = """Add-hoc dispatcher
     -v, --version         show program's version number and exit
     -a, --api             shows the local API docs
     -o, --offline         shows the local User docs instead of live ones
+    -e, --export          exports the configuration file
+    -i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH 
+                          imports the configuration file
     """
 
-commands =  [ # Used for autocompletion generation
-    command("docs", ["-a", "--api", "-o", "--offline"]),
-    command("register", [])
-]
+# commands =  [ # Used for autocompletion generation
+#     command("docs", ["-a", "--api", "-o", "--offline"]),
+#     command("register", [])
+# ]
 
 
 config = ConfigParser() # Global configuration parser
@@ -135,11 +139,16 @@ def main():
 
             else: # if only a single path is specified instead of a 'list' of them
                 subprocess.Popen(f"cd {config[arguments['<name>']]['paths']} && {config[arguments['<name>']]['command']} ".replace("\'",""), shell=True)
-        
-        else: # If not registering a command or running one
-            exit()
+    
+    if arguments["config"]:
+        if arguments["--export"]:
+            print(f"{os.curdir}{os.sep}.ahdconfig")
+            with open(f"{os.curdir}{os.sep}.ahdconfig", "w") as config_file:
+                config.write(config_file)
+        if arguments["--import"]:
+            with open(arguments["--import"], "r") as config_file:
+                config.read(config_file)
     os.chdir(CURRENT_PATH)
-
 
 def _preprocess_paths(paths:str):
     """Preprocesses paths from input and splits + formats them

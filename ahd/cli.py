@@ -22,13 +22,16 @@ Docs website: https://ahd.readthedocs.io
 
 # Standard lib dependencies
 import os                             # Used primarily to validate paths
-import sys
+import sys                            # Used to check length of input arguments
+import glob                           # Used to preprocess wildcard paths
 import webbrowser                     # Used to auto-launch the documentation link
 import subprocess                     # Used to run the dispatched commands
 from configparser import ConfigParser # Used to serialize and de-serialize config files
 
+
 # Internal dependencies
-from .autocomplete import command, generate_bash_autocomplete
+from .autocomplete import command, \
+    generate_bash_autocomplete       # Used to generate bash autocomplete files
 
 # Third-party dependencies
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
@@ -75,7 +78,6 @@ def main():
 
     # Setup arguments for parsing
     arguments = docopt(usage, version="ahd V 0.1.0")
-    # print(arguments)
 
     if len(sys.argv) == 1:
         print("\n", usage)
@@ -91,10 +93,43 @@ def main():
     
     # Begin argument parsing
 
+    # ========= Docs argument parsing =========
     if arguments["docs"]:
-        webbrowser.open_new("https://ahd.readthedocs.io")
-        exit()
+        if not arguments["--offline"] or arguments["--api"]:
+            webbrowser.open_new("https://ahd.readthedocs.io")
+            exit()
+        else:
+            if arguments["--offline"]:
+                #TODO
+                print("Not yet implemented")
 
+            if arguments["--api"]:
+                #TODO
+                print("Not yet implemented")
+
+    # ========= config argument parsing =========
+    if arguments["config"]:
+        if arguments["--export"]:
+            print(f"{os.curdir}{os.sep}.ahdconfig")
+            with open(f"{os.curdir}{os.sep}.ahdconfig", "w") as config_file:
+                config.write(config_file)
+
+        if arguments["--import"]:
+
+            new_config_path = arguments["--import"]
+            new_config = ConfigParser()
+            
+            new_config.read(new_config_path)
+
+            for argument in new_config:
+                print(f"{argument=}")
+
+            os.remove(CONFIG_FILE_PATH)
+            print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
+            with open(CONFIG_FILE_PATH, "w") as config_file:
+                new_config.write(config_file)
+
+    # ========= preprocessing commands and paths =========
     if not arguments["<paths>"]:
         arguments["<paths>"] = ""
     else:
@@ -106,7 +141,11 @@ def main():
     if "." == arguments["<command>"]: # If <command> is . set to specified value
         arguments["<command>"] = config[arguments["<name>"]]["command"]
 
+    # ========= register argument parsing =========
     if arguments["register"]:
+        if not arguments["<name>"]:
+            print(usage)
+            exit()
         config[arguments["<name>"]] = {
             "command": arguments["<command>"],
             "paths": arguments["<paths>"],
@@ -120,37 +159,31 @@ def main():
             autocomplete_file_text = generate_bash_autocomplete(commands)
             with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
                 autocomplete_file.write(autocomplete_file_text)
-            print(autocomplete_file_text)
-
+            print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh")
 
         with open(CONFIG_FILE_PATH, "w") as config_file:
             config.write(config_file)
 
     else: # If not registering a command
+
+    # ========= User command argument parsing =========
         if arguments['<name>']:
-            if config[arguments['<name>']]['paths'].startswith("["):
-                paths = config[arguments['<name>']]['paths']
-                if os.name == "nt":
-                    paths = paths.replace("/", f"{os.sep}")
-                paths = paths[1:-1:].split(",") # Removes the leading and trailing brackets and splits based on commas
+            paths = _postprocess_paths(config[arguments['<name>']]['paths'])
+            if len(paths) > 1:
                 for current_path in paths:
-                    print(f"Running: cd {current_path.strip()} && {config[arguments['<name>']]['command']} ".replace("\'",""))
-                    subprocess.Popen(f"cd {current_path.strip()} && {config[arguments['<name>']]['command']} ".replace("\'",""), shell=True)
+                    command = config[arguments['<name>']]['command']
+                    if os.name == "nt":
+                        current_path = current_path.replace("/", f"{os.sep}")
+                    print(f"Running: cd {current_path} && {command} ".replace("\'",""))
+                    subprocess.Popen(f"cd {current_path} && {command} ".replace("\'",""), shell=True)
 
             else: # if only a single path is specified instead of a 'list' of them
-                subprocess.Popen(f"cd {config[arguments['<name>']]['paths']} && {config[arguments['<name>']]['command']} ".replace("\'",""), shell=True)
+                subprocess.Popen(f"cd {config[arguments['<name>']]['paths']} && {command} ".replace("\'",""), shell=True)
     
-    if arguments["config"]:
-        if arguments["--export"]:
-            print(f"{os.curdir}{os.sep}.ahdconfig")
-            with open(f"{os.curdir}{os.sep}.ahdconfig", "w") as config_file:
-                config.write(config_file)
-        if arguments["--import"]:
-            with open(arguments["--import"], "r") as config_file:
-                config.read(config_file)
+    # Since executing commands requires changing directories, make sure to return after
     os.chdir(CURRENT_PATH)
 
-def _preprocess_paths(paths:str):
+def _preprocess_paths(paths:str) -> str:
     """Preprocesses paths from input and splits + formats them
     into a useable list for later parsing.
     
@@ -161,14 +194,45 @@ def _preprocess_paths(paths:str):
     
     paths = _preprocess_paths(paths)
 
-    print(paths) # Prints: ['C:/Users/Kieran/Desktop/Development/Canadian Coding/SSB', 'C:/Users/Kieran/Desktop/Development/Canadian Coding/website', 'C:/Users/Kieran/Desktop/Development/Personal/noter']
+    print(paths) # Prints: 'C:/Users/Kieran/Desktop/Development/Canadian Coding/SSB, C:/Users/Kieran/Desktop/Development/Canadian Coding/website, C:/Users/Kieran/Desktop/Development/Personal/noter'
     ```
     """
     result = paths.split(",")
-    for index, path in enumerate(result):
-        result[index] = path.replace("\\", "/").strip()
+    for index, directory in enumerate(result):
+        directory = directory.replace("\\", "/").strip()
+        result[index] = os.path.abspath(directory)
+
+    result = ",".join(result)
 
     return result
 
+def _postprocess_paths(paths:str) -> list:
+    """Postprocesses existing paths to be used by dispatcher.
+
+    This means things like expanding wildcards, and processing correct path seperators.
+    
+    Example
+    -------
+    ```
+    paths = 'C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\SSB, C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\website, C:\\Users\\Kieran\\Desktop\\Development\\Personal\\noter, C:\\Users\\Kieran\\Desktop\\Development\\*'
+    
+    paths = _preprocess_paths(paths)
+
+    print(_postprocess_paths(paths)) 
+    # Prints: ['C:/Users/Kieran/Desktop/Development/Canadian Coding/SSB', ' C:/Users/Kieran/Desktop/Development/Canadian Coding/website', ' C:/Users/Kieran/Desktop/Development/Personal/noter', 'C:/Users/Kieran/Desktop/Development/Canadian Coding', 'C:/Users/Kieran/Desktop/Development/Personal', 'C:/Users/Kieran/Desktop/Development/pystall', 'C:/Users/Kieran/Desktop/Development/python-package-template', 'C:/Users/Kieran/Desktop/Development/Work']
+    ```
+    """
+    result = paths.split(",")
+    for directory in result:
+        if "*" in directory:
+            wildcard_paths = glob.glob(directory.strip())
+            for wildcard_directory in wildcard_paths:
+                wildcard_directory = wildcard_directory.replace("\\", "/")
+                result.append(wildcard_directory)
+            result.remove(directory)
+    return result
+
+
 if __name__ == "__main__":
     main()
+    

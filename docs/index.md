@@ -14,9 +14,52 @@ This package seeks to make the tedius task of creating one off bash scripts obso
 
 
 
+## Features
+
+- Execution of any valid bash/wsl commands.
+- Specification of multiple paths (including [wildcards](/en/latest/usage/#wildcards-and-cross-platform-paths))
+- Autocomplete (\*nix only; with bash, and plans to add zsh and fish later)
+- A namespace with only 3 reserved keywords (docs, register, config)
+- Cross-platform support
 
 
 
+## "Limitations"
+
+- Autocompletion not supported on windows (not my fault)
+- Technically without vendoring you also can't use ```ahd``` as a command for any other purpose
 
 
+
+# Upgrading to V 0.2.0 from V0.1.0
+
+One thing to note if you are updating to V0.2.0 from V0.1.0, the way that the preprocessing of paths works has been changed. Originally it was being stored as a "list" (though this isn't actually the case), and  now it is just a string of comma-delimited paths. Here are the steps to migrate:
+
+
+
+1. Export your current configuration by running:
+    ```ahd config -e```
+
+2. Edit the configuration file in a text editor (in this example I will use nano):
+    ```nano .ahdconfig```
+
+3. Change any paths for commands to string representations instead of lists(remove the square brackets). For example:
+    This
+
+    ```ini
+    [git-upt]
+    command = git pull
+    paths = [C:\Users\Kieran\Desktop\Development\personal\*, C:\Users\Kieran\Desktop\Development\Canadian Coding\*]
+    
+    ```
+
+    Would become
+
+    ```ini
+    [git-upt]
+    command = git pull
+    paths = C:\Users\Kieran\Desktop\Development\personal\*, C:\Users\Kieran\Desktop\Development\Canadian Coding\*
+    ```
+
+    
 

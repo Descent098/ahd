@@ -81,3 +81,45 @@ This means by default if we run ```ahd buildapp``` it will run in the same direc
 
 
 to execute ```docker compose up``` in all 3 locations.
+
+
+
+## Wildcards and Cross platform paths
+
+Paths in ahd are automatically platform agnostic (unless you manually edit the config file). Additionally you can specify wildcards to say "all directories in a given pattern". Under the hood this is done through the [glob](https://docs.python.org/3/library/glob.html) module in python (note there must be an asterisk or else it will register as a literal character), but the basics are that an asterisk delimits "any directory". So for example if you wanted to register a command to "git pull" all folders in a directory you could use:
+
+```powershell
+ahd register git-upt "git pull" "C:\Users\Kieran\Desktop\Development\Canadian Coding\*"
+```
+
+
+
+Here is the tree for ```C:\Users\Kieran\Desktop\Development\Canadian Coding``` :
+
+```powershell
+C:\USERS\KIERAN\DESKTOP\DEVELOPMENT\CANADIAN CODING
+├───posts
+├───SSB
+├───website
+```
+
+
+
+So this means that when you run ```ahd git-upt``` it will run the same as:
+
+```powershell
+cd C:\Users\Kieran\Desktop\Development\Canadian Coding\posts && git pull
+
+cd C:\Users\Kieran\Desktop\Development\Canadian Coding\SSB && git pull
+
+cd C:\Users\Kieran\Desktop\Development\Canadian Coding\website && git pull
+```
+
+
+
+### Manually editing paths in config
+
+All paths should be specified in unix style (use / instead of \\), even if intended to be used on windows. This is because the preprocessor that happens when you register a command does this for you.
+
+
+

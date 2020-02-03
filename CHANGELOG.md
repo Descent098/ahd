@@ -1,6 +1,6 @@
 # Changelog
 
-## V 0.2.0; TBD
+## V 0.2.0; February 2nd 20202
 
 Focus was on improving the overall useability of ahd. Note this version breaks backwards compatibility, but includes a migration guide in the docs (to be removed in V0.3.0).
 

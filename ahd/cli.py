@@ -174,6 +174,7 @@ def main():
                     command = config[arguments['<name>']]['command']
                     if os.name == "nt":
                         current_path = current_path.replace("/", f"{os.sep}")
+                        current_path = current_path.replace("~", os.getenv('USERPROFILE'))
                     print(f"Running: cd {current_path} && {command} ".replace("\'",""))
                     subprocess.Popen(f"cd {current_path} && {command} ".replace("\'",""), shell=True)
 

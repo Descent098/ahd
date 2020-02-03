@@ -86,7 +86,25 @@ to execute ```docker compose up``` in all 3 locations.
 
 ## Wildcards and Cross platform paths
 
-Paths in ahd are automatically platform agnostic (unless you manually edit the config file). Additionally you can specify wildcards to say "all directories in a given pattern". Under the hood this is done through the [glob](https://docs.python.org/3/library/glob.html) module in python (note there must be an asterisk or else it will register as a literal character), but the basics are that an asterisk delimits "any directory". So for example if you wanted to register a command to "git pull" all folders in a directory you could use:
+In ahd paths are normalized across os's and wildcards are supported.
+
+
+
+### Platform normalization steps
+
+**TL;DR**: use unix-style paths (/ and include ~ for the home directory) even on windows.
+
+
+
+**The long version**: Paths in ahd are automatically platform agnostic (unless you manually edit the config file). This means that when you register a command in windows the paths are preprocessed to change \\ to / in the config file, and ~ to the USERPROFILE environment variable, then postprocessed back when running commands. Functionally this means you can use the exact same configuration across platforms if you use the unix path idiosyncrasies (~ and /).
+
+
+
+
+
+### Wildcards
+
+Additionally you can specify wildcards to say "all directories in a given pattern". Under the hood this is done through the [glob](https://docs.python.org/3/library/glob.html) module in python (note there must be an asterisk or else it will register as a literal character), but the basics are that an asterisk delimits "any directory". So for example if you wanted to register a command to "git pull" all folders in a directory you could use:
 
 ```powershell
 ahd register git-upt "git pull" "C:\Users\Kieran\Desktop\Development\Canadian Coding\*"
@@ -123,3 +141,8 @@ All paths should be specified in unix style (use / instead of \\), even if inten
 
 
 
+
+
+## Autocompletion on ZSH, fish etc.
+
+There are plans to fully support zsh and fish in the future, but a temporary solution is to use a module called [docopt-completion](https://github.com/Infinidat/infi.docopt_completion) (install using ```pip install infi.docopt-completion```). Once installed you can run ```docopt-completion ahd``` to generate autocompletion on the **TOP-LEVEL** (register, docs, config) commands. Unfortunately there is no solution for autocompletion on ahd registered commands (yet).

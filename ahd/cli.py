@@ -30,8 +30,7 @@ from configparser import ConfigParser # Used to serialize and de-serialize confi
 
 
 # Internal dependencies
-from .autocomplete import command, \
-    generate_bash_autocomplete       # Used to generate bash autocomplete files
+from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
@@ -110,8 +109,7 @@ def main():
     # ========= config argument parsing =========
     if arguments["config"]:
         if arguments["--export"]:
-            print(f"{os.curdir}{os.sep}.ahdconfig")
-            with open(f"{os.curdir}{os.sep}.ahdconfig", "w") as config_file:
+            with open(f"{os.path.abspath(os.curdir)}{os.sep}.ahdconfig", "w") as config_file:
                 config.write(config_file)
 
         if arguments["--import"]:
@@ -121,14 +119,11 @@ def main():
             
             new_config.read(new_config_path)
 
-            for argument in new_config:
-                print(f"{argument=}")
-
             os.remove(CONFIG_FILE_PATH)
             print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
             with open(CONFIG_FILE_PATH, "w") as config_file:
                 new_config.write(config_file)
-
+            
     # ========= preprocessing commands and paths =========
     if not arguments["<paths>"]:
         arguments["<paths>"] = ""
@@ -169,17 +164,18 @@ def main():
     # ========= User command argument parsing =========
         if arguments['<name>']:
             paths = _postprocess_paths(config[arguments['<name>']]['paths'])
+            current_command = config[arguments['<name>']]['command']
             if len(paths) > 1:
                 for current_path in paths:
-                    command = config[arguments['<name>']]['command']
                     if os.name == "nt":
                         current_path = current_path.replace("/", f"{os.sep}")
                         current_path = current_path.replace("~", os.getenv('USERPROFILE'))
-                    print(f"Running: cd {current_path} && {command} ".replace("\'",""))
-                    subprocess.Popen(f"cd {current_path} && {command} ".replace("\'",""), shell=True)
+                    print(f"Running: cd {current_path} && {current_command} ".replace("\'",""))
+                    subprocess.Popen(f"cd {current_path} && {current_command} ".replace("\'",""), shell=True)
 
             else: # if only a single path is specified instead of a 'list' of them
-                subprocess.Popen(f"cd {config[arguments['<name>']]['paths']} && {command} ".replace("\'",""), shell=True)
+                print(f"Running: cd {config[arguments['<name>']]['paths']} && {current_command} ".replace("\'",""))
+                subprocess.Popen(f"cd {config[arguments['<name>']]['paths']} && {current_command} ".replace("\'",""), shell=True)
     
     # Since executing commands requires changing directories, make sure to return after
     os.chdir(CURRENT_PATH)
@@ -201,7 +197,10 @@ def _preprocess_paths(paths:str) -> str:
     result = paths.split(",")
     for index, directory in enumerate(result):
         directory = directory.replace("\\", "/").strip()
-        result[index] = os.path.abspath(directory)
+        if not "~" in directory:
+            result[index] = os.path.abspath(directory)
+        else:
+            result[index] = directory
 
     result = ",".join(result)
 
@@ -223,14 +222,28 @@ def _postprocess_paths(paths:str) -> list:
     # Prints: ['C:/Users/Kieran/Desktop/Development/Canadian Coding/SSB', ' C:/Users/Kieran/Desktop/Development/Canadian Coding/website', ' C:/Users/Kieran/Desktop/Development/Personal/noter', 'C:/Users/Kieran/Desktop/Development/Canadian Coding', 'C:/Users/Kieran/Desktop/Development/Personal', 'C:/Users/Kieran/Desktop/Development/pystall', 'C:/Users/Kieran/Desktop/Development/python-package-template', 'C:/Users/Kieran/Desktop/Development/Work']
     ```
     """
-    result = paths.split(",")
-    for directory in result:
+    paths = paths.split(",")
+    result = []
+    for directory in paths:
         if "*" in directory:
+            if "~" in directory:
+                if os.name == "nt":
+                    USERPROFILE = os.getenv('USERPROFILE')
+                    directory = directory.replace("~",f"{USERPROFILE}")
+                else:
+                    directory = directory.replace("~", f"{os.getenv('HOME')}")
             wildcard_paths = glob.glob(directory.strip())
+
+            if os.name == "nt":
+                USERPROFILE = os.getenv('USERPROFILE')
+                directory = directory.replace(f"{USERPROFILE}","~")
+            else:
+                directory = directory.replace(f"{os.getenv('HOME')}","~")
+
             for wildcard_directory in wildcard_paths:
                 wildcard_directory = wildcard_directory.replace("\\", "/")
                 result.append(wildcard_directory)
-            result.remove(directory)
+
     return result
 
 

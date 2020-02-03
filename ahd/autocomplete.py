@@ -1,12 +1,33 @@
+"""This module is used to generate autocomplete files for vaious systems (bash, zsh etc.)
+
+Examples
+--------
+
+Creating a bash autocomplete file:
+
+```
+>> from ahd.autocomplete import generate_bash_autocomplete, command
+
+>> commands =  [ # Used for autocompletion generation
+        command("docs", ["-a", "--api", "-o", "--offline"]),
+        command("register", [])
+    ]
+
+>> print(generate_bash_autocomplete(commands))
+```
+
+Notes
+-----
+If you need to fix a bug in this file contact me with the cost of the whisky bottle :)
+"""
+
 from collections import namedtuple
 
 command = namedtuple("command", ["name", "arguments"])
 
 
-def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = "ahd"):
-
-
-
+def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = "ahd") -> str:
+    """Generates the first portion of a bash autocomplete file"""
     arguments = _stringify_list(arguments)
 
     root_template = f"""_{root}()
@@ -40,8 +61,8 @@ def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = 
 
 
 
-def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd"):
-    """Generates a bash autocomplete block for a single command"""
+def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd") -> str:
+    """Generates a bash autocomplete section for a single command"""
     
     if arguments:
         arguments = _stringify_list(arguments)
@@ -61,8 +82,13 @@ def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd"
     return command_result
 
 
-def _stringify_list(arguments:list):
-    """Takes a list and stringifies it to a useable format for autocomplete files"""
+def _stringify_list(arguments:list) -> str:
+    """Takes a list and stringifies it to a useable format for autocomplete files
+    
+    Examples
+    --------
+    >> _stringify_list(["-a", "--api", "-o", "--offline"])
+    >> # Returns: '-a --api -o --offline' """
     stringified = ""
     for argument in arguments: # Preprocess arguments into appropriate string form
         stringified += f" {argument}"
@@ -70,7 +96,9 @@ def _stringify_list(arguments:list):
     return stringified
 
 
-def generate_bash_autocomplete(commands:list, root:str = "ahd"):
+def generate_bash_autocomplete(commands:list, root:str = "ahd") -> str:
+    """Takes a list of commands (namedtuple type) and returns the text necessary
+     for a bash autocomplete file"""
 
     sub_commands = [root] # list of just top level sub-commands
     for command in commands: # Iterate through and pull just subcommands from commands list
@@ -90,10 +118,3 @@ def generate_bash_autocomplete(commands:list, root:str = "ahd"):
     autocomplete_text += f"\ncomplete -o bashdefault -o default -o filenames -F _{root} {root}\n"
 
     return autocomplete_text
-
-if __name__ == "__main__":
-    commands =  [ # Used for autocompletion generation
-        command("docs", ["-a", "--api", "-o", "--offline"]),
-        command("register", [])
-    ]
-    print(generate_bash_autocomplete(commands))

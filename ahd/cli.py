@@ -53,7 +53,7 @@ usage = """Add-hoc dispatcher
     -o, --offline         shows the local User docs instead of live ones
     -e, --export          exports the configuration file
     -i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH 
-                          imports the configuration file
+                        imports the configuration file
     """
 
 commands =  [ # Used for autocompletion generation
@@ -82,7 +82,6 @@ def main():
         print("\n", usage)
         exit()
 
-
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         config.read(CONFIG_FILE_PATH) # Read it
 
@@ -99,15 +98,18 @@ def main():
             exit()
         else:
             if arguments["--offline"]:
-                #TODO
+                # TODO
                 print("Not yet implemented")
 
             if arguments["--api"]:
-                #TODO
+                # TODO
                 print("Not yet implemented")
 
     # ========= config argument parsing =========
     if arguments["config"]:
+        if not arguments["--export"] or arguments["--import"]:
+            print(usage)
+            exit()
         if arguments["--export"]:
             with open(f"{os.path.abspath(os.curdir)}{os.sep}.ahdconfig", "w") as config_file:
                 config.write(config_file)
@@ -138,7 +140,7 @@ def main():
 
     # ========= register argument parsing =========
     if arguments["register"]:
-        if not arguments["<name>"]:
+        if not arguments["<name>"] or not arguments["<paths>"]:
             print(usage)
             exit()
         config[arguments["<name>"]] = {
@@ -154,17 +156,29 @@ def main():
             autocomplete_file_text = generate_bash_autocomplete(commands)
             with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
                 autocomplete_file.write(autocomplete_file_text)
-            print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh")
+            print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
 
         with open(CONFIG_FILE_PATH, "w") as config_file:
             config.write(config_file)
 
+        # Since executing commands requires changing directories, make sure to return after
+        os.chdir(CURRENT_PATH)
+        exit()
+
     else: # If not registering a command
 
     # ========= User command argument parsing =========
+        
         if arguments['<name>']:
-            paths = _postprocess_paths(config[arguments['<name>']]['paths'])
-            current_command = config[arguments['<name>']]['command']
+            if "register" == arguments['<name>']:
+                print(usage)
+                exit()
+            try:
+                paths = _postprocess_paths(config[arguments['<name>']]['paths'])
+                current_command = config[arguments['<name>']]['command']
+            except KeyError: # TODO Find a way to suggest a similar command
+                print("Command not found in configuration")
+                exit()
             if len(paths) > 1:
                 for current_path in paths:
                     if os.name == "nt":
@@ -177,8 +191,7 @@ def main():
                 print(f"Running: cd {config[arguments['<name>']]['paths']} && {current_command} ".replace("\'",""))
                 subprocess.Popen(f"cd {config[arguments['<name>']]['paths']} && {current_command} ".replace("\'",""), shell=True)
     
-    # Since executing commands requires changing directories, make sure to return after
-    os.chdir(CURRENT_PATH)
+
 
 def _preprocess_paths(paths:str) -> str:
     """Preprocesses paths from input and splits + formats them
@@ -249,4 +262,3 @@ def _postprocess_paths(paths:str) -> list:
 
 if __name__ == "__main__":
     main()
-    

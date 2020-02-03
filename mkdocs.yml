@@ -4,6 +4,7 @@ nav:
     - Home: index.md
     - Quick Start: quick-start.md
     - Usage: usage.md
+    - Contributing: contributing.md
 
 theme: readthedocs
 

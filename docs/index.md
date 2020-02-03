@@ -58,7 +58,7 @@ One thing to note if you are updating to V0.2.0 from V0.1.0, the way that the pr
     ```ini
     [git-upt]
     command = git pull
-    paths = C:\Users\Kieran\Desktop\Development\personal\*, C:\Users\Kieran\Desktop\Development\Canadian Coding\*
+    paths = ~/Desktop/Development/personal/*, ~/Desktop/Development/Canadian Coding/*
     ```
 
     

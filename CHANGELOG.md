@@ -8,16 +8,19 @@ Focus was on improving the overall useability of ahd. Note this version breaks b
 
 Features:
 
-- Bash Autocomplete implemented
+- Bash Autocomplete implemented (ZSH and fish to come)
 - Ability to export configuration
 - Ability to import configuration
 - Added a top level "docs" command to easy access documentation
+- Added cross-platform wildcard support (see docs for usage)
+- Added cross-platform home directory (see docs for details)
 
 
 
 Bug fixes:
 
 - Fixed issue where running "register" command without any flags would error out instead of printing help info
+- Fixed issue with relative path tracking
 
 
 
@@ -27,6 +30,7 @@ Documentation improvements:
 - Added pull request templates
 - Added contribution guide
 - Added migration information
+- Added relevant documentation for all features released in V0.2.0
 
 
 

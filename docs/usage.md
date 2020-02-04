@@ -69,7 +69,7 @@ The register command allows you to register a name to be used later on. For exam
 
 
 
-#### \<name\>
+#### <name\>
 
 This is a placeholder value for the name of a command you have registered. Once the command is registered you can run it by using ```ahd <name>```, additionally you can override the default set commands or paths, details can be found below.
 

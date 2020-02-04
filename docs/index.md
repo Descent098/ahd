@@ -31,9 +31,9 @@ This package seeks to make the tedius task of creating one off bash scripts obso
 
 
 
-# Upgrading to V 0.2.0 from V0.1.0
+# Upgrading to V 0.2.x from V0.1.x
 
-One thing to note if you are updating to V0.2.0 from V0.1.0, the way that the preprocessing of paths works has been changed. Originally it was being stored as a "list" (though this isn't actually the case), and  now it is just a string of comma-delimited paths. Here are the steps to migrate:
+One thing to note if you are updating to V0.2.x from V0.1.x, the way that the preprocessing of paths works has been changed. Originally it was being stored as a "list" (though this isn't actually the case), and  now it is just a string of comma-delimited paths. Here are the steps to migrate:
 
 
 
@@ -46,20 +46,19 @@ One thing to note if you are updating to V0.2.0 from V0.1.0, the way that the pr
 3. Change any paths for commands to string representations instead of lists(remove the square brackets). For example:
     This
 
-    ```ini
-    [git-upt]
-    command = git pull
-    paths = [C:\Users\Kieran\Desktop\Development\personal\*, C:\Users\Kieran\Desktop\Development\Canadian Coding\*]
-    
-    ```
+```ini
+[git-upt]
+command = git pull
+paths = [C:\Users\Kieran\Desktop\Development\personal\*, C:\Users\Kieran\Desktop\Development\Canadian Coding\*]
+```
 
-    Would become
+Would become
 
-    ```ini
-    [git-upt]
-    command = git pull
-    paths = ~/Desktop/Development/personal/*, ~/Desktop/Development/Canadian Coding/*
-    ```
+```ini
+[git-upt]
+command = git pull
+paths = ~/Desktop/Development/personal/*, ~/Desktop/Development/Canadian Coding/*
+```
 
-    
+​    
 

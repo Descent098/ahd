@@ -1,12 +1,13 @@
-site_name: ahd; Ad-Hoc Dispatcher
+site_name: Ad-Hoc Dispatcher
 
 nav:
     - Home: index.md
     - Quick Start: quick-start.md
     - Usage: usage.md
     - Contributing: contributing.md
+    - FAQ: faq.md
 
-theme: readthedocs
+theme: material
 
 repo_url: https://github.com/Descent098/ahd
 

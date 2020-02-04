@@ -1,5 +1,0 @@
-docopt
-nox
-pytest
-mkdocs
-mkdocs-material

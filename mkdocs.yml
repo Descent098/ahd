@@ -7,7 +7,7 @@ nav:
     - Contributing: contributing.md
     - FAQ: faq.md
 
-theme: material
+theme: readthedocs
 
 repo_url: https://github.com/Descent098/ahd
 

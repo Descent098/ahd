@@ -93,7 +93,7 @@ def main():
 
     # ========= Docs argument parsing =========
     if arguments["docs"]:
-        if not arguments["--offline"] or arguments["--api"]:
+        if not arguments["--offline"] and not arguments["--api"]:
             webbrowser.open_new("https://ahd.readthedocs.io")
             exit()
         else:
@@ -107,7 +107,7 @@ def main():
 
     # ========= config argument parsing =========
     if arguments["config"]:
-        if not arguments["--export"] or arguments["--import"]:
+        if not arguments["--export"] and not arguments["--import"]:
             print(usage)
             exit()
         if arguments["--export"]:
@@ -125,6 +125,7 @@ def main():
             print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
             with open(CONFIG_FILE_PATH, "w") as config_file:
                 new_config.write(config_file)
+        
             
     # ========= preprocessing commands and paths =========
     if not arguments["<paths>"]:
@@ -188,8 +189,8 @@ def main():
                     subprocess.Popen(f"cd {current_path} && {current_command} ".replace("\'",""), shell=True)
 
             else: # if only a single path is specified instead of a 'list' of them
-                print(f"Running: cd {config[arguments['<name>']]['paths']} && {current_command} ".replace("\'",""))
-                subprocess.Popen(f"cd {config[arguments['<name>']]['paths']} && {current_command} ".replace("\'",""), shell=True)
+                print(f"Running: cd {paths[0]} && {current_command} ".replace("\'",""))
+                subprocess.Popen(f"cd {paths[0]} && {current_command} ".replace("\'",""), shell=True)
     
 
 
@@ -212,6 +213,10 @@ def _preprocess_paths(paths:str) -> str:
         directory = directory.replace("\\", "/").strip()
         if not "~" in directory:
             result[index] = os.path.abspath(directory)
+            if os.name == "nt":
+                directory = directory.replace(f"{os.getenv('USERPROFILE')}","~")
+            else:
+                directory = directory.replace(f"{os.getenv('HOME')}","~")
         else:
             result[index] = directory
 
@@ -227,7 +232,7 @@ def _postprocess_paths(paths:str) -> list:
     Example
     -------
     ```
-    paths = 'C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\SSB, C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\website, C:\\Users\\Kieran\\Desktop\\Development\\Personal\\noter, C:\\Users\\Kieran\\Desktop\\Development\\*'
+    paths = 'C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\SSB, C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\website, ~/Desktop/Development/Personal/noter, C:\\Users\\Kieran\\Desktop\\Development\\*'
     
     paths = _preprocess_paths(paths)
 
@@ -238,25 +243,28 @@ def _postprocess_paths(paths:str) -> list:
     paths = paths.split(",")
     result = []
     for directory in paths:
-        if "*" in directory:
-            if "~" in directory:
-                if os.name == "nt":
-                    USERPROFILE = os.getenv('USERPROFILE')
-                    directory = directory.replace("~",f"{USERPROFILE}")
-                else:
-                    directory = directory.replace("~", f"{os.getenv('HOME')}")
-            wildcard_paths = glob.glob(directory.strip())
 
+        if os.name == "nt":
+            directory = directory.replace("/", "\\")
+
+        if directory.startswith(".") and (directory[1] == "/" or directory[1] == "\\"):
+            directory = f"{os.curdir}{directory[1::]}"
+
+        if "~" in directory:
             if os.name == "nt":
-                USERPROFILE = os.getenv('USERPROFILE')
-                directory = directory.replace(f"{USERPROFILE}","~")
+                directory = directory.replace("~",f"{os.getenv('USERPROFILE')}")
             else:
-                directory = directory.replace(f"{os.getenv('HOME')}","~")
+                directory = directory.replace("~", f"{os.getenv('HOME')}")
+        
+        if "*" in directory:
+
+            wildcard_paths = glob.glob(directory.strip())
 
             for wildcard_directory in wildcard_paths:
                 wildcard_directory = wildcard_directory.replace("\\", "/")
                 result.append(wildcard_directory)
-
+        else:
+            result.append(directory)
     return result
 
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## V 0.2.1; February 2nd 2020
+
+- Added support for . as current directory path
+- Fixed issue with being unable to import configuration files
+- Fixed issue with docs command when running --api
+
+
+
 ## V 0.2.0; February 2nd 20202
 
 Focus was on improving the overall useability of ahd. Note this version breaks backwards compatibility, but includes a migration guide in the docs (to be removed in V0.3.0).

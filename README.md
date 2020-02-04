@@ -1,4 +1,4 @@
-![ahd-logo](https://raw.githubusercontent.com/Descent098/ahd/master/docs/img/ahd-logo.png)
+![ahd-logo](https://raw.githubusercontent.com/Descent098/ahd/master/docs/img/ahd-logo.png) [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/Descent098/ahd/?ref=repository-badge)
 
 # ahd; Ad-Hoc Dispatcher
 

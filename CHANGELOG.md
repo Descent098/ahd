@@ -1,5 +1,22 @@
 # Changelog
 
+## V 0.3.0; TBD
+
+Focus for this release was on building sustainable development pipelines (logging, testing etc.), and making the project more reliable in edge cases and error handling.
+
+Features:
+
+- Built out the testing suite to be run before release
+- Built out the logging mechanism for debugging
+- Introduced many error catches for various issues.
+- Split discrete actions into function in primary entrypoint
+- Similarity checking; performs a check to see if a command is misstyped by checking similarity to registered commands when a command fails to run.
+
+Documentation improvements:
+
+- Created API documentation site
+
+
 ## V 0.2.1; February 2nd 2020
 
 - Added support for . as current directory path

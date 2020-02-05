@@ -6,9 +6,17 @@ def test_bash_generation():
     pass
 
 def test_stringify_list():
-    """Testing the _stringify_list method from autocomplete module"""
+    """Testing the _stringify_list method from autocomplete module
+    
+    Cases
+    -----
+    - List case (expected input)
+    - Empty list case
+    - Tuple case (expected input)
+    - String case (Error)
+    """
 
-    # Regular case
+    # List case
     assert _stringify_list(["-a", "--api", "-o", "--offline"]) == ' -a --api -o --offline'
 
     # Empty list case

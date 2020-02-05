@@ -25,7 +25,13 @@ setuptools.setup(
     description = "Create ad-hoc commands to be dispatched in their own namespace.",
     long_description = get_content("README.md", "CHANGELOG.md"),
     long_description_content_type = "text/markdown",
-    url = "https://github.com/Descent098/ahd",
+    project_urls = {
+        "User Docs" : "https://ahd.readthedocs.io/en/latest/",
+        "Source" : "https://github.com/Descent098/ahd",
+        "Bug Report": "https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=bug&template=bug_report.md&title=%5BBUG%5D",
+        "Feature Request": "https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=enhancement&template=feature_request.md&title=%5BFeature%5D",
+        "Roadmap": "https://github.com/Descent098/ahd/projects/1"
+    },
     include_package_data = True,
     packages = setuptools.find_packages(),
     entry_points = { 
@@ -44,5 +50,6 @@ setuptools.setup(
     classifiers = [
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
+        "Development Status :: 5 - Production Stable"
     ],
 )

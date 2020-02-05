@@ -12,6 +12,10 @@ Features:
 - Split discrete actions into function in primary entrypoint
 - Similarity checking; performs a check to see if a command is misstyped by checking similarity to registered commands when a command fails to run.
 
+Bug Fixes:
+
+- Added config command to bash autocomplete
+
 Documentation improvements:
 
 - Created API documentation site

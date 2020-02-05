@@ -68,7 +68,7 @@ def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd"
     command_result = f"""_{root}_{command}()
     {{
         local cur
-        cur=\"\${{COMP_WORDS[COMP_CWORD]}}\"
+        cur=\"${{COMP_WORDS[COMP_CWORD]}}\"
 
         if [ $COMP_CWORD -ge 2 ]; then
             COMPREPLY=( $( compgen -W '{arguments}' -- $cur) )

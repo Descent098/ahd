@@ -58,7 +58,8 @@ usage = """Add-hoc dispatcher
 
 commands =  [ # Used for autocompletion generation
     command("docs", ["-a", "--api", "-o", "--offline"]),
-    command("register", [])
+    command("register", []),
+    command("config", ["-e", "--export", "-i", "--import"])
 ]
 
 

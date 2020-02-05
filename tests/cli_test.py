@@ -58,5 +58,3 @@ def test_postprocess_paths():
         correct_paths.append(f"{os.getenv('HOME')}/Desktop/Development/Personal/noter")
         correct_paths.append(os.path.abspath("."))
         assert _postprocess_paths(paths) == correct_paths
-
-

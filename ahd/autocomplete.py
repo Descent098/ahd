@@ -9,11 +9,12 @@ Creating a bash autocomplete file:
 >> from ahd.autocomplete import generate_bash_autocomplete, command
 
 >> commands =  [ # Used for autocompletion generation
-        command("docs", ["-a", "--api", "-o", "--offline"]),
-        command("register", [])
-    ]
+    command("docs", ["-a", "--api", "-o", "--offline"]),
+    command("register", [])
+]
 
->> print(generate_bash_autocomplete(commands))
+>> # Output is too long to display in this docstring
+>> print(generate_bash_autocomplete(commands)) 
 ```
 
 Notes
@@ -56,10 +57,6 @@ def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = 
     """
 
     return root_template
-        
-
-
-
 
 def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd") -> str:
     """Generates a bash autocomplete section for a single command"""
@@ -87,9 +84,16 @@ def _stringify_list(arguments:list) -> str:
     
     Examples
     --------
-    >> _stringify_list(["-a", "--api", "-o", "--offline"])
-    >> # Returns: '-a --api -o --offline' """
+    ```
+    >> _stringify_list(["-a", "--api", "-o", "--offline"]) # Returns: '-a --api -o --offline' 
+    ```
+    """
+
+    if not (type(arguments) == list or type(arguments) == tuple):
+        raise ValueError("Expected list of arguments, got string instead")
+
     stringified = ""
+
     for argument in arguments: # Preprocess arguments into appropriate string form
         stringified += f" {argument}"
     
@@ -98,7 +102,22 @@ def _stringify_list(arguments:list) -> str:
 
 def generate_bash_autocomplete(commands:list, root:str = "ahd") -> str:
     """Takes a list of commands (namedtuple type) and returns the text necessary
-     for a bash autocomplete file"""
+    for a bash autocomplete file
+     
+    Examples
+    --------
+    ```
+    >> commands =  [ # Used for autocompletion generation
+        command("docs", ["-a", "--api", "-o", "--offline"]),
+        command("register", [])
+    ]
+
+    >> # Output is too long to display in this docstring
+    >> print(generate_bash_autocomplete(commands)) 
+    ```
+    """
+    if not type(commands) == list:
+        raise ValueError("Expected list of commands, got string instead")
 
     sub_commands = [root] # list of just top level sub-commands
     for command in commands: # Iterate through and pull just subcommands from commands list

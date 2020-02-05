@@ -46,7 +46,8 @@ def test(session):
     """Runs tests defined in tests folder against all installed versions
        of python from 3.5-3.8"""
     session.install('pytest')
-    session.run('pytest')
+    session.install('.')
+    session.run('pytest', "-vv")
 
 @nox.session
 def docs(session):

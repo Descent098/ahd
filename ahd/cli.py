@@ -30,7 +30,7 @@ from configparser import ConfigParser # Used to serialize and de-serialize confi
 
 
 # Internal dependencies
-from .autocomplete import command, generate_bash_autocomplete
+# from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
@@ -56,10 +56,10 @@ usage = """Add-hoc dispatcher
                         imports the configuration file
     """
 
-commands =  [ # Used for autocompletion generation
-    command("docs", ["-a", "--api", "-o", "--offline"]),
-    command("register", [])
-]
+# commands =  [ # Used for autocompletion generation
+#     command("docs", ["-a", "--api", "-o", "--offline"]),
+#     command("register", [])
+# ]
 
 
 config = ConfigParser() # Global configuration parser
@@ -76,7 +76,7 @@ def main():
     All primary business logic is within this function."""
 
     # Setup arguments for parsing
-    arguments = docopt(usage, version="ahd V 0.1.0")
+    arguments = docopt(usage, version="ahd V 0.3.0")
 
     if len(sys.argv) == 1:
         print("\n", usage)
@@ -201,24 +201,30 @@ def _preprocess_paths(paths:str) -> str:
     Example
     -------
     ```
-    paths = 'C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\SSB, C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\website, C:\\Users\\Kieran\\Desktop\\Development\\Personal\\noter'
+    paths = '~/Desktop/Development/Canadian Coding/SSB, C:\\Users\\Kieran\\Desktop\\Development\\*, ~\\Desktop\\Development\\Personal\\noter, .'
     
     paths = _preprocess_paths(paths)
 
-    print(paths) # Prints: 'C:/Users/Kieran/Desktop/Development/Canadian Coding/SSB, C:/Users/Kieran/Desktop/Development/Canadian Coding/website, C:/Users/Kieran/Desktop/Development/Personal/noter'
+    print(paths) # Prints: '~/Desktop/Development/Canadian Coding/SSB,~/Desktop/Development/*,~/Desktop/Development/Personal/noter,.'
     ```
     """
     result = paths.split(",")
     for index, directory in enumerate(result):
-        directory = directory.replace("\\", "/").strip()
+        directory = directory.strip()
+        if directory.startswith(".") and (len(directory) > 1):
+            directory = os.path.abspath(directory)
         if not "~" in directory:
-            result[index] = os.path.abspath(directory)
             if os.name == "nt":
-                directory = directory.replace(f"{os.getenv('USERPROFILE')}","~")
+                directory = directory.replace(os.getenv('USERPROFILE'),"~")
+
             else:
-                directory = directory.replace(f"{os.getenv('HOME')}","~")
-        else:
+                directory = directory.replace(os.getenv('HOME'),"~")
+            directory = directory.replace("\\", "/")
             result[index] = directory
+        else:
+            directory = directory.replace("\\", "/")
+            result[index] = directory
+
 
     result = ",".join(result)
 
@@ -243,12 +249,17 @@ def _postprocess_paths(paths:str) -> list:
     paths = paths.split(",")
     result = []
     for directory in paths:
+        directory = directory.strip()
 
         if os.name == "nt":
             directory = directory.replace("/", "\\")
 
-        if directory.startswith(".") and (directory[1] == "/" or directory[1] == "\\"):
-            directory = f"{os.curdir}{directory[1::]}"
+        if directory.startswith("."):
+            try:
+                if directory[1] == "/" or directory[1] == "\\":
+                    directory = f"{os.curdir}{directory[1::]}"
+            except IndexError:
+                directory = os.path.abspath(".")
 
         if "~" in directory:
             if os.name == "nt":
@@ -269,4 +280,9 @@ def _postprocess_paths(paths:str) -> list:
 
 
 if __name__ == "__main__":
-    main()
+
+    paths = '~/Desktop/Development/Canadian Coding/SSB,~/Desktop/Development/*,~/Desktop/Development/Personal/noter,.'
+    
+    print(_postprocess_paths(paths))
+    #main()
+    

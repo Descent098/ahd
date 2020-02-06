@@ -34,6 +34,7 @@ from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
+import colored
 
 
 usage = """Add-hoc dispatcher
@@ -121,11 +122,15 @@ def main():
             new_config = ConfigParser()
             
             new_config.read(new_config_path)
+            try:
+                os.remove(CONFIG_FILE_PATH)
+                print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
+                with open(CONFIG_FILE_PATH, "w") as config_file:
+                    new_config.write(config_file)
+            except PermissionError:
+                print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
+                print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")
 
-            os.remove(CONFIG_FILE_PATH)
-            print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
-            with open(CONFIG_FILE_PATH, "w") as config_file:
-                new_config.write(config_file)
         
             
     # ========= preprocessing commands and paths =========
@@ -150,18 +155,25 @@ def main():
             "paths": arguments["<paths>"],
         }
 
+        try:
+            with open(CONFIG_FILE_PATH, "w") as config_file:
+                config.write(config_file)
+        except PermissionError:
+                print(f"{colored.fg(1)}Unable to register command are you sudo?")
+                print(f"{colored.fg(15)}\tTry running: sudo ahd register {arguments['<name>']} \"{arguments['<command>']}\" \"{arguments['<paths>']}\" ")
+
         if not os.name == "nt": # Generate bash autocomplete
             for index, custom_command in enumerate(config):
                 if not index == 0: # for some reason the first thing in config object is garbage
                     commands.append(command(custom_command, []))
 
             autocomplete_file_text = generate_bash_autocomplete(commands)
-            with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
-                autocomplete_file.write(autocomplete_file_text)
-            print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
-
-        with open(CONFIG_FILE_PATH, "w") as config_file:
-            config.write(config_file)
+            try:
+                with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
+                    autocomplete_file.write(autocomplete_file_text)
+                print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
+            except PermissionError:
+                print(f"{colored.fg(1)}Unable to write bash autocompletion file are you sudo?")
 
         # Since executing commands requires changing directories, make sure to return after
         os.chdir(CURRENT_PATH)
@@ -179,7 +191,7 @@ def main():
                 paths = _postprocess_paths(config[arguments['<name>']]['paths'])
                 current_command = config[arguments['<name>']]['command']
             except KeyError: # TODO Find a way to suggest a similar command
-                print("Command not found in configuration")
+                print(f"{colored.fg(1)}Command not found in configuration")
                 exit()
             if len(paths) > 1:
                 for current_path in paths:

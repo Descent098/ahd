@@ -1,5 +1,20 @@
 # Changelog
 
+## V 0.3.0; February 6th
+
+Focus for this release was on building sustainable development pipelines (logging, testing etc.), and making the project more reliable in edge cases and error handling.
+
+Features:
+
+- Built out the testing suite to be run before release
+- Built out the logging mechanism for debugging
+- Introduced many error catches for various issues.
+
+Bug Fixes:
+
+- Added config command to bash autocomplete
+
+
 ## V 0.2.1; February 2nd 2020
 
 - Added support for . as current directory path

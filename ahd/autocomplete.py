@@ -22,13 +22,17 @@ Notes
 If you need to fix a bug in this file contact me with the cost of the whisky bottle :)
 """
 
-from collections import namedtuple
+# Standard lib dependencies
+
+import logging                        # Used to log valueable logging info
+from collections import namedtuple    # Used to setup command schema for feeding autocomplete
 
 command = namedtuple("command", ["name", "arguments"])
 
 
 def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = "ahd") -> str:
     """Generates the first portion of a bash autocomplete file"""
+    logging.info("Beginning bash root command autocomplete generation")
     arguments = _stringify_list(arguments)
 
     root_template = f"""_{root}()
@@ -56,11 +60,15 @@ def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = 
     }
     """
 
+    logging.debug(f"Root Template: {root_template}")
+
+
     return root_template
 
 def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd") -> str:
     """Generates a bash autocomplete section for a single command"""
-    
+    logging.info(f"Beginning command autocomplete generation for command {command} with arguments {arguments}")
+
     if arguments:
         arguments = _stringify_list(arguments)
     else:
@@ -76,6 +84,8 @@ def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd"
     }}
     """
 
+    logging.debug(f"Command Result: {command_result}")
+
     return command_result
 
 
@@ -88,7 +98,7 @@ def _stringify_list(arguments:list) -> str:
     >> _stringify_list(["-a", "--api", "-o", "--offline"]) # Returns: '-a --api -o --offline' 
     ```
     """
-
+    logging.info(f"Beginning list ({arguments})  stringification")
     if not (type(arguments) == list or type(arguments) == tuple):
         raise ValueError("Expected list of arguments, got string instead")
 
@@ -97,6 +107,8 @@ def _stringify_list(arguments:list) -> str:
     for argument in arguments: # Preprocess arguments into appropriate string form
         stringified += f" {argument}"
     
+    logging.debug(f"Stringified: {stringified}")
+
     return stringified
 
 
@@ -116,6 +128,8 @@ def generate_bash_autocomplete(commands:list, root:str = "ahd") -> str:
     >> print(generate_bash_autocomplete(commands)) 
     ```
     """
+    logging.info("Beginning bash autocompletion generation")
+
     if not type(commands) == list:
         raise ValueError("Expected list of commands, got string instead")
 
@@ -135,5 +149,7 @@ def generate_bash_autocomplete(commands:list, root:str = "ahd") -> str:
 
 
     autocomplete_text += f"\ncomplete -o bashdefault -o default -o filenames -F _{root} {root}\n"
+
+    logging.debug(f"Autocomplete Text: {autocomplete_text}")
 
     return autocomplete_text

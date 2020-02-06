@@ -24,6 +24,7 @@ Docs website: https://ahd.readthedocs.io
 import os                             # Used primarily to validate paths
 import sys                            # Used to check length of input arguments
 import glob                           # Used to preprocess wildcard paths
+import logging                        # Used to log valueable logging info
 import webbrowser                     # Used to auto-launch the documentation link
 import subprocess                     # Used to run the dispatched commands
 from configparser import ConfigParser # Used to serialize and de-serialize config files
@@ -33,8 +34,8 @@ from configparser import ConfigParser # Used to serialize and de-serialize confi
 from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
+import colored                        # Used to colour terminal output
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
-import colored
 
 
 usage = """Add-hoc dispatcher
@@ -135,18 +136,22 @@ def main():
             
     # ========= preprocessing commands and paths =========
     if not arguments["<paths>"]:
+        logging.debug("No paths argument registered setting to \'\'")
         arguments["<paths>"] = ""
     else:
         arguments["<paths>"] = _preprocess_paths(arguments["<paths>"])
     
     if not arguments["<command>"]:
+        logging.debug("No command argument registered setting to \'\'")
         arguments["<command>"] = ""
     
     if "." == arguments["<command>"]: # If <command> is . set to specified value
+        logging.debug(f". command registered, setting to {config[arguments['<name>']]['command']}")
         arguments["<command>"] = config[arguments["<name>"]]["command"]
 
     # ========= register argument parsing =========
     if arguments["register"]:
+        logging.info(f"Registering command {arguments['<name>']} with \nCommand: {arguments['<command>']} \nPaths: {arguments['<paths>']}")
         if not arguments["<name>"] or not arguments["<paths>"]:
             print(usage)
             exit()
@@ -156,6 +161,7 @@ def main():
         }
 
         try:
+            logging.info(f"Begin writing config file to {CONFIG_FILE_PATH}")
             with open(CONFIG_FILE_PATH, "w") as config_file:
                 config.write(config_file)
         except PermissionError:
@@ -187,11 +193,12 @@ def main():
             if "register" == arguments['<name>']:
                 print(usage)
                 exit()
+            logging.info(f"Beggining execution of {arguments['<name>']}")
             try:
                 paths = _postprocess_paths(config[arguments['<name>']]['paths'])
                 current_command = config[arguments['<name>']]['command']
             except KeyError: # TODO Find a way to suggest a similar command
-                print(f"{colored.fg(1)}Command not found in configuration")
+                print(f"{colored.fg(1)}Command not found in configuration validate spelling is correct.")
                 exit()
             if len(paths) > 1:
                 for current_path in paths:
@@ -221,9 +228,11 @@ def _preprocess_paths(paths:str) -> str:
     print(paths) # Prints: '~/Desktop/Development/Canadian Coding/SSB,~/Desktop/Development/*,~/Desktop/Development/Personal/noter,.'
     ```
     """
+    logging.info(f"Beginning path preprocessing on {paths}")
     result = paths.split(",")
     for index, directory in enumerate(result):
         directory = directory.strip()
+        logging.debug(f"Directory: {directory}")
         if directory.startswith(".") and (len(directory) > 1):
             directory = os.path.abspath(directory)
         if not "~" in directory:
@@ -238,7 +247,7 @@ def _preprocess_paths(paths:str) -> str:
             directory = directory.replace("\\", "/")
             result[index] = directory
 
-
+    logging.debug(f"Result: {result}")
     result = ",".join(result)
 
     return result
@@ -259,6 +268,8 @@ def _postprocess_paths(paths:str) -> list:
     # Prints: ['C:/Users/Kieran/Desktop/Development/Canadian Coding/SSB', ' C:/Users/Kieran/Desktop/Development/Canadian Coding/website', ' C:/Users/Kieran/Desktop/Development/Personal/noter', 'C:/Users/Kieran/Desktop/Development/Canadian Coding', 'C:/Users/Kieran/Desktop/Development/Personal', 'C:/Users/Kieran/Desktop/Development/pystall', 'C:/Users/Kieran/Desktop/Development/python-package-template', 'C:/Users/Kieran/Desktop/Development/Work']
     ```
     """
+    logging.info(f"Beginning path postprocessing on {paths}")
+
     paths = paths.split(",")
     result = []
     for directory in paths:
@@ -289,6 +300,8 @@ def _postprocess_paths(paths:str) -> list:
                 result.append(wildcard_directory)
         else:
             result.append(directory)
+
+    logging.debug(f"Result: {result}")
     return result
 
 

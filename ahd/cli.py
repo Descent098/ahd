@@ -3,7 +3,7 @@
 Module Variables
 ----------------
 
-usage (str);
+usage (str):
     Used by docopt to setup argument parsing;
     Defines the actual command line interface.
 
@@ -58,7 +58,7 @@ usage = """Add-hoc dispatcher
                         imports the configuration file
     """
 
-commands =  [ # Used for autocompletion generation
+command_list =  [ # Used for autocompletion generation
     command("docs", ["-a", "--api", "-o", "--offline"]),
     command("register", []),
     command("config", ["-e", "--export", "-i", "--import"])
@@ -96,43 +96,11 @@ def main():
 
     # ========= Docs argument parsing =========
     if arguments["docs"]:
-        if not arguments["--offline"] and not arguments["--api"]:
-            webbrowser.open_new("https://ahd.readthedocs.io")
-            exit()
-        else:
-            if arguments["--offline"]:
-                # TODO
-                print("Not yet implemented")
-
-            if arguments["--api"]:
-                # TODO
-                print("Not yet implemented")
+        docs(arguments["--api"], arguments["--offline"])
 
     # ========= config argument parsing =========
     if arguments["config"]:
-        if not arguments["--export"] and not arguments["--import"]:
-            print(usage)
-            exit()
-        if arguments["--export"]:
-            with open(f"{os.path.abspath(os.curdir)}{os.sep}.ahdconfig", "w") as config_file:
-                config.write(config_file)
-
-        if arguments["--import"]:
-
-            new_config_path = arguments["--import"]
-            new_config = ConfigParser()
-            
-            new_config.read(new_config_path)
-            try:
-                os.remove(CONFIG_FILE_PATH)
-                print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
-                with open(CONFIG_FILE_PATH, "w") as config_file:
-                    new_config.write(config_file)
-            except PermissionError:
-                print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
-                print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")
-
-        
+        configure(arguments["--export"], arguments["--import"])
             
     # ========= preprocessing commands and paths =========
     if not arguments["<paths>"]:
@@ -151,68 +119,184 @@ def main():
 
     # ========= register argument parsing =========
     if arguments["register"]:
-        logging.info(f"Registering command {arguments['<name>']} with \nCommand: {arguments['<command>']} \nPaths: {arguments['<paths>']}")
-        if not arguments["<name>"] or not arguments["<paths>"]:
-            print(usage)
-            exit()
-        config[arguments["<name>"]] = {
-            "command": arguments["<command>"],
-            "paths": arguments["<paths>"],
-        }
-
-        try:
-            logging.info(f"Begin writing config file to {CONFIG_FILE_PATH}")
-            with open(CONFIG_FILE_PATH, "w") as config_file:
-                config.write(config_file)
-        except PermissionError:
-                print(f"{colored.fg(1)}Unable to register command are you sudo?")
-                print(f"{colored.fg(15)}\tTry running: sudo ahd register {arguments['<name>']} \"{arguments['<command>']}\" \"{arguments['<paths>']}\" ")
-
-        if not os.name == "nt": # Generate bash autocomplete
-            for index, custom_command in enumerate(config):
-                if not index == 0: # for some reason the first thing in config object is garbage
-                    commands.append(command(custom_command, []))
-
-            autocomplete_file_text = generate_bash_autocomplete(commands)
-            try:
-                with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
-                    autocomplete_file.write(autocomplete_file_text)
-                print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
-            except PermissionError:
-                print(f"{colored.fg(1)}Unable to write bash autocompletion file are you sudo?")
-
-        # Since executing commands requires changing directories, make sure to return after
-        os.chdir(CURRENT_PATH)
-        exit()
-
-    else: # If not registering a command
+        register(arguments["<name>"], arguments["<command>"], arguments["<paths>"] )
 
     # ========= User command argument parsing =========
+    
+    if arguments['<name>']:
+        if not arguments['<paths>'] and not arguments['<command>']:
+            dispatch(arguments['<name>'])
+
+        else:
+            if arguments['<paths>'] and not arguments['<command>']: 
+                # Process inputted paths
+                arguments['<paths>'] = _preprocess_paths(arguments['<paths>'])
+                arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
+                dispatch(arguments['<name>'], paths = arguments['<paths>'])
+
+            if arguments['<command>'] and not arguments['<paths>']:
+                dispatch(arguments['<name>'], command = arguments['<command>'])
+
+            else:
+                # Process inputted paths
+                arguments['<paths>'] = _preprocess_paths(arguments['<paths>'])
+                arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
+                dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'])
+    
+def docs(api:bool = False, offline:bool = False) -> None:
+    """Processes incoming arguments when the docs command is invoked
+
+    Parameters
+    ----------
+    api: (bool)
+        When specified, shows API docs as opposed to user docs.
+
+    offline: (bool)
+        When specified will build local copy of docs instead of going to website
+
+    Notes
+    -----
+    - By Default user documentation is selected
+    - By default the online documentation is selected
+    """
+    if not api and not offline:
+        webbrowser.open_new("https://ahd.readthedocs.io")
+        exit()
+    else:
+        if offline and not api:
+            # TODO Implement build local user docs.
+            print("Not yet implemented")
+
+        elif api:
+            if not offline:
+                webbrowser.open_new("https://kieranwood.ca/ahd")
+                exit()
+            else:
+                # TODO Implement build local user docs.
+                print("Not yet implemented")
+
+def configure(export:bool = False, import_config:bool = False) -> None:
+    """Handles all the exporing and importing of configurations
+
+    Parameters
+    ----------
+    export: (bool)
+        When specified, shows API docs as opposed to user docs.
+
+    import_config: (bool|str)
+        False if no path, otherwise a string representation of path to config file.
+
+    Notes
+    -----
+    - If neither export or import_config are specified, then usage is printed.
+    """
+
+    if not export and not import_config:
+            print(usage)
+            exit()
+    if export:
+        with open(f"{os.path.abspath(os.curdir)}{os.sep}.ahdconfig", "w") as config_file:
+            config.write(config_file)
+
+    if import_config:
+
+        new_config_path = import_config
+        new_config = ConfigParser()
         
-        if arguments['<name>']:
-            if "register" == arguments['<name>']:
+        new_config.read(new_config_path)
+        try:
+            os.remove(CONFIG_FILE_PATH)
+            print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
+            with open(CONFIG_FILE_PATH, "w") as config_file:
+                new_config.write(config_file)
+        except PermissionError:
+            print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
+            print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")
+
+def register(name, commands, paths):
+    """Handles registering of custom commands, and autocompletion generation.
+
+    Parameters
+    ----------
+    name: (str)
+        The name used to call the commands.
+
+    commands: (str)
+        The set of commands to execute.
+    
+    paths: (str)
+        A string representation of the paths to execute the command with.
+
+    Notes
+    -----
+    - When passing paths to this function make sure they are preprocessed.
+    """
+    logging.info(f"Registering command {name} with \nCommand: {commands} \nPaths: {paths}")
+    if not name or not paths:
+        print(usage)
+        exit()
+    config[name] = {
+        "command": commands,
+        "paths": paths,
+    }
+
+    try:
+        logging.info(f"Begin writing config file to {CONFIG_FILE_PATH}")
+        with open(CONFIG_FILE_PATH, "w") as config_file:
+            config.write(config_file)
+    except PermissionError:
+            print(f"{colored.fg(1)}Unable to register command are you sudo?")
+            print(f"{colored.fg(15)}\tTry running: sudo ahd register {name} \"{commands}\" \"{paths}\" ")
+
+    if not os.name == "nt": # Generate bash autocomplete
+        for index, custom_command in enumerate(config):
+            if not index == 0: # for some reason the first thing in config object is garbage
+                command_list.append(command(custom_command, []))
+
+        autocomplete_file_text = generate_bash_autocomplete(command_list)
+        try:
+            with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
+                autocomplete_file.write(autocomplete_file_text)
+            print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
+        except PermissionError:
+            print(f"{colored.fg(1)}Unable to write bash autocompletion file are you sudo?")
+
+    # Since executing commands requires changing directories, make sure to return after
+    os.chdir(CURRENT_PATH)
+    exit()
+
+def dispatch(name, command = False, paths = False):
+    """Controls the dispatching of custom functions"""
+    if "register" == name:
                 print(usage)
                 exit()
-            logging.info(f"Beggining execution of {arguments['<name>']}")
-            try:
-                paths = _postprocess_paths(config[arguments['<name>']]['paths'])
-                current_command = config[arguments['<name>']]['command']
-            except KeyError: # TODO Find a way to suggest a similar command
-                print(f"{colored.fg(1)}Command not found in configuration validate spelling is correct.")
-                exit()
-            if len(paths) > 1:
-                for current_path in paths:
-                    if os.name == "nt":
-                        current_path = current_path.replace("/", f"{os.sep}")
-                        current_path = current_path.replace("~", os.getenv('USERPROFILE'))
-                    print(f"Running: cd {current_path} && {current_command} ".replace("\'",""))
-                    subprocess.Popen(f"cd {current_path} && {current_command} ".replace("\'",""), shell=True)
+    logging.info(f"Beggining execution of {name}")
 
-            else: # if only a single path is specified instead of a 'list' of them
-                print(f"Running: cd {paths[0]} && {current_command} ".replace("\'",""))
-                subprocess.Popen(f"cd {paths[0]} && {current_command} ".replace("\'",""), shell=True)
+    try: # Accessing stored information on the command
+        config[name]
+
+    except KeyError: # TODO Find a way to suggest a similar command
+        print(f"{colored.fg(1)}Command not found in configuration validate spelling is correct.")
+        exit()
     
+    if not command or command == ".":
+        command = config[name]['command']
+    
+    if not paths:
+        paths = _postprocess_paths(config[name]['paths'])
 
+    if len(paths) > 1:
+        for current_path in paths:
+            if os.name == "nt":
+                current_path = current_path.replace("/", f"{os.sep}")
+                current_path = current_path.replace("~", os.getenv('USERPROFILE'))
+            print(f"Running: cd {current_path} && {command} ".replace("\'",""))
+            subprocess.Popen(f"cd {current_path} && {command} ".replace("\'",""), shell=True)
+
+    else: # if only a single path is specified instead of a 'list' of them
+        print(f"Running: cd {paths[0]} && {command} ".replace("\'",""))
+        subprocess.Popen(f"cd {paths[0]} && {command} ".replace("\'",""), shell=True)
+    pass
 
 def _preprocess_paths(paths:str) -> str:
     """Preprocesses paths from input and splits + formats them

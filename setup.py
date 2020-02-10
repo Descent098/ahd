@@ -19,18 +19,19 @@ def get_content(*filename):
 
 setuptools.setup(
     name = "ahd",
-    version = "0.3.0",
+    version = "0.4.0",
     author = "Kieran Wood",
     author_email = "kieran@canadiancoding.ca",
     description = "Create ad-hoc commands to be dispatched in their own namespace.",
     long_description = get_content("README.md", "CHANGELOG.md"),
     long_description_content_type = "text/markdown",
     project_urls = {
-        "User Docs" : "https://ahd.readthedocs.io/en/latest/",
-        "Source" : "https://github.com/Descent098/ahd",
-        "Bug Report": "https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=bug&template=bug_report.md&title=%5BBUG%5D",
+        "User Docs" :      "https://ahd.readthedocs.io/en/latest/",
+        "API Docs"  :      "https://kieranwood.ca/ahd",
+        "Source" :         "https://github.com/Descent098/ahd",
+        "Bug Report":      "https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=bug&template=bug_report.md&title=%5BBUG%5D",
         "Feature Request": "https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=enhancement&template=feature_request.md&title=%5BFeature%5D",
-        "Roadmap": "https://github.com/Descent098/ahd/projects/1"
+        "Roadmap":         "https://github.com/Descent098/ahd/projects/1"
     },
     include_package_data = True,
     packages = setuptools.find_packages(),
@@ -45,7 +46,7 @@ setuptools.setup(
         "dev" : ["nox",    # Used to run automated processes
                  "pytest", # Used to run the test code in the tests directory
                  "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
-                 "mkdocs-material"],
+                 "pdoc"],  # Used for building API documentation
 
     },
     classifiers = [

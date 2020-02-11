@@ -1,227 +1,65 @@
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Create ad-hoc commands to be dispatched in their own namespace.">
-  <meta name="author" content="Kieran Wood | Descent098">
-  <link rel="shortcut icon" href="img/favicon.ico">
-  <title>Home - Ad-Hoc Dispatcher</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  
-  <script>
-    // Current page data
-    var mkdocs_page_name = "Home";
-    var mkdocs_page_input_path = "index.md";
-    var mkdocs_page_url = null;
-  </script>
-  
-  <script src="js/jquery-2.1.1.min.js" defer></script>
-  <script src="js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>ahd API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 </head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-      <div class="wy-side-nav-search">
-        <a href="." class="icon icon-home"> Ad-Hoc Dispatcher</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
-  </form>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ahd</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="ahd.autocomplete" href="autocomplete.html">ahd.autocomplete</a></code></dt>
+<dd>
+<section class="desc"><p>This module is used to generate autocomplete files for vaious systems (bash, zsh etc.) …</p></section>
+</dd>
+<dt><code class="name"><a title="ahd.cli" href="cli.html">ahd.cli</a></code></dt>
+<dd>
+<section class="desc"><p>This file houses the primary entrypoint, and main business logic of ahd …</p></section>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
 </div>
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1 current">
-		
-    <a class="current" href=".">Home</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#ahd-ad-hoc-dispatcher">ahd; Ad-Hoc Dispatcher</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l3" href="#why">Why?</a></li>
-        
-            <li><a class="toctree-l3" href="#features">Features</a></li>
-        
-            <li><a class="toctree-l3" href="#limitations">"Limitations"</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l2"><a href="#upgrading-to-v-02x-from-v01x">Upgrading to V 0.2.x from V0.1.x</a></li>
-    
-
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="quick-start/">Quick Start</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="usage/">Usage</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="contributing/">Contributing</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="faq/">FAQ</a>
-	    </li>
-          
-        </ul>
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href=".">Ad-Hoc Dispatcher</a>
-      </nav>
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href=".">Docs</a> &raquo;</li>
-    
-      
-    
-    <li>Home</li>
-    <li class="wy-breadcrumbs-aside">
-      
-        <a href="https://github.com/Descent098/ahd/edit/master/docs/index.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
-    </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main">
-            <div class="section">
-              
-                <p><img alt="ahd-logo" src="https://raw.githubusercontent.com/Descent098/ahd/master/docs/img/ahd-logo.png" /></p>
-<h1 id="ahd-ad-hoc-dispatcher">ahd; Ad-Hoc Dispatcher</h1>
-<p>Create ad-hoc commands to be dispatched in their own namespace.</p>
-<h2 id="why">Why?</h2>
-<p>This package seeks to make the tedius task of creating one off bash scripts obsolete. The idea is to write an annoying command once, give it a name, and be able to recall it without an issue. It also has the benefit of namespacing commands that would normally be keywords for ease of use. See the quick-start guide for more details.</p>
-<h2 id="features">Features</h2>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li>Execution of any valid bash/wsl commands.</li>
-<li>Specification of multiple paths (including <a href="/en/latest/usage/#wildcards-and-cross-platform-paths">wildcards</a>)</li>
-<li>Autocomplete (*nix only; with bash, and plans to add zsh and fish later)</li>
-<li>A namespace with only 3 reserved keywords (docs, register, config)</li>
-<li>Cross-platform support</li>
+<li><code><a title="ahd.autocomplete" href="autocomplete.html">ahd.autocomplete</a></code></li>
+<li><code><a title="ahd.cli" href="cli.html">ahd.cli</a></code></li>
 </ul>
-<h2 id="limitations">"Limitations"</h2>
-<ul>
-<li>Autocompletion not supported on windows (not my fault)</li>
-<li>Technically without vendoring you also can't use <code>ahd</code> as a command for any other purpose</li>
+</li>
 </ul>
-<h1 id="upgrading-to-v-02x-from-v01x">Upgrading to V 0.2.x from V0.1.x</h1>
-<p>One thing to note if you are updating to V0.2.x from V0.1.x, the way that the preprocessing of paths works has been changed. Originally it was being stored as a "list" (though this isn't actually the case), and  now it is just a string of comma-delimited paths. Here are the steps to migrate:</p>
-<ol>
-<li>
-<p>Export your current configuration by running:
-    <code>ahd config -e</code></p>
-</li>
-<li>
-<p>Edit the configuration file in a text editor (in this example I will use nano):
-    <code>nano .ahdconfig</code></p>
-</li>
-<li>
-<p>Change any paths for commands to string representations instead of lists(remove the square brackets). For example:
-    This</p>
-</li>
-</ol>
-<pre><code class="ini">[git-upt]
-command = git pull
-paths = [C:\Users\Kieran\Desktop\Development\personal\*, C:\Users\Kieran\Desktop\Development\Canadian Coding\*]
-</code></pre>
-
-<p>Would become</p>
-<pre><code class="ini">[git-upt]
-command = git pull
-paths = ~/Desktop/Development/personal/*, ~/Desktop/Development/Canadian Coding/*
-</code></pre>
-
-<p>​    </p>
-              
-            </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="quick-start/" class="btn btn-neutral float-right" title="Quick Start">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-    </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-    
-  </div>
-
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
 </footer>
-      
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" style="cursor: pointer">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-          <a href="https://github.com/Descent098/ahd/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
-      
-        <span style="margin-left: 15px"><a href="quick-start/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
-</div>
-    <script>var base_url = '.';</script>
-    <script src="js/theme.js" defer></script>
-      <script src="search/main.js" defer></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
 </body>
 </html>
-
-<!--
-MkDocs version : 1.0.4
-Build Date UTC : 2020-02-06 07:57:06
--->

@@ -39,17 +39,18 @@ from docopt import docopt             # Used to parse arguments and setup POSIX 
 
 
 usage = """Add-hoc dispatcher
-    Create ad-hoc commands to be dispatched within their own namespace.
 
-    Usage: 
-        ahd list [-l]
-        ahd [-h] [-v] [-d]
-        ahd docs [-a] [-o]
-        ahd config [-e] [-i CONFIG_FILE_PATH]
-        ahd register <name> [<command>] [<paths>]
-        ahd <name> [<command>] [<paths>]
+Create ad-hoc commands to be dispatched within their own namespace.
 
-    Options:
+Usage: 
+    ahd list [-l]
+    ahd [-h] [-v] [-d]
+    ahd docs [-a] [-o]
+    ahd config [-e] [-i CONFIG_FILE_PATH]
+    ahd register <name> [<command>] [<paths>]
+    ahd <name> [<command>] [<paths>]
+
+Options:
     -h, --help            show this help message and exit
     -v, --version         show program's version number and exit
     -l, --long            Shows all commands in configuration with paths and commands
@@ -98,14 +99,17 @@ def main():
 
     if arguments["list"]:
         list_commands(arguments["--long"])
+        exit()
 
     # ========= Docs argument parsing =========
     if arguments["docs"]:
         docs(arguments["--api"], arguments["--offline"])
+        exit()
 
     # ========= config argument parsing =========
     if arguments["config"]:
         configure(arguments["--export"], arguments["--import"])
+        exit()
             
     # ========= preprocessing commands and paths =========
     if not arguments["<paths>"]:
@@ -170,11 +174,10 @@ def list_commands(verbose = False) -> None:
                     print(f"\tPaths = {configuration[command]['paths']}{colored.fg(15)}")
                 else:
                     print(f"\n{colored.fg(6)}{command}{colored.fg(15)}")
+        print(f"\n\n{count} commands detected")
 
     else: # If a file does not exist create one
         print(f"{colored.fg(1)}No commands found")
-    print() # reset terminal text to white
-    exit()
 
 
 def docs(api:bool = False, offline:bool = False) -> None:
@@ -195,7 +198,6 @@ def docs(api:bool = False, offline:bool = False) -> None:
     """
     if not api and not offline:
         webbrowser.open_new("https://ahd.readthedocs.io")
-        exit()
     else:
         if offline and not api:
             # TODO Implement build local user docs.
@@ -204,7 +206,6 @@ def docs(api:bool = False, offline:bool = False) -> None:
         elif api:
             if not offline:
                 webbrowser.open_new("https://kieranwood.ca/ahd")
-                exit()
             else:
                 # TODO Implement build local user docs.
                 print("Not yet implemented")
@@ -227,7 +228,7 @@ def configure(export:bool = False, import_config:bool = False) -> None:
 
     if not export and not import_config:
             print(usage)
-            exit()
+            return
     if export:
         with open(f"{os.path.abspath(os.curdir)}{os.sep}.ahdconfig", "w") as config_file:
             config.write(config_file)
@@ -266,9 +267,6 @@ def register(name, commands, paths):
     - When passing paths to this function make sure they are preprocessed.
     """
     logging.info(f"Registering command {name} with \nCommand: {commands} \nPaths: {paths}")
-    if not name or not paths:
-        print(usage)
-        exit()
     config[name] = {
         "command": commands,
         "paths": paths,

@@ -26,21 +26,23 @@ Run ```pip install ahd``` or ```sudo pip3 install ahd```
 ### Usage
 
 ```bash
-Usage: 
-	ahd [-h] [-v] [-d]
+Usage:
+    ahd list [-l]
+    ahd [-h] [-v] [-d]
     ahd docs [-a] [-o]
     ahd config [-e] [-i CONFIG_FILE_PATH]
     ahd register <name> [<command>] [<paths>]
     ahd <name> [<command>] [<paths>]
 
 Options:
-    -h, --help            show this help message and exit
-    -v, --version         show program's version number and exit
-    -a, --api             shows the local API docs
-    -o, --offline         shows the local User docs instead of live ones
-    -e, --export          exports the configuration file
-    -i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH 
-                          imports the configuration file
+-h, --help            show this help message and exit
+-v, --version         show program's version number and exit
+-l, --long            Shows all commands in configuration with paths and commands
+-a, --api             shows the local API docs
+-o, --offline         shows the local User docs instead of live ones
+-e, --export          exports the configuration file
+-i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH
+                    imports the configuration file
 ```
 
 
@@ -59,6 +61,14 @@ This example was somewhat trivial but keep in mind this effectively means you ca
 
 
 #### Arguments
+
+##### list
+
+The list command shows a list of your current registered commands.
+
+**Options**:
+
+  \- \-\-long: Shows all commands in configuration with paths and commands  
 
 ##### docs
 
@@ -104,7 +114,7 @@ This is a placeholder value for the name of a command you have registered. Once 
 
 ## Additional Documentation
 
-Additional user and development/contribution documentation will be available at [https://ahd.readthedocs.io/en/latest/](https://ahd.readthedocs.io/en/latest/).
+Additional user and development/contribution documentation will be available at [https://ahd.readthedocs.io/en/latest/](https://ahd.readthedocs.io/en/latest/). Also API documentation is available at [https://kieranwood.ca/ahd](https://kieranwood.ca/ahd)
 
 
 

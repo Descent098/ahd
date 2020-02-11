@@ -46,7 +46,7 @@ setuptools.setup(
         "dev" : ["nox",    # Used to run automated processes
                  "pytest", # Used to run the test code in the tests directory
                  "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
-                 "pdoc"],  # Used for building API documentation
+                 "pdoc3"], # Used for building API documentation
 
     },
     classifiers = [

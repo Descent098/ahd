@@ -1,6 +1,6 @@
 # Changelog
 
-## V 0.3.0; February 10th
+## V 0.4.0; February 10th
 
 Focus for this release was breaking up command line parsing into more testable chunks.
 

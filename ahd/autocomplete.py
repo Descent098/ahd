@@ -1,4 +1,4 @@
-"""This module is used to generate autocomplete files for vaious systems (bash, zsh etc.)
+"""This module is used to generate autocomplete files for various systems (bash, zsh etc.)
 
 Examples
 --------

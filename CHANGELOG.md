@@ -1,5 +1,18 @@
 # Changelog
 
+## V 0.3.0; February 10th
+
+Focus for this release was breaking up command line parsing into more testable chunks.
+
+Features:
+
+- All argument parsing is now based on discrete functions
+- Added a list command to show your current available commands
+
+Documentation:
+
+- Created API documentation site: https://kieranwood.ca/ahd
+
 ## V 0.3.0; February 6th
 
 Focus for this release was on building sustainable development pipelines (logging, testing etc.), and making the project more reliable in edge cases and error handling.

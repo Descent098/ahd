@@ -34,6 +34,7 @@ def release(session):
     # Confirm all the essential release stuff has been done
     confirm("Have you run the tests?")
     confirm("Have you updated inline docs?")
+    confirm("Have you updated the changelog?")
     confirm("Have you updated the docs folder documentation?")
     confirm("Have you created the release page?")
     confirm("Have you updated the readme docs?")

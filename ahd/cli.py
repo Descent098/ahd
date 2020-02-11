@@ -42,6 +42,7 @@ usage = """Add-hoc dispatcher
     Create ad-hoc commands to be dispatched within their own namespace.
 
     Usage: 
+        ahd list [-l]
         ahd [-h] [-v] [-d]
         ahd docs [-a] [-o]
         ahd config [-e] [-i CONFIG_FILE_PATH]
@@ -51,6 +52,7 @@ usage = """Add-hoc dispatcher
     Options:
     -h, --help            show this help message and exit
     -v, --version         show program's version number and exit
+    -l, --long            Shows all commands in configuration with paths and commands
     -a, --api             shows the local API docs
     -o, --offline         shows the local User docs instead of live ones
     -e, --export          exports the configuration file
@@ -79,7 +81,7 @@ def main():
     All primary business logic is within this function."""
 
     # Setup arguments for parsing
-    arguments = docopt(usage, version="ahd V 0.3.0")
+    arguments = docopt(usage, version="ahd V 0.4.0")
 
     if len(sys.argv) == 1:
         print("\n", usage)
@@ -93,6 +95,9 @@ def main():
                 config.write(config_file)
     
     # Begin argument parsing
+
+    if arguments["list"]:
+        list_commands(arguments["--long"])
 
     # ========= Docs argument parsing =========
     if arguments["docs"]:
@@ -143,6 +148,35 @@ def main():
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
                 dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'])
     
+def list_commands(verbose = False) -> None:
+    """Lists commands currently in config
+
+    Parameters
+    ----------
+    verbose: (bool)
+        When specified will print both the command name and
+        associated commands + paths
+    
+    """
+    configuration = ConfigParser()
+    if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
+        configuration.read(CONFIG_FILE_PATH) # Read it
+        for count, command in enumerate(configuration):
+            if count > 0:
+                if verbose:
+                    print("\n\n============================================\n\n")
+                    print(f"{colored.fg(6)}{command}\n")
+                    print(f"{colored.fg(100)}\tCommand = {configuration[command]['command']}")
+                    print(f"\tPaths = {configuration[command]['paths']}{colored.fg(15)}")
+                else:
+                    print(f"\n{colored.fg(6)}{command}{colored.fg(15)}")
+
+    else: # If a file does not exist create one
+        print(f"{colored.fg(1)}No commands found")
+    print() # reset terminal text to white
+    exit()
+
+
 def docs(api:bool = False, offline:bool = False) -> None:
     """Processes incoming arguments when the docs command is invoked
 

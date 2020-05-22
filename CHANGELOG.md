@@ -1,5 +1,29 @@
 # Changelog
 
+## V 0.5.0; TBD
+
+Focus for this release was to make it easier to understand how to use and contribute to ahd, to convert from configparser to PyYaml and finish the rest of the test suite.
+
+Features:
+
+- Added remaining CLI command tests
+- Replaced configparser with [PyYaml](https://pyyaml.org/); see migration notice on the docs for details
+- Added support for full path globbing (Regex based path expansion); see [glob module](https://docs.python.org/3.8/library/glob.html) for details
+
+Documentation:
+
+- Overhauled user documentation site for clarity
+  - Revamped README
+  - Revamped contribution guide
+  - Added Code Style guide
+  - Cleaned up wording surrounding what the project actually does
+- Transitioned from full roadmap project boards to per-release project boards
+
+Bug Fixes:
+
+- Inability to build from sdist due to missing files; Thanks to [thatch](https://github.com/thatch) for the fix
+- Fixed testing pipeline in github actions
+
 ## V 0.4.0; February 10th
 
 Focus for this release was breaking up command line parsing into more testable chunks.

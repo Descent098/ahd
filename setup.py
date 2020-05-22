@@ -19,7 +19,7 @@ def get_content(*filename):
 
 setuptools.setup(
     name = "ahd",
-    version = "0.4.0",
+    version = "0.5.0",
     author = "Kieran Wood",
     author_email = "kieran@canadiancoding.ca",
     description = "Create ad-hoc commands to be dispatched in their own namespace.",

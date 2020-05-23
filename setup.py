@@ -31,22 +31,22 @@ setuptools.setup(
         "Source" :         "https://github.com/Descent098/ahd",
         "Bug Report":      "https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=bug&template=bug_report.md&title=%5BBUG%5D",
         "Feature Request": "https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=enhancement&template=feature_request.md&title=%5BFeature%5D",
-        "Roadmap":         "https://github.com/Descent098/ahd/projects/1"
+        "Roadmap":         "https://github.com/Descent098/ahd/projects"
     },
     include_package_data = True,
     packages = setuptools.find_packages(),
     entry_points = { 
-           'console_scripts': ['ahd = ahd.cli:main']
-       },
+            'console_scripts': ['ahd = ahd.cli:main']
+        },
     install_requires = [
     "docopt", # Used for argument parsing
     "colored" # Used to color terminal output
-      ],
+        ],
     extras_require = {
-        "dev" : ["nox",    # Used to run automated processes
-                 "pytest", # Used to run the test code in the tests directory
-                 "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
-                 "pdoc3"], # Used for building API documentation
+        "dev" : ["nox",   # Used to run automated processes
+                "pytest", # Used to run the test code in the tests directory
+                "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
+                "pdoc3"], # Used for building API documentation
 
     },
     classifiers = [

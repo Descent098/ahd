@@ -6,16 +6,15 @@
 
 ## Table of contents
 
-- [What does this do?](#what-does-this-do?)
-  - [Use Cases](#use-cases)
-- [Why should I use it?](#why-should-I-use-it)
-- [Who is this for?](who-is-this-for?)
-- [Features & Roadmap](#features-&-roadmap)
-  - [Path Expansion](#path-expansion)
-  - [Cross Platform](#cross-platform)
-  - [Organized](#organized)
-  - [Dynamic](#dynamic)
-  - [Roadmap](#roadmap)
+- [What does ahd do?](#what-does-ahd-do?)
+  - [Features & Roadmap](#features-&-roadmap)
+    - [Path Expansion](#path-expansion)
+    - [Cross Platform](#cross-platform)
+    - [Dynamic Execution & Organization](#dynamic-execution-&-organization)
+    - [Roadmap](#roadmap)
+  - [Example use cases](#example-use-cases)
+- [Why should I use ahd?](#why-should-I-use-ahd)
+- [Who is ahd for?](who-is-ahd-for?)
 - [Quick Start](#quick-start)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
@@ -27,53 +26,70 @@
     - [List](#list)
     - [Docs](#docs)
     - [Config](#config)
+- [Contact/Contribute](#contact/contribute)
+- [Glossary](#https://ahd.readthedocs.io/en/latest/glossary/)
 
 ## Additional Documentation
 
-Additional user and development/contribution documentation will be available at [https://ahd.readthedocs.io/en/latest/](https://ahd.readthedocs.io/en/latest/), API documentation is available at [https://kieranwood.ca/ahd](https://kieranwood.ca/ahd).
+This readme will give you enough information to get up and running with ahd. If you are confused about terminology used then take a look at the [glossary section](#https://ahd.readthedocs.io/en/latest/glossary/) of the docs. If you are looking for more in-depth documentation:
+
+- Additional user and development/contribution documentation will be available at [https://ahd.readthedocs.io/en/latest/](https://ahd.readthedocs.io/en/latest/)
+- API documentation is available at [https://kieranwood.ca/ahd](https://kieranwood.ca/ahd).
 
 
 
-## What does this do? 
+## What does ahd do? 
 
-Simply put, it allows you to take annoying to remember commands and make it easier to re-use them along with providing extra functionality like cross-platform support. 
-
-### Use cases
-
-For example it can be used to update every git repo in a directory, organize your downloads folder by various filetypes, or even do multi-stage project compilation in various directories. Really the possibilities are only limited to what you can type in your regular terminal.
-
-## Why should I use it?
-
-The easiest way to understand why this project is useful is with an example. Let's say you want to write a simple script to take all the PDF's in a directory and put them in a ```.7z``` archive and then remove them. Well all you need is this simple command ```7za a -t7z PDFs.7z *.pdf && rm *.pdf```...
-
-Yeah, pretty awful to remember. Assuming we want to do this every so often let's make a script we can call. Currently with bash you need to drop the script in ```usr/bin``` (and try to remember what you called it), or add it to your bash/fish/zsh aliases (assuming you use the alias file, or ```.bashrc``` etc. if you don't), and on windows it's just not even worth it.
-
-Enter ahd, you can register a command (lets call it zip-pdfs) using the same annoying command in this case ```sudo ahd register zip-pdfs "7za a -t7z PDFs.7z *.pdf && rm *.pdf" "."```. Now when we want to re-use this command in the directory we're in you just type ```ahd zip-pdfs```. If you forget the name there's a list command, and if you use a longer name there's bash autocomplete (fish and zsh support coming later).
-
-## Who is this for?
-
-Lots of people. ahd can be used by developers looking to speed up annoying workflows, it can be used to create a common set of macros across servers for devops specialists, or a common config for people who dual-boot, or just people who are sick of having a bunch of random scripts everywhere and want one config file for complex commands.
-
-
+ahd allows you to take annoying to remember commands and organize them into easy to re-use macros.
 
 ## Features & Roadmap
 
 ### Path Expansion
-Commands can take full advantage of wildcards + regex to match directories. For example if you wanted to delete all PDFs in all folders on the desktop you can use ```sudo ahd register no-pdfs "rm *.pdf" "~/Desktop/*"```.
+
+- Macros can take full advantage of wildcards + regex to match directories. 
+For example if you wanted to delete all PDFs in all folders on the desktop you can use ```sudo ahd register no-pdfs "rm *.pdf" "~/Desktop/*"```.
+- *nix and windows path adages are cross-platform. For example ```~``` is converted to ```%USERPROFILE%``` on windows,  ```\``` paths are converted to ```/``` on *nix systems and vice-versa.
 
 ### Cross platform
-Not only just that it runs on windows, but if your directory structure and tools are similar across platform you can 1:1 bring the config file from linux to windows to mac. For example if you want to write a command that git pulls in a folder called ```/development``` on your desktop using the \*nix standard ```~/Desktop/development/*``` works on both \*nix and windows.
 
-### Organized
-The commands you are running are all in one place that uses a simple YAML format to define each command, making it possible to manually update the configuration if you so choose (though built-in options are available).
+- ahd natively suppports windows and any *nix systems (including Mac OS). 
+- Supports copy-paste cross platform configurations (assuming the same commands and file structure are on both)
+For example if you want to write a command that git pulls in a folder called ```/development``` on your desktop using the \*nix standard ```~/Desktop/development/*``` works on both \*nix and windows.
 
-### Dynamic
-Paths and commands can be overwritten on each use, meaning that if you wrote a macro to delete all the PDF's in your downloads folder you can use the same macro and just change the path for that run to remove them from your documents folder.
+### Dynamic Execution & Organization
+- One YAML file contains the configuration for all your macros instead of being all over the place.
+- Macros can be updated manually (editing the YAML file), or simply re-registered.
+- The defined Paths and commands can be overwritten on each use (see [overriding](https://ahd.readthedocs.io/en/latest/usage#overriding) for details).
 
 ### Roadmap
 
 A full roadmap for each project version can be found here: https://github.com/Descent098/ahd/projects
 
+## Example use cases
+
+Really the possibilities are only limited to what you can type in your regular terminal, but here are some good examples:
+- Update every git repo in a directory
+- Organize your downloads folder by various filetypes
+- Multi-stage project compilation/build in various directories
+
+
+## Why should I use ahd?
+
+The easiest way to understand why this project is useful is with an example. Let's say you want to write a simple script to take all the PDF's in a directory and put them in a ```.7z``` archive and then remove them. Well all you need is this simple command ```7za a -t7z PDFs.7z *.pdf && rm *.pdf```...
+
+Yeah, pretty awful to remember. Assuming we want to do this every so often let's make a script we can call. Currently with bash you need to drop the script in ```usr/bin``` (and try to remember what you called it), or add it to your bash/fish/zsh aliases (assuming you use the alias file, or ```.bashrc``` etc. if you don't), and on windows it's just not even worth it.
+
+Enter ahd, you can register a macro (lets call it zip-pdfs) using the same annoying command, in this case ```sudo ahd register zip-pdfs "7za a -t7z PDFs.7z *.pdf && rm *.pdf" "."```. Now when we want to re-use this macro in the directory we're in you just type ```ahd zip-pdfs```. 
+
+If you forget the name there's a list command, and if you use a longer name there's bash autocomplete (fish and zsh support coming later).
+
+## Who is ahd for?
+
+The primary audience is developers looking to speed up annoying workflows. However there are a number of other people it could benefit, such as:
+- devops specialists; can use ahd to create a common set of macros across servers .
+- dual booters; people who want one common config for multiple OS's.
+- testers; if you need to execute multiple tests on various systems you can write one macro to run them all.
+- etc; people who are sick of having a bunch of random scripts everywhere and want one config file for complex commands.
 
 
 ## Quick-start
@@ -183,7 +199,7 @@ The docs command is designed to bring up documentation as needed, you can run ``
 
 #### config
 
-This command is used for configuration management, due to the amount of preprocessing involved in keeping ahd cross platform it is recomended to use [register](#register) to register/update commands. The config command is for managing configurations manually take a look at the documentation for details about [manual configuration](https://ahd.readthedocs.io/en/latest/usage#wildcards-and-cross-platform-paths).
+This command is used for configuration management. It is recomended to use [register](#register) to register/update commands. The config command is for managing configurations manually take a look at the documentation for details about [manual configuration](https://ahd.readthedocs.io/en/latest/usage#wildcards-and-cross-platform-paths).
 
 
 
@@ -195,9 +211,10 @@ This command is used for configuration management, due to the amount of preproce
 
 
 
+## Contact/Contribute
 
+For a full contribution guide, check the [contribution section of the documentation](https://ahd.readthedocs.io/en/latest/contributing/).
 
-
-
+For any additional questions please submit then through github [here](https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=documentation&template=question.md&title=%5Bquestion%5D) (much faster response), or my email [kieran@canadiancoding.ca](mailto:kieran@canadiancoding.ca?subject=AHD:Question).
 
 

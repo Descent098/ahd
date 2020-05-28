@@ -14,6 +14,7 @@ Documentation:
 
 - Overhauled user documentation site for clarity
   - Revamped README
+  - Added Glossary
   - Revamped contribution guide
   - Added Code Style guide
   - Cleaned up wording surrounding what the project actually does

@@ -1,15 +1,18 @@
-"""
-Description:
-    Contains all the configuration for the package on pip
-"""
+"""Contains all the configuration for the package on pip"""
 import setuptools
 
 def get_content(*filename):
     """ Gets the content of a file and returns it as a string
-    Args:
-        filename(str): Name of file to pull content from
-    Returns:
-        str: Content from file
+
+    Parameters
+    ----------
+    filename : (str)
+        Name of file to pull content from
+    
+    Returns
+    -------
+    str:
+        Content from file
     """
     content = ""
     for file in filename:
@@ -22,7 +25,7 @@ setuptools.setup(
     version = "0.5.0",
     author = "Kieran Wood",
     author_email = "kieran@canadiancoding.ca",
-    description = "Create ad-hoc commands to be dispatched in their own namespace.",
+    description = "Create ad-hoc macros to be dispatched in their own namespace.",
     long_description = get_content("README.md", "CHANGELOG.md"),
     long_description_content_type = "text/markdown",
     project_urls = {

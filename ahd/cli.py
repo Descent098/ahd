@@ -98,7 +98,7 @@ def main():
     # Begin argument parsing
 
     if arguments["list"]:
-        list_commands(arguments["--long"])
+        list_macros(arguments["--long"])
         exit()
 
     # ========= Docs argument parsing =========
@@ -151,34 +151,51 @@ def main():
                 arguments['<paths>'] = _preprocess_paths(arguments['<paths>'])
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
                 dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'])
-    
-def list_commands(verbose = False) -> None:
+
+def list_macros(configuration:ConfigParser=False, verbose:bool = False) -> dict:
     """Lists commands currently in config
 
     Parameters
     ----------
+    configurations: (ConfigParser)
+        The ConfigParser instance that contains the current config
+
     verbose: (bool)
         When specified will print both the command name and
-        associated commands + paths
+        associated commands + paths. Additionally the dictionary
+        will only return when this flag is specified.
+
+    Returns
+    -------
+    A dictionary of each macro with a structure of:
+    {<name>:
+        {
+        command: <command>,
+        paths: <paths>
+        }
+    }
     
     """
-    configuration = ConfigParser()
-    if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
-        configuration.read(CONFIG_FILE_PATH) # Read it
-        for count, command in enumerate(configuration):
-            if count > 0:
-                if verbose:
-                    print("\n\n============================================\n\n")
-                    print(f"{colored.fg(6)}{command}\n")
-                    print(f"{colored.fg(100)}\tCommand = {configuration[command]['command']}")
-                    print(f"\tPaths = {configuration[command]['paths']}{colored.fg(15)}")
-                else:
-                    print(f"\n{colored.fg(6)}{command}{colored.fg(15)}")
-        print(f"\n\n{count} commands detected")
+    if not configuration:
+        ValueError("Not config")
+        configuration = ConfigParser()
+        if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
+            configuration.read(CONFIG_FILE_PATH) # Read it
+        else: # If a file does not exist print an error message
+            print(f"{colored.fg(1)}No macros found")
 
-    else: # If a file does not exist create one
-        print(f"{colored.fg(1)}No commands found")
-
+    # Iterate over the config, and pull information about the macros
+    for count, macro in enumerate(configuration):
+        if count > 0:
+            if verbose:
+                print("\n\n============================================\n\n")
+                print(f"{colored.fg(6)}{macro}\n")
+                print(f"{colored.fg(100)}\tCommand = {configuration[macro]['command']}")
+                print(f"\tPaths = {configuration[macro]['paths']}{colored.fg(15)}")
+                macros[macro] = {"command":configuration[macro]['command'], "paths":configuration[macro]["paths"]}
+            else:
+                print(f"\n{colored.fg(6)}{macro}{colored.fg(15)}")
+    print(f"\n\n{count} macros detected")
 
 def docs(api:bool = False, offline:bool = False) -> None:
     """Processes incoming arguments when the docs command is invoked

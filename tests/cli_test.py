@@ -3,7 +3,7 @@
 import os
 
 import glob
-
+from ahd.cli import *
 from ahd.cli import _preprocess_paths, _postprocess_paths
 
 def test_preprocess_paths():
@@ -58,3 +58,20 @@ def test_postprocess_paths():
         correct_paths.append(f"{os.getenv('HOME')}/Desktop/Development/Personal/noter")
         correct_paths.append(os.path.abspath("."))
         assert _postprocess_paths(paths) == correct_paths
+
+def test_docs():
+    """Since no docs functionality is implemented, this is just a stub"""
+    pass
+
+def test_configure():
+    """TODO: going to change when config systems are switched, not worth doing yet"""
+    pass
+
+def test_register():
+    """TODO: going to change when config systems are switched, not worth doing yet"""
+    pass
+
+def test_dispatch():
+    """Don't think there's a good way to test this
+    TODO: come up with a platform agnostic test"""
+    pass

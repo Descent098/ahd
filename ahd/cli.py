@@ -32,10 +32,12 @@ from configparser import ConfigParser # Used to serialize and de-serialize confi
 
 # Internal dependencies
 from .autocomplete import command, generate_bash_autocomplete
+from .configuration import migrate
 
 # Third-party dependencies
 import colored                        # Used to colour terminal output
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
+import yaml
 
 
 usage = """Add-hoc dispatcher
@@ -87,6 +89,11 @@ def main():
     if len(sys.argv) == 1:
         print("\n", usage)
         exit()
+
+    CONFIG_FILE_PATH =  f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
+    
+    # Checks if a legacy config is available and if it is migrates to new standard
+    migrate_config() # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         config.read(CONFIG_FILE_PATH) # Read it
@@ -247,20 +254,18 @@ def configure(export:bool = False, import_config:bool = False) -> None:
             print(usage)
             return
     if export:
-        with open(f"{os.path.abspath(os.curdir)}{os.sep}.ahdconfig", "w") as config_file:
-            config.write(config_file)
+        with open(f"{os.path.abspath(os.curdir)}{os.sep}ahd.yml", "w") as config_file:
+            config = yaml.load(config_file)
+            yaml.dump(config, os.curdir)
 
     if import_config:
-
-        new_config_path = import_config
-        new_config = ConfigParser()
-        
-        new_config.read(new_config_path)
         try:
+            with open(import_config, "r") as config_file:
+                yaml.load(config_file)
             os.remove(CONFIG_FILE_PATH)
             print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
             with open(CONFIG_FILE_PATH, "w") as config_file:
-                new_config.write(config_file)
+                yaml.dump
         except PermissionError:
             print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
             print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")

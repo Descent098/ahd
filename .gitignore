@@ -105,6 +105,7 @@ venv.bak/
 
 # ahd config files
 .ahdconfig
+.yml
 
 # Noxfiles
 .nox/*

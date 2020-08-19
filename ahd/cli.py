@@ -98,8 +98,9 @@ def main():
             config = yaml.load(config_file)
 
     else: # If a file does not exist create one
+        print(f"{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}")
         with open(CONFIG_FILE_PATH, "w") as config_file:
-                yaml.dump("macros:", config_file)
+            config_file.write("macros:")
     
     # Begin argument parsing
 
@@ -158,7 +159,7 @@ def main():
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
                 dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'])
 
-def list_macros(configuration:dict=False, verbose:bool = False) -> dict:
+def list_macros(configuration:dict=False, verbose:bool = False):
     """Lists commands currently in config
 
     Parameters
@@ -170,17 +171,6 @@ def list_macros(configuration:dict=False, verbose:bool = False) -> dict:
         When specified will print both the command name and
         associated commands + paths. Additionally the dictionary
         will only return when this flag is specified.
-
-    Returns
-    -------
-    A dictionary of each macro with a structure of:
-    {<name>:
-        {
-        command: <command>,
-        paths: <paths>
-        }
-    }
-    
     """
     if not configuration:
         ValueError(f"{colored.fg(1)}No macros found")
@@ -245,18 +235,20 @@ def configure(export:bool = False, import_config:bool = False) -> None:
             print(usage)
             return
     if export:
-        with open(f"{os.path.abspath(os.curdir)}{os.sep}ahd.yml", "w") as config_file:
+        with open(CONFIG_FILE_PATH) as config_file:
             config = yaml.load(config_file)
-            yaml.dump(config, os.curdir)
+            with open(f"{os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml", "w") as export_file:
+                yaml.dump(config, export_file, default_flow_style=False)
 
     if import_config:
         try:
-            with open(import_config, "r") as config_file:
-                yaml.load(config_file)
+            with open(import_config, "r") as config_file: # Read new config file
+                new_config = yaml.load(config_file)
+            print(f"Importing {os.path.abspath(import_config)} to {CONFIG_FILE_PATH}")
             os.remove(CONFIG_FILE_PATH)
-            print(f"Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}")
             with open(CONFIG_FILE_PATH, "w") as config_file:
-                yaml.dump
+                yaml.dump(new_config, config_file, default_flow_style=False)
+            
         except PermissionError:
             print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
             print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")

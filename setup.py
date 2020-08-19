@@ -43,7 +43,8 @@ setuptools.setup(
         },
     install_requires = [
     "docopt", # Used for argument parsing
-    "colored" # Used to color terminal output
+    "colored",# Used to color terminal output
+    "pyyaml", # Used for configuration parsing
         ],
     extras_require = {
         "dev" : ["nox",   # Used to run automated processes

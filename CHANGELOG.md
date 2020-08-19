@@ -6,9 +6,7 @@ Focus for this release was to make it easier to understand how to use and contri
 
 Features:
 
-- Added remaining CLI command tests
 - Replaced configparser with [PyYaml](https://pyyaml.org/); see migration notice on the docs for details
-- Added support for full path globbing (Regex based path expansion); see [glob module](https://docs.python.org/3.8/library/glob.html) for details
 
 Documentation:
 

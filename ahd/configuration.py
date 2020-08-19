@@ -31,6 +31,7 @@ def migrate_config():
             remove_legacy = input("Would you like to remove the old configuration file (y or n)?")
             if remove_legacy.lower().startswith("y"):
                 os.remove(OLD_CONFIG_FILE_PATH)
+                return True
             elif remove_legacy.lower().startswith("n"):
                 return True
             else:

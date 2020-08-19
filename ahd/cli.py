@@ -32,7 +32,7 @@ from configparser import ConfigParser # Used to serialize and de-serialize confi
 
 # Internal dependencies
 from .autocomplete import command, generate_bash_autocomplete
-from .configuration import migrate
+from .configuration import migrate_config
 
 # Third-party dependencies
 import colored                        # Used to colour terminal output
@@ -70,10 +70,10 @@ command_list =  [ # Used for autocompletion generation
 ]
 
 
-config = ConfigParser() # Global configuration parser
+config = {} # an empty dict that will become the config once deserialized
 
 # The default (and currently only) path to the configuration file
-CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}.ahdconfig"
+CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
 
 
 CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
@@ -89,23 +89,22 @@ def main():
     if len(sys.argv) == 1:
         print("\n", usage)
         exit()
-
-    CONFIG_FILE_PATH =  f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
     
     # Checks if a legacy config is available and if it is migrates to new standard
     migrate_config() # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
-        config.read(CONFIG_FILE_PATH) # Read it
+        with open(CONFIG_FILE_PATH, "r") as config_file:
+            config = yaml.load(config_file)
 
     else: # If a file does not exist create one
         with open(CONFIG_FILE_PATH, "w") as config_file:
-                config.write(config_file)
+                yaml.dump("macros:", config_file)
     
     # Begin argument parsing
 
     if arguments["list"]:
-        list_macros(arguments["--long"])
+        list_macros(config, arguments["--long"])
         exit()
 
     # ========= Docs argument parsing =========
@@ -130,8 +129,8 @@ def main():
         arguments["<command>"] = ""
     
     if "." == arguments["<command>"]: # If <command> is . set to specified value
-        logging.debug(f". command registered, setting to {config[arguments['<name>']]['command']}")
-        arguments["<command>"] = config[arguments["<name>"]]["command"]
+        logging.debug(f". command registered, setting to {config['macros'][arguments['<name>']]['command']}")
+        arguments["<command>"] = config["macros"][arguments["<name>"]]["command"]
 
     # ========= register argument parsing =========
     if arguments["register"]:
@@ -159,13 +158,13 @@ def main():
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
                 dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'])
 
-def list_macros(configuration:ConfigParser=False, verbose:bool = False) -> dict:
+def list_macros(configuration:dict=False, verbose:bool = False) -> dict:
     """Lists commands currently in config
 
     Parameters
     ----------
-    configurations: (ConfigParser)
-        The ConfigParser instance that contains the current config
+    configurations: (dict)
+        The dict that contains the current config
 
     verbose: (bool)
         When specified will print both the command name and
@@ -184,25 +183,17 @@ def list_macros(configuration:ConfigParser=False, verbose:bool = False) -> dict:
     
     """
     if not configuration:
-        ValueError("Not config")
-        configuration = ConfigParser()
-        if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
-            configuration.read(CONFIG_FILE_PATH) # Read it
-        else: # If a file does not exist print an error message
-            print(f"{colored.fg(1)}No macros found")
+        ValueError(f"{colored.fg(1)}No macros found")
 
     # Iterate over the config, and pull information about the macros
-    for count, macro in enumerate(configuration):
-        if count > 0:
-            if verbose:
-                print("\n\n============================================\n\n")
-                print(f"{colored.fg(6)}{macro}\n")
-                print(f"{colored.fg(100)}\tCommand = {configuration[macro]['command']}")
-                print(f"\tPaths = {configuration[macro]['paths']}{colored.fg(15)}")
-                macros[macro] = {"command":configuration[macro]['command'], "paths":configuration[macro]["paths"]}
-            else:
-                print(f"\n{colored.fg(6)}{macro}{colored.fg(15)}")
-    print(f"\n\n{count} macros detected")
+    for count, macro in enumerate(configuration["macros"]):
+        if verbose:
+            print(f"{colored.fg(6)}{macro}\n")
+            print(f"{colored.fg(100)}\tCommand = {configuration['macros'][macro]['command']}")
+            print(f"\tPaths = {configuration['macros'][macro]['paths']}{colored.fg(15)}")
+        else:
+            print(f"\n{colored.fg(6)}{macro}{colored.fg(15)}")
+    print(f"\n\n{count+1} macros detected")
 
 def docs(api:bool = False, offline:bool = False) -> None:
     """Processes incoming arguments when the docs command is invoked
@@ -289,7 +280,7 @@ def register(name, commands, paths):
     - When passing paths to this function make sure they are preprocessed.
     """
     logging.info(f"Registering command {name} with \nCommand: {commands} \nPaths: {paths}")
-    config[name] = {
+    config["macros"][name] = {
         "command": commands,
         "paths": paths,
     }
@@ -327,17 +318,17 @@ def dispatch(name, command = False, paths = False):
     logging.info(f"Beggining execution of {name}")
 
     try: # Accessing stored information on the command
-        config[name]
+        config["macros"][name]
 
     except KeyError: # TODO Find a way to suggest a similar command
         print(f"{colored.fg(1)}Command not found in configuration validate spelling is correct.")
         exit()
     
     if not command or command == ".":
-        command = config[name]['command']
+        command = config["macros"][name]['command']
     
     if not paths:
-        paths = _postprocess_paths(config[name]['paths'])
+        paths = _postprocess_paths(config["macros"][name]['paths'])
 
     if len(paths) > 1:
         for current_path in paths:

@@ -1,15 +1,28 @@
 import os                             # Used primarily to validate paths
 from configparser import ConfigParser # Used to serialize and de-serialize legacy config files
 
+# Internal dependencies
+from .autocomplete import command, generate_bash_autocomplete
+
 # Third-party dependencies
 import yaml
 import colored                        # Used to colour terminal output
 
+# The default (and currently only) path to the configuration file
+CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
+
+CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
+
+command_list =  [ # Used for autocompletion generation
+    command("docs", ["-a", "--api", "-o", "--offline"]),
+    command("register", []),
+    command("config", ["-e", "--export", "-i", "--import"])
+]
+
 def migrate_config():
     """Migrates pre V0.5.0 configs to the new standard"""
 
-    # Configuration file locations
-    CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
+    # Configuration file locations    
     OLD_CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}.ahdconfig"
     if os.path.isfile(OLD_CONFIG_FILE_PATH):
         print(f"{colored.fg(1)}Old Configuration file found in {OLD_CONFIG_FILE_PATH} automatically migrating to version 0.5.0+{colored.fg(15)}")
@@ -41,3 +54,97 @@ def migrate_config():
 
     else: # If no legacy configs are present
         return False
+
+def configure(export:bool = False, import_config:bool = False, config:dict={}) -> None:
+    """Handles all the exporing and importing of configurations
+
+    Parameters
+    ----------
+    export: (bool)
+        When specified, shows API docs as opposed to user docs.
+
+    import_config: (bool|str)
+        False if no path, otherwise a string representation of path to config file.
+
+    Notes
+    -----
+    - If neither export or import_config are specified, then usage is printed.
+    """
+
+    if not export and not import_config:
+            print(usage)
+            return
+    if export:
+        with open(CONFIG_FILE_PATH) as config_file:
+            config = yaml.load(config_file)
+            with open(f"{os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml", "w") as export_file:
+                yaml.dump(config, export_file, default_flow_style=False)
+
+    if import_config:
+        try:
+            with open(import_config, "r") as config_file: # Read new config file
+                new_config = yaml.load(config_file)
+            print(f"Importing {os.path.abspath(import_config)} to {CONFIG_FILE_PATH}")
+            os.remove(CONFIG_FILE_PATH)
+            with open(CONFIG_FILE_PATH, "w") as config_file:
+                yaml.dump(new_config, config_file, default_flow_style=False)
+            
+        except PermissionError:
+            print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
+            print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")
+
+def register(macro_name, commands, paths, config):
+    """Handles registering of custom commands, and autocompletion generation.
+
+    Parameters
+    ----------
+    macro_name: (str)
+        The name used to call the commands.
+
+    commands: (str)
+        The set of commands to execute.
+    
+    paths: (str)
+        A string representation of the paths to execute the command with.
+
+    Notes
+    -----
+    - When passing paths to this function make sure they are preprocessed.
+    """
+    print(f"Registering macro {macro_name} \n\tCommand: {commands} \n\tPaths: {paths}")
+    try:
+        config["macros"][macro_name] = {
+            "command": commands,
+            "paths": paths,
+        }
+    except TypeError: # If the configuration is empty
+        config["macros"] = {}
+        config["macros"][macro_name] = {
+            "command": commands,
+            "paths": paths,
+        }
+
+    try:
+        print(f"Begin writing config file to {CONFIG_FILE_PATH}")
+        with open(CONFIG_FILE_PATH, "w") as config_file:
+            yaml.dump(config, config_file, default_flow_style=False)
+        print(f"Configuration file saved {macro_name} registered")
+    except PermissionError:
+            print(f"{colored.fg(1)}Unable to register command are you sudo?")
+            print(f"{colored.fg(15)}\tTry running: sudo ahd register {macro_name} \"{commands}\" \"{paths}\" ")
+
+    if not os.name == "nt": # Generate bash autocomplete
+        for index, custom_command in enumerate(config["macros"]):
+            command_list.append(command(custom_command, []))
+
+        autocomplete_file_text = generate_bash_autocomplete(command_list)
+        try:
+            with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
+                autocomplete_file.write(autocomplete_file_text)
+            print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
+        except PermissionError:
+            print(f"{colored.fg(1)}Unable to write bash autocompletion file are you sudo?")
+
+    # Since executing commands requires changing directories, make sure to return after
+    os.chdir(CURRENT_PATH)
+    exit()

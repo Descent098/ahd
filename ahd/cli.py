@@ -96,6 +96,7 @@ def main():
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         with open(CONFIG_FILE_PATH, "r") as config_file:
             config = yaml.load(config_file)
+            config = dict(config)
 
     else: # If a file does not exist create one
         print(f"{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}")
@@ -135,7 +136,7 @@ def main():
 
     # ========= register argument parsing =========
     if arguments["register"]:
-        register(arguments["<name>"], arguments["<command>"], arguments["<paths>"] )
+        register(arguments["<name>"], arguments["<command>"], arguments["<paths>"], config)
 
     # ========= User command argument parsing =========
     
@@ -253,12 +254,12 @@ def configure(export:bool = False, import_config:bool = False) -> None:
             print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
             print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")
 
-def register(name, commands, paths):
+def register(macro_name, commands, paths, config):
     """Handles registering of custom commands, and autocompletion generation.
 
     Parameters
     ----------
-    name: (str)
+    macro_name: (str)
         The name used to call the commands.
 
     commands: (str)
@@ -271,24 +272,24 @@ def register(name, commands, paths):
     -----
     - When passing paths to this function make sure they are preprocessed.
     """
-    logging.info(f"Registering command {name} with \nCommand: {commands} \nPaths: {paths}")
-    config["macros"][name] = {
+    print(f"Registering macro {macro_name} \n\tCommand: {commands} \n\tPaths: {paths}")
+    config["macros"][macro_name] = {
         "command": commands,
         "paths": paths,
     }
 
     try:
-        logging.info(f"Begin writing config file to {CONFIG_FILE_PATH}")
+        print(f"Begin writing config file to {CONFIG_FILE_PATH}")
         with open(CONFIG_FILE_PATH, "w") as config_file:
-            config.write(config_file)
+            yaml.dump(config, config_file, default_flow_style=False)
+        print(f"Configuration file saved {macro_name} registered")
     except PermissionError:
             print(f"{colored.fg(1)}Unable to register command are you sudo?")
-            print(f"{colored.fg(15)}\tTry running: sudo ahd register {name} \"{commands}\" \"{paths}\" ")
+            print(f"{colored.fg(15)}\tTry running: sudo ahd register {macro_name} \"{commands}\" \"{paths}\" ")
 
     if not os.name == "nt": # Generate bash autocomplete
-        for index, custom_command in enumerate(config):
-            if not index == 0: # for some reason the first thing in config object is garbage
-                command_list.append(command(custom_command, []))
+        for index, custom_command in enumerate(config["macros"]):
+            command_list.append(command(custom_command, []))
 
         autocomplete_file_text = generate_bash_autocomplete(command_list)
         try:

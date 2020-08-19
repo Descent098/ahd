@@ -102,6 +102,7 @@ def main():
         print(f"{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}")
         with open(CONFIG_FILE_PATH, "w") as config_file:
             config_file.write("macros:")
+            exit()
     
     # Begin argument parsing
 
@@ -273,10 +274,17 @@ def register(macro_name, commands, paths, config):
     - When passing paths to this function make sure they are preprocessed.
     """
     print(f"Registering macro {macro_name} \n\tCommand: {commands} \n\tPaths: {paths}")
-    config["macros"][macro_name] = {
-        "command": commands,
-        "paths": paths,
-    }
+    try:
+        config["macros"][macro_name] = {
+            "command": commands,
+            "paths": paths,
+        }
+    except TypeError: # If the configuration is empty
+        config["macros"] = {}
+        config["macros"][macro_name] = {
+            "command": commands,
+            "paths": paths,
+        }
 
     try:
         print(f"Begin writing config file to {CONFIG_FILE_PATH}")

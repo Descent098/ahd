@@ -87,7 +87,7 @@ def main() -> None:
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         with open(CONFIG_FILE_PATH, "r") as config_file:
-            config = yaml.load(config_file)
+            config = yaml.safe_load(config_file)
             config = dict(config)
 
     else: # If a file does not exist create one

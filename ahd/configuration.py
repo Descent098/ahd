@@ -94,14 +94,14 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
         return
     if export:
         with open(CONFIG_FILE_PATH) as config_file:
-            config = yaml.load(config_file)
+            config = yaml.safe_load(config_file)
             with open(f"{os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml", "w") as export_file:
                 yaml.dump(config, export_file, default_flow_style=False)
 
     if import_config:
         try:
             with open(import_config, "r") as config_file:  # Read new config file
-                new_config = yaml.load(config_file)
+                new_config = yaml.safe_load(config_file)
             print(f"Importing {os.path.abspath(import_config)} to {CONFIG_FILE_PATH}")
             os.remove(CONFIG_FILE_PATH)
             with open(CONFIG_FILE_PATH, "w") as config_file:

@@ -34,7 +34,7 @@
 This readme will give you enough information to get up and running with ahd. If you are confused about terminology used then take a look at the [glossary section](#https://ahd.readthedocs.io/en/latest/glossary/) of the docs. If you are looking for more in-depth documentation:
 
 - Additional user and development/contribution documentation will be available at [https://ahd.readthedocs.io/en/latest/](https://ahd.readthedocs.io/en/latest/)
-- API documentation is available at [https://kieranwood.ca/ahd](https://kieranwood.ca/ahd).
+- API documentation is available at [https://kieranwood.ca/ahd](https://kieranwood.ca/ahd)
 
 
 
@@ -52,7 +52,7 @@ For example if you wanted to delete all PDFs in all folders on the desktop you c
 
 ### Cross platform
 
-- ahd natively suppports windows and any *nix systems (including Mac OS). 
+- ahd natively supports windows and any *nix systems (including Mac OS). 
 - Supports copy-paste cross platform configurations (assuming the same commands and file structure are on both)
 For example if you want to write a command that git pulls in a folder called ```/development``` on your desktop using the \*nix standard ```~/Desktop/development/*``` works on both \*nix and windows.
 
@@ -213,7 +213,7 @@ This command is used for configuration management. It is recomended to use [regi
 
 ## Contact/Contribute
 
-For a full contribution guide, check the [contribution section of the documentation](https://ahd.readthedocs.io/en/latest/contributing/).
+For a full contribution guide, check the [contribution section of the documentation](https://ahd.readthedocs.io/en/latest/contributing/). Also be sure to check the [faq](https://ahd.readthedocs.io/en/latest/faq/) before submitting issues.
 
 For any additional questions please submit then through github [here](https://github.com/Descent098/ahd/issues/new?assignees=Descent098&labels=documentation&template=question.md&title=%5Bquestion%5D) (much faster response), or my email [kieran@canadiancoding.ca](mailto:kieran@canadiancoding.ca?subject=AHD:Question).
 

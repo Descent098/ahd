@@ -1,8 +1,6 @@
 import pytest
 from ahd.autocomplete import generate_bash_autocomplete, command, _stringify_list
 
-
-
 def test_stringify_list():
     """Testing the _stringify_list() function from ahd/autocompletion.py
     

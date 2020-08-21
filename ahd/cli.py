@@ -41,8 +41,6 @@ import colored                        # Used to colour terminal output
 import yaml                           # Used to handle configuration serialization/deserialization
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
 
-
-
 usage = """Add-hoc dispatcher
 
 Create ad-hoc commands to be dispatched within their own namespace.

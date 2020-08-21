@@ -90,8 +90,8 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
     """
 
     if not export and not import_config:
-            print("Please provide either the export (-e or --export) or import (-i or --import) flag")
-            return
+        print("Please provide either the export (-e or --export) or import (-i or --import) flag")
+        return
     if export:
         with open(CONFIG_FILE_PATH) as config_file:
             config = yaml.load(config_file)
@@ -151,8 +151,8 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
             yaml.dump(config, config_file, default_flow_style=False)
         print(f"Configuration file saved {macro_name} registered")
     except PermissionError:
-            print(f"{colored.fg(1)}Unable to register command are you sudo?")
-            print(f"{colored.fg(15)}\tTry running: sudo ahd register {macro_name} \"{commands}\" \"{paths}\" ")
+        print(f"{colored.fg(1)}Unable to register command are you sudo?")
+        print(f"{colored.fg(15)}\tTry running: sudo ahd register {macro_name} \"{commands}\" \"{paths}\" ")
 
     if not os.name == "nt":  # Generate bash autocomplete
         for custom_command in config["macros"]:

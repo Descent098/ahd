@@ -1,5 +1,17 @@
 # Usage
 
+This section will give you a high level overview of the commands, arguments and flags available in the ahd CLI. 
+
+
+
+For details on more advanced topics like:
+
+- macro overriding
+- wildcards
+- Autocompletion
+
+See the [advanced usage section](../advanced-usage) of the docs for details.
+
 ```bash
 Usage:
     ahd list [-l]
@@ -20,172 +32,71 @@ Options:
                     imports the configuration file
 ```
 
+## Register
+
+The register command allows you to register a command to be used later on. 
+
+<u>Required Arguments:</u>
+
+- *<name\>*;  This is a **positional** placeholder value for the name of a command you  are registering. Once the command is registered you can run it by using ```ahd <name>```.
 
 
-## Example
-
-Here is a quick example of creating a command that runs ```sudo apt-get update && sudo apt-get upgrade```:
-
-1. Register the command as the name "update": ```ahd register update "sudo apt-get update && sudo apt-get upgrade"```
-2. Run the command using the name "update": ```ahd update```
+- *<command\>*;  This is a **positional** placeholder value for the macro you want to run when the command is used after being registered. For example if you wanted to delete all the PDF's in a directory the macro you would normally run is ```rm *.pdf``` and so you would do ```ahd register <name> "rm *.pdf" <paths>```. 
+	- It is generally advised to use encapsulating quotes since this avoids argument parsing artifacts.
 
 
+- *<paths\>*;  This is a **positional** placeholder value for the path(s) that you want the command to run the macro in by default. For example if you wanted to a command to execute a macro on the desktop when it's run you can do ```ahd register <name> <command> "~/Desktop"```.
+    - Use encapsulating quotes since this avoids argument parsing artifacts.
+    - You can use a ```"."``` to have the macro run in whatever the current directory (at runtime) is.
+    - You can specify multiple directories through comma delimiting, for example: ```ahd register <name> <command> "~/Desktop, ~/Documents, ~/Pictures"```.
+    - More details about paths can be found in the [all about paths section](../advanced-usage#all-about-paths) (Particularly globbing and wildcards).
 
-This example was somewhat trivial but keep in mind this effectively means you can replace any short bash scripts you are using to do things like updating multiple git repos, executing a sequence of commands to sort your downloads folder etc.
+
+
+## Using a Registered Command
+
+You can use a registered command by simply typing ```ahd <name>```, where ```<name>``` is whatever name you gave to the command.
+
+<u>Optional Arguments:</u>
+
+- *<command\>*; This is an optional positional argument that lets you overwrite the command, while retaining the registered paths. See [command overriding for details](../advanced-usage#command-overriding).
+
+- *<paths\>*; This is an optional positional argument that lets you overwrite the paths the command will run against. See [path overriding for details](../advanced-usage#path-overriding).
 
 
 
-## Arguments
+## list
 
-### list
+The list command shows a list of your current registered macros.
 
-The list command shows a list of your current registered commands.
+<u>Optional flags:</u>
 
-**Options**:
+- *\-l or \-\-long*: Shows all macros in configuration with the registered paths and commands.
 
-  \- \-\-long: Shows all commands in configuration with paths and commands
 
-### docs
+
+## docs
 
 The docs command is designed to bring up documentation as needed, you can run ```ahd docs``` to open the documentation site in the default browser.
 
 
 
-**Options**:
+<u>Optional Flags:</u>
 
-  \-a \-\-api: Used to serve local API documentation (Not yet implemented)
+- *\-a or \-\-api*: Used to serve local API documentation **(Not yet implemented)**
 
-  \-o \-\-offline: Used to serve local user documentation (Not yet implemented)
+- *\-o or \-\-offline*: Used to serve local user documentation **(Not yet implemented)**
 
 
 
-### config
+## config
 
-This command is used for **all** configuration management. Due to the amount of preprocessing involved in keeping ahd cross platform the dotfile is obstructed from view by default. The config command is the main interface for managing configurations manually though I would recommend using the **register** command as opposed to this, or looking at the documentation for details about [manual configuration](https://ahd.readthedocs.io/en/latest/usage#wildcards-and-cross-platform-paths).
+This command is primarily used for **manual** configuration management, It is recommended to use [register](#register) to register/update commands as opposed to the config command. Take a look at the [manual configuration section](../advanced-usage#manual-configuration) to learn more. This command does also allow for transferring configurations, the details for which can be found in the [transferring configurations section](../advanced-usage#transferring-configurations).
 
 
 
-**Options**:
+<u>Optional flags:</u>
 
-  \-e \-\-export: Export the current configuration file (it's a dotfile so make sure view hidden files is enabled)
+  \-e or \-\-export: Export the current configuration file (called ```ahdconfig.yml```)
 
-  \-i \-\-import: Import a configuration file; takes the path as an argument
-
-
-
-### Register
-
-The register command allows you to register a name to be used later on. For example if I wanted to create a command that dispatched running git pull in several of my directories that is activated when I type ```ahd git-upt``` then I can just run ```ahd register git-upt "git pull" "~/path/to/project, ~/path/to/project-2, ~/path/to/project-3```
-
-
-
-#### <name\>
-
-This is a placeholder value for the name of a command you have registered. Once the command is registered you can run it by using ```ahd <name>```, additionally you can override the default set commands or paths, details can be found below.
-
-
-
-## Overriding
-
-You can override the registered command, or paths of a name ad-hoc. Overriding can be useful in circumstances where you may want to vary the command or paths being run. This also means that on top of running commands you can use ahd to specify a set of paths to execure ad-hoc commands to. Here are some examples of both.
-
-
-
-### Commands
-
-Let's say you have registered the name "environments", this contains all the paths to the root directories of application instances you have running on a server. For example:
-
-```ahd register environments "" "~/path/to/application, ~/path/to/application-2, ~/path/to/application-3"```
-
-
-
-You'll notice I left the command blank since it will be overriden anyway later on. You can now use command overriding to run commands accross all of your application instances. In this example let's say you wanted to pull the latest git code on all the application instances, you could just use:
-
-```ahd environments "git pull"```
-
-
-
-Since only the ```<command>``` is being overridden ahd will execute "git pull" in all the specified paths.
-
-
-
-### Paths
-
-Overriding paths is a bit more esoteric, there is a built-in mechanism that allows you to skip command overriding and specify a new path. Let's take the following example of running ```docker compose up``` in various paths. First register the command with a name, in this case we will call it "buildapp":
-
-```ahd register buildapp "docker compose up" "."```
-
-
-
-This means by default if we run ```ahd buildapp``` it will run in the same directory you are in, but we could override the paths and execute it in multiple places. The way this works is by "overriding" the command to "." this is a built-in convention that means "skip overridding the command value for now". In this case we could run:
-
-```ahd buildapp "." "~/path/to/application, ~/path/to/application-2, ~/path/to/application-3"```
-
-
-
-to execute ```docker compose up``` in all 3 locations.
-
-
-
-## Wildcards and Cross platform paths
-
-In ahd paths are normalized across os's and wildcards are supported.
-
-
-
-### Platform normalization steps
-
-**TL;DR**: use unix-style paths (/ and include ~ for the home directory) even on windows.
-
-
-
-**The long version**: Paths in ahd are automatically platform agnostic (unless you manually edit the config file). This means that when you register a command in windows the paths are preprocessed to change \\ to / in the config file, and ~ to the USERPROFILE environment variable, then postprocessed back when running commands. Functionally this means you can use the exact same configuration across platforms if you use the unix path idiosyncrasies (~ and /).
-
-
-
-
-
-### Wildcards
-
-Additionally you can specify wildcards to say "all directories in a given pattern". Under the hood this is done through the [glob](https://docs.python.org/3/library/glob.html) module in python (note there must be an asterisk or else it will register as a literal character), but the basics are that an asterisk delimits "any directory". So for example if you wanted to register a command to "git pull" all folders in a directory you could use:
-
-```powershell
-ahd register git-upt "git pull" "C:\Users\Kieran\Desktop\Development\Canadian Coding\*"
-```
-
-
-
-Here is the tree for ```C:\Users\Kieran\Desktop\Development\Canadian Coding``` :
-
-```powershell
-C:\USERS\KIERAN\DESKTOP\DEVELOPMENT\CANADIAN CODING
-├───posts
-├───SSB
-├───website
-```
-
-
-
-So this means that when you run ```ahd git-upt``` it will run the same as:
-
-```powershell
-cd C:\Users\Kieran\Desktop\Development\Canadian Coding\posts && git pull
-
-cd C:\Users\Kieran\Desktop\Development\Canadian Coding\SSB && git pull
-
-cd C:\Users\Kieran\Desktop\Development\Canadian Coding\website && git pull
-```
-
-
-
-### Manually editing paths in config
-
-All paths should be specified in unix style (use / instead of \\), even if intended to be used on windows. This is because the preprocessor that happens when you register a command does this for you.
-
-
-
-
-
-## Autocompletion on ZSH, fish etc.
-
-There are plans to fully support zsh and fish in the future, but a temporary solution is to use a module called [docopt-completion](https://github.com/Infinidat/infi.docopt_completion) (install using ```pip install infi.docopt-completion```). Once installed you can run ```docopt-completion ahd``` to generate autocompletion on the **TOP-LEVEL** (register, docs, config) commands. Unfortunately there is no solution for autocompletion on ahd registered commands (yet).
+  \-i or \-\-import: Import a configuration file; takes the path to the config file as an argument

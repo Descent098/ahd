@@ -9,7 +9,7 @@ If you have any questions feel free to submit an issue on [github](https://githu
 There are two options:
 
 1. You can re-register the command; anytime a command is registered that has the name of an existing command it will overwrite the existing command.
-2. You can manually edit the configuration by running ```ahd config -e``` then modifying the ```.ahdconfig``` file that shows up in your current directory and reimport it using ```ahd config -i .ahdconfig```.
+2. You can manually edit the configuration, details on how to do this can be found in the [manual configuration](../advanced-usage#manual-configuration) section.
 
 
 
@@ -22,3 +22,7 @@ On \*nix systems I have intentionally made it so you **MUST** use sudo when regi
 ## I'm getting a permission error when I try to run a command, what do I do?
 
 Likely the command you have registered needs sudo access, modify your configuration using one of the methods found in the first question of this page and add ```sudo``` in front of the command.
+
+
+
+For example if you originally registered a command to ```apt-get update``` by doing ```ahd register update "apt-get update" "."```, then you will need to do ```ahd register update "sudo apt-get update" "."```.

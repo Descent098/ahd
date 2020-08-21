@@ -1,5 +1,12 @@
 """This module is used to generate autocomplete files for various systems (bash, zsh etc.)
 
+Module Variables
+----------------
+
+command (namedtuple):
+    Defines the schema for commands that is used
+    to generate autocomplete files.
+
 Examples
 --------
 
@@ -115,7 +122,15 @@ def _stringify_list(arguments:list) -> str:
 def generate_bash_autocomplete(commands:list, root:str = "ahd") -> str:
     """Takes a list of commands (namedtuple type) and returns the text necessary
     for a bash autocomplete file
-     
+
+    Parameters
+    ----------
+    commands: (list[namedtuple])
+        A list of the commands to generate the autocomplete file for
+
+    root: (str)
+        The string signifying the base programs name, default is 'ahd'
+    
     Examples
     --------
     ```

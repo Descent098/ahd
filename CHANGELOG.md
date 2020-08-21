@@ -1,6 +1,29 @@
 # Changelog
 
-## V 0.4.0; February 10th
+## V 0.5.0; August 22nd 2020
+
+Focus for this release was to make it easier to understand how to use and contribute to ahd, to convert from configparser to PyYaml and cleanup some left over errors in deepsource.
+
+Features:
+
+- Replaced configparser with [PyYaml](https://pyyaml.org/); see migration notice in the docs for details
+
+Documentation:
+
+- Overhauled user documentation site for clarity
+  - Revamped README
+  - Added Glossary
+  - Revamped contribution guide
+  - Added Code Style guide
+  - Cleaned up wording surrounding what the project actually does
+- Transitioned from full roadmap project boards to per-release project boards
+
+Bug Fixes:
+
+- Inability to build from sdist due to missing files; Thanks to [thatch](https://github.com/thatch) for the fix
+- Fixed testing pipeline in github actions
+
+## V 0.4.0; February 10th 2020
 
 Focus for this release was breaking up command line parsing into more testable chunks.
 
@@ -13,7 +36,7 @@ Documentation:
 
 - Created API documentation site: https://kieranwood.ca/ahd
 
-## V 0.3.0; February 6th
+## V 0.3.0; February 6th 2020
 
 Focus for this release was on building sustainable development pipelines (logging, testing etc.), and making the project more reliable in edge cases and error handling.
 

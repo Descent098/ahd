@@ -1,11 +1,14 @@
 site_name: Ad-Hoc Dispatcher
 
 nav:
-    - Home: index.md
+    - Overview: index.md
     - Quick Start: quick-start.md
     - Usage: usage.md
+    - Advanced Usage/Details: advanced-usage.md
     - Contributing: contributing.md
     - FAQ: faq.md
+    - Glossary: glossary.md
+    - Migrating from Pre v0.5.0 configs: migration.md
 
 theme: readthedocs
 

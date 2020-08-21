@@ -1,10 +1,8 @@
 import pytest
-
 from ahd.autocomplete import generate_bash_autocomplete, command, _stringify_list
 
-
 def test_stringify_list():
-    """Testing the _stringify_list method from autocomplete module
+    """Testing the _stringify_list() function from ahd/autocompletion.py
     
     Cases
     -----
@@ -28,7 +26,8 @@ def test_stringify_list():
         _stringify_list(" -a --api -o --offline")
 
 def test_bash_generation():
-    """Validates that the bash generation function generates the correct file."""
+    """Validates that the generate_bash_autocomplete() function in ahd/autocompletion.py
+    generates the correct file."""
 
     commands =  [
         command("docs", ["-a", "--api", "-o", "--offline"]),

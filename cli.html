@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.4" />
+<meta name="generator" content="pdoc 0.7.5" />
 <title>ahd.cli API documentation</title>
 <meta name="description" content="This file houses the primary entrypoint, and main business logic of ahd …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -24,12 +24,15 @@
 <h2 id="module-variables">Module Variables</h2>
 <p>usage (str):
 Used by docopt to setup argument parsing;
-Defines the actual command line interface.</p>
+Defines the actual command line interface</p>
+<p>config(dict):
+The dictionary containing the current configuration
+once deserialized from CONFIG_FILE_PATH</p>
 <p>CONFIG_FILE_PATH(str):
-The path to the configuration file.</p>
+The path to the configuration file</p>
 <p>CURRENT_PATH(str):
 Used to keep track of users current directory
-to cd back into it after script execution.</p>
+to cd back into it after script execution</p>
 <h2 id="documentation">Documentation</h2>
 <p>Docs website: <a href="https://ahd.readthedocs.io">https://ahd.readthedocs.io</a></p>
 <details class="source">
@@ -43,14 +46,18 @@ Module Variables
 
 usage (str):
     Used by docopt to setup argument parsing;
-    Defines the actual command line interface.
+    Defines the actual command line interface
+
+config(dict):
+    The dictionary containing the current configuration
+    once deserialized from CONFIG_FILE_PATH
 
 CONFIG_FILE_PATH(str):
-    The path to the configuration file.
+    The path to the configuration file
 
 CURRENT_PATH(str):
     Used to keep track of users current directory
-    to cd back into it after script execution.
+    to cd back into it after script execution
 
 
 Documentation
@@ -65,29 +72,29 @@ import glob                           # Used to preprocess wildcard paths
 import logging                        # Used to log valueable logging info
 import webbrowser                     # Used to auto-launch the documentation link
 import subprocess                     # Used to run the dispatched commands
-from configparser import ConfigParser # Used to serialize and de-serialize config files
 
 
 # Internal dependencies
-from .autocomplete import command, generate_bash_autocomplete
+from .configuration import migrate_config, configure, register
 
 # Third-party dependencies
 import colored                        # Used to colour terminal output
+import yaml                           # Used to handle configuration serialization/deserialization
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
 
-
 usage = &#34;&#34;&#34;Add-hoc dispatcher
-    Create ad-hoc commands to be dispatched within their own namespace.
 
-    Usage: 
-        ahd list [-l]
-        ahd [-h] [-v] [-d]
-        ahd docs [-a] [-o]
-        ahd config [-e] [-i CONFIG_FILE_PATH]
-        ahd register &lt;name&gt; [&lt;command&gt;] [&lt;paths&gt;]
-        ahd &lt;name&gt; [&lt;command&gt;] [&lt;paths&gt;]
+Create ad-hoc commands to be dispatched within their own namespace.
 
-    Options:
+Usage: 
+    ahd list [-l]
+    ahd [-h] [-v] [-d]
+    ahd docs [-a] [-o]
+    ahd config [-e] [-i CONFIG_FILE_PATH]
+    ahd register &lt;name&gt; [&lt;command&gt;] [&lt;paths&gt;]
+    ahd &lt;name&gt; [&lt;command&gt;] [&lt;paths&gt;]
+
+Options:
     -h, --help            show this help message and exit
     -v, --version         show program&#39;s version number and exit
     -l, --long            Shows all commands in configuration with paths and commands
@@ -98,24 +105,15 @@ usage = &#34;&#34;&#34;Add-hoc dispatcher
                         imports the configuration file
     &#34;&#34;&#34;
 
-command_list =  [ # Used for autocompletion generation
-    command(&#34;docs&#34;, [&#34;-a&#34;, &#34;--api&#34;, &#34;-o&#34;, &#34;--offline&#34;]),
-    command(&#34;register&#34;, []),
-    command(&#34;config&#34;, [&#34;-e&#34;, &#34;--export&#34;, &#34;-i&#34;, &#34;--import&#34;])
-]
+config = {}  # The dictionary containing the current configuration once deserialized from CONFIG_FILE_PATH
 
-
-config = ConfigParser() # Global configuration parser
-
-# The default (and currently only) path to the configuration file
-CONFIG_FILE_PATH = f&#34;{os.path.dirname(__file__)}{os.sep}.ahdconfig&#34;
-
+CONFIG_FILE_PATH = f&#34;{os.path.dirname(__file__)}{os.sep}ahd.yml&#34;  # The path to the configuration file
 
 CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
 
-def main():
+def main() -&gt; None:
     &#34;&#34;&#34;The primary entrypoint for the ahd script.
-    
+
     All primary business logic is within this function.&#34;&#34;&#34;
 
     # Setup arguments for parsing
@@ -123,97 +121,103 @@ def main():
 
     if len(sys.argv) == 1:
         print(&#34;\n&#34;, usage)
-        exit()
+        sys.exit()
+
+    # Checks if a legacy config is available and if it is migrates to new standard
+    migrate_config()  # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
-        config.read(CONFIG_FILE_PATH) # Read it
+        with open(CONFIG_FILE_PATH, &#34;r&#34;) as config_file:
+            config = yaml.safe_load(config_file)
+            config = dict(config)
 
     else: # If a file does not exist create one
+        print(f&#34;{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}&#34;)
         with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
-                config.write(config_file)
-    
+            config_file.write(&#34;macros:&#34;)
+            sys.exit()
+
     # Begin argument parsing
 
     if arguments[&#34;list&#34;]:
-        list_commands(arguments[&#34;--long&#34;])
+        list_macros(arguments[&#34;--long&#34;], config)
+        sys.exit()
 
     # ========= Docs argument parsing =========
     if arguments[&#34;docs&#34;]:
         docs(arguments[&#34;--api&#34;], arguments[&#34;--offline&#34;])
+        sys.exit()
 
     # ========= config argument parsing =========
     if arguments[&#34;config&#34;]:
-        configure(arguments[&#34;--export&#34;], arguments[&#34;--import&#34;])
-            
+        configure(arguments[&#34;--export&#34;], arguments[&#34;--import&#34;], config)
+        sys.exit()
+
     # ========= preprocessing commands and paths =========
     if not arguments[&#34;&lt;paths&gt;&#34;]:
         logging.debug(&#34;No paths argument registered setting to \&#39;\&#39;&#34;)
         arguments[&#34;&lt;paths&gt;&#34;] = &#34;&#34;
     else:
         arguments[&#34;&lt;paths&gt;&#34;] = _preprocess_paths(arguments[&#34;&lt;paths&gt;&#34;])
-    
+
     if not arguments[&#34;&lt;command&gt;&#34;]:
         logging.debug(&#34;No command argument registered setting to \&#39;\&#39;&#34;)
         arguments[&#34;&lt;command&gt;&#34;] = &#34;&#34;
-    
+
     if &#34;.&#34; == arguments[&#34;&lt;command&gt;&#34;]: # If &lt;command&gt; is . set to specified value
-        logging.debug(f&#34;. command registered, setting to {config[arguments[&#39;&lt;name&gt;&#39;]][&#39;command&#39;]}&#34;)
-        arguments[&#34;&lt;command&gt;&#34;] = config[arguments[&#34;&lt;name&gt;&#34;]][&#34;command&#34;]
+        logging.debug(f&#34;. command registered, setting to {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;command&#39;]}&#34;)
+        arguments[&#34;&lt;command&gt;&#34;] = config[&#34;macros&#34;][arguments[&#34;&lt;name&gt;&#34;]][&#34;command&#34;]
 
     # ========= register argument parsing =========
     if arguments[&#34;register&#34;]:
-        register(arguments[&#34;&lt;name&gt;&#34;], arguments[&#34;&lt;command&gt;&#34;], arguments[&#34;&lt;paths&gt;&#34;] )
+        register(arguments[&#34;&lt;name&gt;&#34;], arguments[&#34;&lt;command&gt;&#34;], arguments[&#34;&lt;paths&gt;&#34;], config)
 
     # ========= User command argument parsing =========
-    
+
     if arguments[&#39;&lt;name&gt;&#39;]:
         if not arguments[&#39;&lt;paths&gt;&#39;] and not arguments[&#39;&lt;command&gt;&#39;]:
-            dispatch(arguments[&#39;&lt;name&gt;&#39;])
+            dispatch(arguments[&#39;&lt;name&gt;&#39;], config=config)
 
         else:
             if arguments[&#39;&lt;paths&gt;&#39;] and not arguments[&#39;&lt;command&gt;&#39;]: 
                 # Process inputted paths
                 arguments[&#39;&lt;paths&gt;&#39;] = _preprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
                 arguments[&#39;&lt;paths&gt;&#39;] = _postprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
-                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;])
+                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;], config=config)
 
             if arguments[&#39;&lt;command&gt;&#39;] and not arguments[&#39;&lt;paths&gt;&#39;]:
-                dispatch(arguments[&#39;&lt;name&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;])
+                dispatch(arguments[&#39;&lt;name&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;], config=config)
 
             else:
                 # Process inputted paths
                 arguments[&#39;&lt;paths&gt;&#39;] = _preprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
                 arguments[&#39;&lt;paths&gt;&#39;] = _postprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
-                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;])
-    
-def list_commands(verbose = False) -&gt; None:
+                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;], config=config)
+
+def list_macros(verbose:bool = False, config:dict={}) -&gt; None:
     &#34;&#34;&#34;Lists commands currently in config
 
     Parameters
     ----------
     verbose: (bool)
         When specified will print both the command name and
-        associated commands + paths
-    
+        associated commands + paths. Additionally the dictionary
+        will only return when this flag is specified.
+
+    config: (dict)
+        The dict that contains the current config
     &#34;&#34;&#34;
-    configuration = ConfigParser()
-    if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
-        configuration.read(CONFIG_FILE_PATH) # Read it
-        for count, command in enumerate(configuration):
-            if count &gt; 0:
-                if verbose:
-                    print(&#34;\n\n============================================\n\n&#34;)
-                    print(f&#34;{colored.fg(6)}{command}\n&#34;)
-                    print(f&#34;{colored.fg(100)}\tCommand = {configuration[command][&#39;command&#39;]}&#34;)
-                    print(f&#34;\tPaths = {configuration[command][&#39;paths&#39;]}{colored.fg(15)}&#34;)
-                else:
-                    print(f&#34;\n{colored.fg(6)}{command}{colored.fg(15)}&#34;)
 
-    else: # If a file does not exist create one
-        print(f&#34;{colored.fg(1)}No commands found&#34;)
-    print() # reset terminal text to white
-    exit()
-
+    # Iterate over the config, and pull information about the macros
+    count = 0
+    for count, macro in enumerate(config[&#34;macros&#34;]):
+        if verbose:
+            print(f&#34;{colored.fg(6)}{macro}\n&#34;)
+            print(f&#34;{colored.fg(100)}\tCommand = {config[&#39;macros&#39;][macro][&#39;command&#39;]}&#34;)
+            print(f&#34;\tPaths = {config[&#39;macros&#39;][macro][&#39;paths&#39;]}{colored.fg(15)}&#34;)
+        else:
+            print(f&#34;\n{colored.fg(6)}{macro}{colored.fg(15)}&#34;)
+    print(f&#34;\n\n{count+1} macros detected&#34;)
 
 def docs(api:bool = False, offline:bool = False) -&gt; None:
     &#34;&#34;&#34;Processes incoming arguments when the docs command is invoked
@@ -233,7 +237,6 @@ def docs(api:bool = False, offline:bool = False) -&gt; None:
     &#34;&#34;&#34;
     if not api and not offline:
         webbrowser.open_new(&#34;https://ahd.readthedocs.io&#34;)
-        exit()
     else:
         if offline and not api:
             # TODO Implement build local user docs.
@@ -242,120 +245,45 @@ def docs(api:bool = False, offline:bool = False) -&gt; None:
         elif api:
             if not offline:
                 webbrowser.open_new(&#34;https://kieranwood.ca/ahd&#34;)
-                exit()
             else:
                 # TODO Implement build local user docs.
                 print(&#34;Not yet implemented&#34;)
 
-def configure(export:bool = False, import_config:bool = False) -&gt; None:
-    &#34;&#34;&#34;Handles all the exporing and importing of configurations
-
-    Parameters
-    ----------
-    export: (bool)
-        When specified, shows API docs as opposed to user docs.
-
-    import_config: (bool|str)
-        False if no path, otherwise a string representation of path to config file.
-
-    Notes
-    -----
-    - If neither export or import_config are specified, then usage is printed.
-    &#34;&#34;&#34;
-
-    if not export and not import_config:
-            print(usage)
-            exit()
-    if export:
-        with open(f&#34;{os.path.abspath(os.curdir)}{os.sep}.ahdconfig&#34;, &#34;w&#34;) as config_file:
-            config.write(config_file)
-
-    if import_config:
-
-        new_config_path = import_config
-        new_config = ConfigParser()
-        
-        new_config.read(new_config_path)
-        try:
-            os.remove(CONFIG_FILE_PATH)
-            print(f&#34;Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}&#34;)
-            with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
-                new_config.write(config_file)
-        except PermissionError:
-            print(f&#34;{colored.fg(1)} Unable to import configuration file, are you sudo?&#34;)
-            print(f&#34;{colored.fg(15)}\tTry running: sudo ahd config -i \&#34;{arguments[&#39;--import&#39;]}\&#34; &#34;)
-
-def register(name, commands, paths):
-    &#34;&#34;&#34;Handles registering of custom commands, and autocompletion generation.
+def dispatch(name, command:str=False, paths:str=False, config:dict={}) -&gt; None:
+    &#34;&#34;&#34;Controls the dispatching of macros
 
     Parameters
     ----------
     name: (str)
-        The name used to call the commands.
+        The name of the macro to dispatch
 
-    commands: (str)
-        The set of commands to execute.
-    
+    command: (str)
+        Used to override the macros configured command
+        when set to False, will pull from configuration
+
     paths: (str)
-        A string representation of the paths to execute the command with.
+        Used to override the macros configured paths
+        when set to False, will pull from configuration
 
-    Notes
-    -----
-    - When passing paths to this function make sure they are preprocessed.
-    &#34;&#34;&#34;
-    logging.info(f&#34;Registering command {name} with \nCommand: {commands} \nPaths: {paths}&#34;)
-    if not name or not paths:
-        print(usage)
-        exit()
-    config[name] = {
-        &#34;command&#34;: commands,
-        &#34;paths&#34;: paths,
-    }
-
-    try:
-        logging.info(f&#34;Begin writing config file to {CONFIG_FILE_PATH}&#34;)
-        with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
-            config.write(config_file)
-    except PermissionError:
-            print(f&#34;{colored.fg(1)}Unable to register command are you sudo?&#34;)
-            print(f&#34;{colored.fg(15)}\tTry running: sudo ahd register {name} \&#34;{commands}\&#34; \&#34;{paths}\&#34; &#34;)
-
-    if not os.name == &#34;nt&#34;: # Generate bash autocomplete
-        for index, custom_command in enumerate(config):
-            if not index == 0: # for some reason the first thing in config object is garbage
-                command_list.append(command(custom_command, []))
-
-        autocomplete_file_text = generate_bash_autocomplete(command_list)
-        try:
-            with open(&#34;/etc/bash_completion.d/ahd.sh&#34;, &#34;w&#34;) as autocomplete_file:
-                autocomplete_file.write(autocomplete_file_text)
-            print(&#34;Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update&#34;)
-        except PermissionError:
-            print(f&#34;{colored.fg(1)}Unable to write bash autocompletion file are you sudo?&#34;)
-
-    # Since executing commands requires changing directories, make sure to return after
-    os.chdir(CURRENT_PATH)
-    exit()
-
-def dispatch(name, command = False, paths = False):
-    &#34;&#34;&#34;Controls the dispatching of custom functions&#34;&#34;&#34;
+    config: (dict)
+        The dict that contains the current config&#34;&#34;&#34;
     if &#34;register&#34; == name:
                 print(usage)
-                exit()
+                sys.exit()
     logging.info(f&#34;Beggining execution of {name}&#34;)
 
     try: # Accessing stored information on the command
-        config[name]
+        config[&#34;macros&#34;][name]
 
     except KeyError: # TODO Find a way to suggest a similar command
         print(f&#34;{colored.fg(1)}Command not found in configuration validate spelling is correct.&#34;)
-        exit()
+        sys.exit()
     
     if not command or command == &#34;.&#34;:
-        command = config[name][&#39;command&#39;]
+        command = config[&#34;macros&#34;][name][&#39;command&#39;]
     
     if not paths:
-        paths = _postprocess_paths(config[name][&#39;paths&#39;])
+        paths = _postprocess_paths(config[&#34;macros&#34;][name][&#39;paths&#39;])
 
     if len(paths) &gt; 1:
         for current_path in paths:
@@ -373,12 +301,12 @@ def dispatch(name, command = False, paths = False):
 def _preprocess_paths(paths:str) -&gt; str:
     &#34;&#34;&#34;Preprocesses paths from input and splits + formats them
     into a useable list for later parsing.
-    
+
     Example
     -------
     ```
     paths = &#39;~/Desktop/Development/Canadian Coding/SSB, C:\\Users\\Kieran\\Desktop\\Development\\*, ~\\Desktop\\Development\\Personal\\noter, .&#39;
-    
+
     paths = _preprocess_paths(paths)
 
     print(paths) # Prints: &#39;~/Desktop/Development/Canadian Coding/SSB,~/Desktop/Development/*,~/Desktop/Development/Personal/noter,.&#39;
@@ -412,12 +340,12 @@ def _postprocess_paths(paths:str) -&gt; list:
     &#34;&#34;&#34;Postprocesses existing paths to be used by dispatcher.
 
     This means things like expanding wildcards, and processing correct path seperators.
-    
+
     Example
     -------
     ```
     paths = &#39;C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\SSB, C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\website, ~/Desktop/Development/Personal/noter, C:\\Users\\Kieran\\Desktop\\Development\\*&#39;
-    
+
     paths = _preprocess_paths(paths)
 
     print(_postprocess_paths(paths)) 
@@ -446,7 +374,7 @@ def _postprocess_paths(paths:str) -&gt; list:
                 directory = directory.replace(&#34;~&#34;,f&#34;{os.getenv(&#39;USERPROFILE&#39;)}&#34;)
             else:
                 directory = directory.replace(&#34;~&#34;, f&#34;{os.getenv(&#39;HOME&#39;)}&#34;)
-        
+
         if &#34;*&#34; in directory:
 
             wildcard_paths = glob.glob(directory.strip())
@@ -472,93 +400,63 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="ahd.cli.configure"><code class="name flex">
-<span>def <span class="ident">configure</span></span>(<span>export=False, import_config=False)</span>
+<dt id="ahd.cli.dispatch"><code class="name flex">
+<span>def <span class="ident">dispatch</span></span>(<span>name, command=False, paths=False, config={})</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Handles all the exporing and importing of configurations</p>
+<section class="desc"><p>Controls the dispatching of macros</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>export</code></strong> :&ensp;(<code>bool</code>)</dt>
-<dd>When specified, shows API docs as opposed to user docs.</dd>
-<dt><strong><code>import_config</code></strong> :&ensp;(<code>bool</code>|<code>str</code>)</dt>
-<dd>False if no path, otherwise a string representation of path to config file.</dd>
-</dl>
-<h2 id="notes">Notes</h2>
-<ul>
-<li>If neither export or import_config are specified, then usage is printed.</li>
-</ul></section>
+<dt><strong><code>name</code></strong> :&ensp;(<code>str</code>)</dt>
+<dd>The name of the macro to dispatch</dd>
+<dt><strong><code>command</code></strong> :&ensp;(<code>str</code>)</dt>
+<dd>Used to override the macros configured command
+when set to False, will pull from configuration</dd>
+<dt><strong><code>paths</code></strong> :&ensp;(<code>str</code>)</dt>
+<dd>Used to override the macros configured paths
+when set to False, will pull from configuration</dd>
+<dt><strong><code>config</code></strong> :&ensp;(<code>dict</code>)</dt>
+<dd>The dict that contains the current config</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def configure(export:bool = False, import_config:bool = False) -&gt; None:
-    &#34;&#34;&#34;Handles all the exporing and importing of configurations
+<pre><code class="python">def dispatch(name, command:str=False, paths:str=False, config:dict={}) -&gt; None:
+    &#34;&#34;&#34;Controls the dispatching of macros
 
     Parameters
     ----------
-    export: (bool)
-        When specified, shows API docs as opposed to user docs.
+    name: (str)
+        The name of the macro to dispatch
 
-    import_config: (bool|str)
-        False if no path, otherwise a string representation of path to config file.
+    command: (str)
+        Used to override the macros configured command
+        when set to False, will pull from configuration
 
-    Notes
-    -----
-    - If neither export or import_config are specified, then usage is printed.
-    &#34;&#34;&#34;
+    paths: (str)
+        Used to override the macros configured paths
+        when set to False, will pull from configuration
 
-    if not export and not import_config:
-            print(usage)
-            exit()
-    if export:
-        with open(f&#34;{os.path.abspath(os.curdir)}{os.sep}.ahdconfig&#34;, &#34;w&#34;) as config_file:
-            config.write(config_file)
-
-    if import_config:
-
-        new_config_path = import_config
-        new_config = ConfigParser()
-        
-        new_config.read(new_config_path)
-        try:
-            os.remove(CONFIG_FILE_PATH)
-            print(f&#34;Importing {os.path.abspath(new_config_path)} to {CONFIG_FILE_PATH}&#34;)
-            with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
-                new_config.write(config_file)
-        except PermissionError:
-            print(f&#34;{colored.fg(1)} Unable to import configuration file, are you sudo?&#34;)
-            print(f&#34;{colored.fg(15)}\tTry running: sudo ahd config -i \&#34;{arguments[&#39;--import&#39;]}\&#34; &#34;)</code></pre>
-</details>
-</dd>
-<dt id="ahd.cli.dispatch"><code class="name flex">
-<span>def <span class="ident">dispatch</span></span>(<span>name, command=False, paths=False)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Controls the dispatching of custom functions</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def dispatch(name, command = False, paths = False):
-    &#34;&#34;&#34;Controls the dispatching of custom functions&#34;&#34;&#34;
+    config: (dict)
+        The dict that contains the current config&#34;&#34;&#34;
     if &#34;register&#34; == name:
                 print(usage)
-                exit()
+                sys.exit()
     logging.info(f&#34;Beggining execution of {name}&#34;)
 
     try: # Accessing stored information on the command
-        config[name]
+        config[&#34;macros&#34;][name]
 
     except KeyError: # TODO Find a way to suggest a similar command
         print(f&#34;{colored.fg(1)}Command not found in configuration validate spelling is correct.&#34;)
-        exit()
+        sys.exit()
     
     if not command or command == &#34;.&#34;:
-        command = config[name][&#39;command&#39;]
+        command = config[&#34;macros&#34;][name][&#39;command&#39;]
     
     if not paths:
-        paths = _postprocess_paths(config[name][&#39;paths&#39;])
+        paths = _postprocess_paths(config[&#34;macros&#34;][name][&#39;paths&#39;])
 
     if len(paths) &gt; 1:
         for current_path in paths:
@@ -613,7 +511,6 @@ if __name__ == &#34;__main__&#34;:
     &#34;&#34;&#34;
     if not api and not offline:
         webbrowser.open_new(&#34;https://ahd.readthedocs.io&#34;)
-        exit()
     else:
         if offline and not api:
             # TODO Implement build local user docs.
@@ -622,14 +519,13 @@ if __name__ == &#34;__main__&#34;:
         elif api:
             if not offline:
                 webbrowser.open_new(&#34;https://kieranwood.ca/ahd&#34;)
-                exit()
             else:
                 # TODO Implement build local user docs.
                 print(&#34;Not yet implemented&#34;)</code></pre>
 </details>
 </dd>
-<dt id="ahd.cli.list_commands"><code class="name flex">
-<span>def <span class="ident">list_commands</span></span>(<span>verbose=False)</span>
+<dt id="ahd.cli.list_macros"><code class="name flex">
+<span>def <span class="ident">list_macros</span></span>(<span>verbose=False, config={})</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Lists commands currently in config</p>
@@ -637,39 +533,39 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt><strong><code>verbose</code></strong> :&ensp;(<code>bool</code>)</dt>
 <dd>When specified will print both the command name and
-associated commands + paths</dd>
+associated commands + paths. Additionally the dictionary
+will only return when this flag is specified.</dd>
+<dt><strong><code>config</code></strong> :&ensp;(<code>dict</code>)</dt>
+<dd>The dict that contains the current config</dd>
 </dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def list_commands(verbose = False) -&gt; None:
+<pre><code class="python">def list_macros(verbose:bool = False, config:dict={}) -&gt; None:
     &#34;&#34;&#34;Lists commands currently in config
 
     Parameters
     ----------
     verbose: (bool)
         When specified will print both the command name and
-        associated commands + paths
-    
-    &#34;&#34;&#34;
-    configuration = ConfigParser()
-    if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
-        configuration.read(CONFIG_FILE_PATH) # Read it
-        for count, command in enumerate(configuration):
-            if count &gt; 0:
-                if verbose:
-                    print(&#34;\n\n============================================\n\n&#34;)
-                    print(f&#34;{colored.fg(6)}{command}\n&#34;)
-                    print(f&#34;{colored.fg(100)}\tCommand = {configuration[command][&#39;command&#39;]}&#34;)
-                    print(f&#34;\tPaths = {configuration[command][&#39;paths&#39;]}{colored.fg(15)}&#34;)
-                else:
-                    print(f&#34;\n{colored.fg(6)}{command}{colored.fg(15)}&#34;)
+        associated commands + paths. Additionally the dictionary
+        will only return when this flag is specified.
 
-    else: # If a file does not exist create one
-        print(f&#34;{colored.fg(1)}No commands found&#34;)
-    print() # reset terminal text to white
-    exit()</code></pre>
+    config: (dict)
+        The dict that contains the current config
+    &#34;&#34;&#34;
+
+    # Iterate over the config, and pull information about the macros
+    count = 0
+    for count, macro in enumerate(config[&#34;macros&#34;]):
+        if verbose:
+            print(f&#34;{colored.fg(6)}{macro}\n&#34;)
+            print(f&#34;{colored.fg(100)}\tCommand = {config[&#39;macros&#39;][macro][&#39;command&#39;]}&#34;)
+            print(f&#34;\tPaths = {config[&#39;macros&#39;][macro][&#39;paths&#39;]}{colored.fg(15)}&#34;)
+        else:
+            print(f&#34;\n{colored.fg(6)}{macro}{colored.fg(15)}&#34;)
+    print(f&#34;\n\n{count+1} macros detected&#34;)</code></pre>
 </details>
 </dd>
 <dt id="ahd.cli.main"><code class="name flex">
@@ -682,9 +578,9 @@ associated commands + paths</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
+<pre><code class="python">def main() -&gt; None:
     &#34;&#34;&#34;The primary entrypoint for the ahd script.
-    
+
     All primary business logic is within this function.&#34;&#34;&#34;
 
     # Setup arguments for parsing
@@ -692,143 +588,78 @@ associated commands + paths</dd>
 
     if len(sys.argv) == 1:
         print(&#34;\n&#34;, usage)
-        exit()
+        sys.exit()
+
+    # Checks if a legacy config is available and if it is migrates to new standard
+    migrate_config()  # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
-        config.read(CONFIG_FILE_PATH) # Read it
+        with open(CONFIG_FILE_PATH, &#34;r&#34;) as config_file:
+            config = yaml.safe_load(config_file)
+            config = dict(config)
 
     else: # If a file does not exist create one
+        print(f&#34;{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}&#34;)
         with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
-                config.write(config_file)
-    
+            config_file.write(&#34;macros:&#34;)
+            sys.exit()
+
     # Begin argument parsing
 
     if arguments[&#34;list&#34;]:
-        list_commands(arguments[&#34;--long&#34;])
+        list_macros(arguments[&#34;--long&#34;], config)
+        sys.exit()
 
     # ========= Docs argument parsing =========
     if arguments[&#34;docs&#34;]:
         docs(arguments[&#34;--api&#34;], arguments[&#34;--offline&#34;])
+        sys.exit()
 
     # ========= config argument parsing =========
     if arguments[&#34;config&#34;]:
-        configure(arguments[&#34;--export&#34;], arguments[&#34;--import&#34;])
-            
+        configure(arguments[&#34;--export&#34;], arguments[&#34;--import&#34;], config)
+        sys.exit()
+
     # ========= preprocessing commands and paths =========
     if not arguments[&#34;&lt;paths&gt;&#34;]:
         logging.debug(&#34;No paths argument registered setting to \&#39;\&#39;&#34;)
         arguments[&#34;&lt;paths&gt;&#34;] = &#34;&#34;
     else:
         arguments[&#34;&lt;paths&gt;&#34;] = _preprocess_paths(arguments[&#34;&lt;paths&gt;&#34;])
-    
+
     if not arguments[&#34;&lt;command&gt;&#34;]:
         logging.debug(&#34;No command argument registered setting to \&#39;\&#39;&#34;)
         arguments[&#34;&lt;command&gt;&#34;] = &#34;&#34;
-    
+
     if &#34;.&#34; == arguments[&#34;&lt;command&gt;&#34;]: # If &lt;command&gt; is . set to specified value
-        logging.debug(f&#34;. command registered, setting to {config[arguments[&#39;&lt;name&gt;&#39;]][&#39;command&#39;]}&#34;)
-        arguments[&#34;&lt;command&gt;&#34;] = config[arguments[&#34;&lt;name&gt;&#34;]][&#34;command&#34;]
+        logging.debug(f&#34;. command registered, setting to {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;command&#39;]}&#34;)
+        arguments[&#34;&lt;command&gt;&#34;] = config[&#34;macros&#34;][arguments[&#34;&lt;name&gt;&#34;]][&#34;command&#34;]
 
     # ========= register argument parsing =========
     if arguments[&#34;register&#34;]:
-        register(arguments[&#34;&lt;name&gt;&#34;], arguments[&#34;&lt;command&gt;&#34;], arguments[&#34;&lt;paths&gt;&#34;] )
+        register(arguments[&#34;&lt;name&gt;&#34;], arguments[&#34;&lt;command&gt;&#34;], arguments[&#34;&lt;paths&gt;&#34;], config)
 
     # ========= User command argument parsing =========
-    
+
     if arguments[&#39;&lt;name&gt;&#39;]:
         if not arguments[&#39;&lt;paths&gt;&#39;] and not arguments[&#39;&lt;command&gt;&#39;]:
-            dispatch(arguments[&#39;&lt;name&gt;&#39;])
+            dispatch(arguments[&#39;&lt;name&gt;&#39;], config=config)
 
         else:
             if arguments[&#39;&lt;paths&gt;&#39;] and not arguments[&#39;&lt;command&gt;&#39;]: 
                 # Process inputted paths
                 arguments[&#39;&lt;paths&gt;&#39;] = _preprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
                 arguments[&#39;&lt;paths&gt;&#39;] = _postprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
-                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;])
+                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;], config=config)
 
             if arguments[&#39;&lt;command&gt;&#39;] and not arguments[&#39;&lt;paths&gt;&#39;]:
-                dispatch(arguments[&#39;&lt;name&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;])
+                dispatch(arguments[&#39;&lt;name&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;], config=config)
 
             else:
                 # Process inputted paths
                 arguments[&#39;&lt;paths&gt;&#39;] = _preprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
                 arguments[&#39;&lt;paths&gt;&#39;] = _postprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
-                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;])</code></pre>
-</details>
-</dd>
-<dt id="ahd.cli.register"><code class="name flex">
-<span>def <span class="ident">register</span></span>(<span>name, commands, paths)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Handles registering of custom commands, and autocompletion generation.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>name</code></strong> :&ensp;(<code>str</code>)</dt>
-<dd>The name used to call the commands.</dd>
-<dt><strong><code>commands</code></strong> :&ensp;(<code>str</code>)</dt>
-<dd>The set of commands to execute.</dd>
-<dt><strong><code>paths</code></strong> :&ensp;(<code>str</code>)</dt>
-<dd>A string representation of the paths to execute the command with.</dd>
-</dl>
-<h2 id="notes">Notes</h2>
-<ul>
-<li>When passing paths to this function make sure they are preprocessed.</li>
-</ul></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def register(name, commands, paths):
-    &#34;&#34;&#34;Handles registering of custom commands, and autocompletion generation.
-
-    Parameters
-    ----------
-    name: (str)
-        The name used to call the commands.
-
-    commands: (str)
-        The set of commands to execute.
-    
-    paths: (str)
-        A string representation of the paths to execute the command with.
-
-    Notes
-    -----
-    - When passing paths to this function make sure they are preprocessed.
-    &#34;&#34;&#34;
-    logging.info(f&#34;Registering command {name} with \nCommand: {commands} \nPaths: {paths}&#34;)
-    if not name or not paths:
-        print(usage)
-        exit()
-    config[name] = {
-        &#34;command&#34;: commands,
-        &#34;paths&#34;: paths,
-    }
-
-    try:
-        logging.info(f&#34;Begin writing config file to {CONFIG_FILE_PATH}&#34;)
-        with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
-            config.write(config_file)
-    except PermissionError:
-            print(f&#34;{colored.fg(1)}Unable to register command are you sudo?&#34;)
-            print(f&#34;{colored.fg(15)}\tTry running: sudo ahd register {name} \&#34;{commands}\&#34; \&#34;{paths}\&#34; &#34;)
-
-    if not os.name == &#34;nt&#34;: # Generate bash autocomplete
-        for index, custom_command in enumerate(config):
-            if not index == 0: # for some reason the first thing in config object is garbage
-                command_list.append(command(custom_command, []))
-
-        autocomplete_file_text = generate_bash_autocomplete(command_list)
-        try:
-            with open(&#34;/etc/bash_completion.d/ahd.sh&#34;, &#34;w&#34;) as autocomplete_file:
-                autocomplete_file.write(autocomplete_file_text)
-            print(&#34;Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update&#34;)
-        except PermissionError:
-            print(f&#34;{colored.fg(1)}Unable to write bash autocompletion file are you sudo?&#34;)
-
-    # Since executing commands requires changing directories, make sure to return after
-    os.chdir(CURRENT_PATH)
-    exit()</code></pre>
+                dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;], config=config)</code></pre>
 </details>
 </dd>
 </dl>
@@ -851,20 +682,18 @@ associated commands + paths</dd>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="ahd.cli.configure" href="#ahd.cli.configure">configure</a></code></li>
+<ul class="">
 <li><code><a title="ahd.cli.dispatch" href="#ahd.cli.dispatch">dispatch</a></code></li>
 <li><code><a title="ahd.cli.docs" href="#ahd.cli.docs">docs</a></code></li>
-<li><code><a title="ahd.cli.list_commands" href="#ahd.cli.list_commands">list_commands</a></code></li>
+<li><code><a title="ahd.cli.list_macros" href="#ahd.cli.list_macros">list_macros</a></code></li>
 <li><code><a title="ahd.cli.main" href="#ahd.cli.main">main</a></code></li>
-<li><code><a title="ahd.cli.register" href="#ahd.cli.register">register</a></code></li>
 </ul>
 </li>
 </ul>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

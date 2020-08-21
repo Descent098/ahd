@@ -99,7 +99,7 @@ def main():
     # Begin argument parsing
 
     if arguments["list"]:
-        list_macros(config, arguments["--long"])
+        list_macros(arguments["--long"], config)
         exit()
 
     # ========= Docs argument parsing =========
@@ -135,25 +135,25 @@ def main():
     
     if arguments['<name>']:
         if not arguments['<paths>'] and not arguments['<command>']:
-            dispatch(arguments['<name>'])
+            dispatch(arguments['<name>'], config=config)
 
         else:
             if arguments['<paths>'] and not arguments['<command>']: 
                 # Process inputted paths
                 arguments['<paths>'] = _preprocess_paths(arguments['<paths>'])
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
-                dispatch(arguments['<name>'], paths = arguments['<paths>'])
+                dispatch(arguments['<name>'], paths = arguments['<paths>'], config=config)
 
             if arguments['<command>'] and not arguments['<paths>']:
-                dispatch(arguments['<name>'], command = arguments['<command>'])
+                dispatch(arguments['<name>'], command = arguments['<command>'], config=config)
 
             else:
                 # Process inputted paths
                 arguments['<paths>'] = _preprocess_paths(arguments['<paths>'])
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
-                dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'])
+                dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'], config=config)
 
-def list_macros(configuration:dict=False, verbose:bool = False):
+def list_macros(verbose:bool = False, configuration:dict={}):
     """Lists commands currently in config
 
     Parameters
@@ -166,8 +166,6 @@ def list_macros(configuration:dict=False, verbose:bool = False):
         associated commands + paths. Additionally the dictionary
         will only return when this flag is specified.
     """
-    if not configuration:
-        ValueError(f"{colored.fg(1)}No macros found")
 
     # Iterate over the config, and pull information about the macros
     for count, macro in enumerate(configuration["macros"]):
@@ -209,7 +207,7 @@ def docs(api:bool = False, offline:bool = False) -> None:
                 # TODO Implement build local user docs.
                 print("Not yet implemented")
 
-def dispatch(name, command = False, paths = False):
+def dispatch(name, command = False, paths = False, config:dict={}):
     """Controls the dispatching of custom functions"""
     if "register" == name:
                 print(usage)

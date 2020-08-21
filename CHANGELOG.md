@@ -1,12 +1,12 @@
 # Changelog
 
-## V 0.5.0; August 20th 2020
+## V 0.5.0; August 22nd 2020
 
-Focus for this release was to make it easier to understand how to use and contribute to ahd, to convert from configparser to PyYaml and finish the rest of the test suite.
+Focus for this release was to make it easier to understand how to use and contribute to ahd, to convert from configparser to PyYaml and cleanup some left over errors in deepsource.
 
 Features:
 
-- Replaced configparser with [PyYaml](https://pyyaml.org/); see migration notice on the docs for details
+- Replaced configparser with [PyYaml](https://pyyaml.org/); see migration notice in the docs for details
 
 Documentation:
 

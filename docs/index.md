@@ -38,6 +38,9 @@ A full roadmap for each project version can be found here: https://github.com/De
 ## Example use cases
 
 Really the possibilities are only limited to what you can type in your regular terminal, but here are some good examples:
+
+
+
 - Update every git repo in a directory
 - Organize your downloads folder by various filetypes
 - Multi-stage project compilation/build in various directories
@@ -56,6 +59,9 @@ If you forget the name there's a list command, and if you use a longer name ther
 ## Who is ahd for?
 
 The primary audience is developers looking to speed up annoying workflows. However there are a number of other people it could benefit, such as:
+
+
+
 - devops specialists; can use ahd to create a common set of macros across servers .
 - dual booters; people who want one common config for multiple OS's.
 - testers; if you need to execute multiple tests on various systems you can write one macro to run them all.

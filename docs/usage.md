@@ -31,9 +31,8 @@ Options:
 -i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH
                     imports the configuration file
 ```
-## CLI Commands
 
-### Register
+## Register
 
 The register command allows you to register a command to be used later on. 
 
@@ -54,7 +53,7 @@ The register command allows you to register a command to be used later on.
 
 
 
-### Using a Registered Command
+## Using a Registered Command
 
 You can use a registered command by simply typing ```ahd <name>```, where ```<name>``` is whatever name you gave to the command.
 
@@ -66,7 +65,7 @@ You can use a registered command by simply typing ```ahd <name>```, where ```<na
 
 
 
-### list
+## list
 
 The list command shows a list of your current registered macros.
 
@@ -76,7 +75,7 @@ The list command shows a list of your current registered macros.
 
 
 
-### docs
+## docs
 
 The docs command is designed to bring up documentation as needed, you can run ```ahd docs``` to open the documentation site in the default browser.
 
@@ -90,7 +89,7 @@ The docs command is designed to bring up documentation as needed, you can run ``
 
 
 
-### config
+## config
 
 This command is primarily used for **manual** configuration management, It is recommended to use [register](#register) to register/update commands as opposed to the config command. Take a look at the [manual configuration section](../advanced-usage#manual-configuration) to learn more. This command does also allow for transferring configurations, the details for which can be found in the [transferring configurations section](../advanced-usage#transferring-configurations).
 

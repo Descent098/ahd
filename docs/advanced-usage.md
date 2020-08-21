@@ -145,10 +145,18 @@ Although not recommended you can opt to do manual configuration, though there ar
 
 That being said, if you prefer to manually update your config here is what you need to know:
 
+- All macros fall under the main macro object with two sub-objects for the command and path respectively.
 - All paths should be specified in unix style (use / instead of \\), even if intended to be used on windows.
 - Make sure your command is encapsulated with quotes if you are unsure of proper YAML escaping.
 
+Here is an example configuration for the macro ```git upt``` with the command ```git pull``` and the paths ```~/Desktop/development/*```:
 
+```yaml
+macros:
+  git-upt:
+    command: git pull
+    paths: ~/Desktop/development/*
+```
 
 
 
@@ -164,7 +172,7 @@ As far as I am aware it is not possible to implement autocomplete for commands o
 
 ### ZSH, fish etc. 
 
-There are plans to fully support zsh and fish in the future . A temporary solution is to use a module called [docopt-completion](https://github.com/Infinidat/infi.docopt_completion) (install using ```pip install infi.docopt-completion```). Once installed you can run ```docopt-completion ahd``` to generate autocompletion on the **TOP-LEVEL** (register, docs, config) commands. Unfortunately there is no solution for autocompletion on ahd registered commands (yet).
+There are plans to fully support zsh and fish in the future . A temporary solution is to use a module called [docopt-completion](https://github.com/Infinidat/infi.docopt_completion) (install using ```pip install infi.docopt-completion```). Once installed you can run ```docopt-completion ahd``` to generate autocompletion on the **TOP-LEVEL** (register, docs, config) commands. Unfortunately there is no solution for autocompletion on ahd registered commands for these shells (yet).
 
 
 
@@ -174,8 +182,6 @@ It is possible to vendor ahd to solve a few potential issues
 
 - If for some reason ahd has a collision with another app called ahd
 - You want something shorter than 3 letters to type each time you use it
-
-
 
 Let's assume you want to instead use ```q``` instead of ```ahd```, you only need to do the following:
 

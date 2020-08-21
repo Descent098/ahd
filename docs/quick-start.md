@@ -30,7 +30,7 @@ Run ```pip install ahd``` or ```sudo pip3 install ahd``` (need a network connect
 
 ## Example
 
-In this example I will show you how to setup a macro called ```update``` that when dispatched will ```git pull``` (**update** to the latest git code) on all folders inside ```~/Desktop/Development```. For this example let's assume you are currently in the ```~/Documents``` directory, and the ```~/Desktop/Development``` directory structure looks like this:
+In this example I will show you how to setup a macro called ```update``` that when dispatched will ```git pull``` (**update** to the latest git code) on all folders inside ```~/Desktop/Development```. For this example let's the ```~/Desktop/Development``` directory structure looks like this:
 
 ```
 ├── /Desktop
@@ -48,14 +48,24 @@ In this example I will show you how to setup a macro called ```update``` that wh
 2. Now to run the macro you use the form ```ahd <name>```, so in this case:
     ```ahd update```
 
-  Running ```ahd update``` will:
+### Running the example
+ 
+ Running ```ahd update``` will:
 
   1. Expand ```~/Desktop/Development/*```, so for this example with the above directory tree it would be:
      ```~/Desktop/Development/project_1```, ```~/Desktop/Development/project_2```, ```~/Desktop/Development/project_3```, and ```~/Desktop/Development/project_4```
 
-  2. Change into each directory and run the command associated with ```update```. In this case the dispatch would produce the same result as:
+  2. Change into each directory and run the command associated with ```update```. In this case the dispatch would produce the same result as running all these commands:
 
-     ```cd ~/Desktop/Development/project_1 && git pull && cd ~/Desktop/Development/project_2 cd && git pull && cd ~/Desktop/Development/project_3 && git pull && cd ~/Desktop/Development/project_4 && git pull ```
+     ```cd ~/Desktop/Development/project_1 && git pull ```
+
+     ``` cd ~/Desktop/Development/project_2 cd && git pull ```
+
+     ```cd ~/Desktop/Development/project_3 && git pull ```
+
+     ```cd ~/Desktop/Development/project_4 && git pull ```
+
+     
 
   3. Changes directory back to the original directory you started from.
 

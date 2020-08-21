@@ -71,11 +71,12 @@ If you are submitting a pull request, this is the minimum **inline** documentati
 
 1. All classes/functions/methods must have a [numpy-style docstring](https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard) (minimum example below) that includes a short description, attributes/parameters, and return types/methods.
 2. If you wrote a new feature include user documentation on how it works, or mention you haven't and at least give some detail in the pull request.
+3. Add [PEP-484](https://www.python.org/dev/peps/pep-0484/) type hints to any methods or functions
 
 Here is an example of a minimum function/method:
 
 ```python
-def add(number_1, number_2):
+def add(number_1:int, number_2:int) -> int:
     """Takes two values and adds them together
     
     Parameters
@@ -105,7 +106,7 @@ class Dog:
    ----------
    name: (str)
        The name of the dog
-   age: (float)
+   age: (int)
        The current age of the dog (in years)
        
    Methods
@@ -113,11 +114,11 @@ class Dog:
    age_to_human_years:
    	   Takes the Dog instances' age and returns the human equivalent
    """
-   def __init__(self, name, age):
+   def __init__(self, name:str, age:int):
        self.name = name
        self.age = age
    
-   def age_to_human_years(self):
+   def age_to_human_years(self) -> int:
        """Takes the Dog instances' age and returns the human equivalent
        
        Returns

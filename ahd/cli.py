@@ -66,15 +66,15 @@ Options:
                         imports the configuration file
     """
 
-config = {} # The dictionary containing the current configuration once deserialized from CONFIG_FILE_PATH
+config = {}  # The dictionary containing the current configuration once deserialized from CONFIG_FILE_PATH
 
-CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml" # The path to the configuration file
+CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"  # The path to the configuration file
 
 CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
 
 def main() -> None:
     """The primary entrypoint for the ahd script.
-    
+
     All primary business logic is within this function."""
 
     # Setup arguments for parsing
@@ -82,10 +82,10 @@ def main() -> None:
 
     if len(sys.argv) == 1:
         print("\n", usage)
-        exit()
-    
+        sys.exit()
+
     # Checks if a legacy config is available and if it is migrates to new standard
-    migrate_config() # TODO: Remove in V0.6.0
+    migrate_config()  # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         with open(CONFIG_FILE_PATH, "r") as config_file:
@@ -96,35 +96,35 @@ def main() -> None:
         print(f"{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}")
         with open(CONFIG_FILE_PATH, "w") as config_file:
             config_file.write("macros:")
-            exit()
-    
+            sys.exit()
+
     # Begin argument parsing
 
     if arguments["list"]:
         list_macros(arguments["--long"], config)
-        exit()
+        sys.exit()
 
     # ========= Docs argument parsing =========
     if arguments["docs"]:
         docs(arguments["--api"], arguments["--offline"])
-        exit()
+        sys.exit()
 
     # ========= config argument parsing =========
     if arguments["config"]:
         configure(arguments["--export"], arguments["--import"], config)
-        exit()
-            
+        sys.exit()
+
     # ========= preprocessing commands and paths =========
     if not arguments["<paths>"]:
         logging.debug("No paths argument registered setting to \'\'")
         arguments["<paths>"] = ""
     else:
         arguments["<paths>"] = _preprocess_paths(arguments["<paths>"])
-    
+
     if not arguments["<command>"]:
         logging.debug("No command argument registered setting to \'\'")
         arguments["<command>"] = ""
-    
+
     if "." == arguments["<command>"]: # If <command> is . set to specified value
         logging.debug(f". command registered, setting to {config['macros'][arguments['<name>']]['command']}")
         arguments["<command>"] = config["macros"][arguments["<name>"]]["command"]
@@ -134,7 +134,7 @@ def main() -> None:
         register(arguments["<name>"], arguments["<command>"], arguments["<paths>"], config)
 
     # ========= User command argument parsing =========
-    
+
     if arguments['<name>']:
         if not arguments['<paths>'] and not arguments['<command>']:
             dispatch(arguments['<name>'], config=config)
@@ -164,7 +164,7 @@ def list_macros(verbose:bool = False, config:dict={}) -> None:
         When specified will print both the command name and
         associated commands + paths. Additionally the dictionary
         will only return when this flag is specified.
-    
+
     config: (dict)
         The dict that contains the current config
     """
@@ -211,7 +211,7 @@ def docs(api:bool = False, offline:bool = False) -> None:
 
 def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
     """Controls the dispatching of macros
-    
+
     Parameters
     ----------
     name: (str)
@@ -220,7 +220,7 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
     command: (str)
         Used to override the macros configured command
         when set to False, will pull from configuration
-    
+
     paths: (str)
         Used to override the macros configured paths
         when set to False, will pull from configuration
@@ -229,7 +229,7 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
         The dict that contains the current config"""
     if "register" == name:
                 print(usage)
-                exit()
+                sys.exit()
     logging.info(f"Beggining execution of {name}")
 
     try: # Accessing stored information on the command
@@ -237,7 +237,7 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
 
     except KeyError: # TODO Find a way to suggest a similar command
         print(f"{colored.fg(1)}Command not found in configuration validate spelling is correct.")
-        exit()
+        sys.exit()
     
     if not command or command == ".":
         command = config["macros"][name]['command']
@@ -261,12 +261,12 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
 def _preprocess_paths(paths:str) -> str:
     """Preprocesses paths from input and splits + formats them
     into a useable list for later parsing.
-    
+
     Example
     -------
     ```
     paths = '~/Desktop/Development/Canadian Coding/SSB, C:\\Users\\Kieran\\Desktop\\Development\\*, ~\\Desktop\\Development\\Personal\\noter, .'
-    
+
     paths = _preprocess_paths(paths)
 
     print(paths) # Prints: '~/Desktop/Development/Canadian Coding/SSB,~/Desktop/Development/*,~/Desktop/Development/Personal/noter,.'
@@ -300,12 +300,12 @@ def _postprocess_paths(paths:str) -> list:
     """Postprocesses existing paths to be used by dispatcher.
 
     This means things like expanding wildcards, and processing correct path seperators.
-    
+
     Example
     -------
     ```
     paths = 'C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\SSB, C:\\Users\\Kieran\\Desktop\\Development\\Canadian Coding\\website, ~/Desktop/Development/Personal/noter, C:\\Users\\Kieran\\Desktop\\Development\\*'
-    
+
     paths = _preprocess_paths(paths)
 
     print(_postprocess_paths(paths)) 
@@ -334,7 +334,7 @@ def _postprocess_paths(paths:str) -> list:
                 directory = directory.replace("~",f"{os.getenv('USERPROFILE')}")
             else:
                 directory = directory.replace("~", f"{os.getenv('HOME')}")
-        
+
         if "*" in directory:
 
             wildcard_paths = glob.glob(directory.strip())

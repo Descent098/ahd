@@ -15,22 +15,23 @@ command_list(list[namedtuple]):
     ahd for autocompletion generation
 
 """
-import os                             # Used primarily to validate paths
-from configparser import ConfigParser # Used to serialize and de-serialize legacy config files
+import os                              # Used primarily to validate paths
+import sys                             # Used to safely exit interpreter session
+from configparser import ConfigParser  # Used to serialize and de-serialize legacy config files
 
 # Internal dependencies
 from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
-import colored                        # Used to colour terminal output
-import yaml                           # Used to handle configuration serialization/deserialization
+import colored                         # Used to colour terminal output
+import yaml                            # Used to handle configuration serialization/deserialization
 
 # The default (and currently only) path to the configuration file
 CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
 
-CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
+CURRENT_PATH = os.curdir  # Keeps track of current directory to return to after executing commands
 
-command_list =  [ # Used for autocompletion generation
+command_list = [  # Used for autocompletion generation
     command("docs", ["-a", "--api", "-o", "--offline"]),
     command("register", []),
     command("config", ["-e", "--export", "-i", "--import"])
@@ -39,7 +40,7 @@ command_list =  [ # Used for autocompletion generation
 def migrate_config() -> None:
     """Migrates pre V0.5.0 configs to the new standard"""
     OLD_CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}.ahdconfig"
-    if os.path.isfile(OLD_CONFIG_FILE_PATH): # Validate whether a legacy config exists
+    if os.path.isfile(OLD_CONFIG_FILE_PATH):  # Validate whether a legacy config exists
         print(f"{colored.fg(1)}Old Configuration file found in {OLD_CONFIG_FILE_PATH} automatically migrating to version 0.5.0+{colored.fg(15)}")
         with open(OLD_CONFIG_FILE_PATH, "r") as old_config_file:
             old_config = ConfigParser()
@@ -52,7 +53,7 @@ def migrate_config() -> None:
         new_config["macros"] = old_config
         with open(CONFIG_FILE_PATH, "w") as new_config_file:
             yaml.dump(new_config, new_config_file, default_flow_style=False)
-        del old_config # HACK: Clean up configparser reference since it screws with file access
+        del old_config  # HACK: Clean up configparser reference since it screws with file access
 
         valid = False
         while not valid:
@@ -66,8 +67,7 @@ def migrate_config() -> None:
                 print("Please enter Y to remove config or N to not")
                 continue
 
-
-    else: # If no legacy configs are present
+    else:  # If no legacy configs are present
         return False
 
 def configure(export:bool=False, import_config:bool=False, config:dict={}) -> None:
@@ -100,7 +100,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
 
     if import_config:
         try:
-            with open(import_config, "r") as config_file: # Read new config file
+            with open(import_config, "r") as config_file:  # Read new config file
                 new_config = yaml.load(config_file)
             print(f"Importing {os.path.abspath(import_config)} to {CONFIG_FILE_PATH}")
             os.remove(CONFIG_FILE_PATH)
@@ -138,7 +138,7 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
             "command": commands,
             "paths": paths,
         }
-    except TypeError: # If the configuration is empty
+    except TypeError:  # If the configuration is empty
         config["macros"] = {}
         config["macros"][macro_name] = {
             "command": commands,
@@ -154,8 +154,8 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
             print(f"{colored.fg(1)}Unable to register command are you sudo?")
             print(f"{colored.fg(15)}\tTry running: sudo ahd register {macro_name} \"{commands}\" \"{paths}\" ")
 
-    if not os.name == "nt": # Generate bash autocomplete
-        for index, custom_command in enumerate(config["macros"]):
+    if not os.name == "nt":  # Generate bash autocomplete
+        for custom_command in config["macros"]:
             command_list.append(command(custom_command, []))
 
         autocomplete_file_text = generate_bash_autocomplete(command_list)
@@ -168,4 +168,4 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
 
     # Since executing commands requires changing directories, make sure to return after
     os.chdir(CURRENT_PATH)
-    exit()
+    sys.exit()

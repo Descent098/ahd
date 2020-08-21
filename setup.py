@@ -1,18 +1,20 @@
 """Contains all the configuration for the package on pip"""
 import setuptools
 
-def get_content(*filename):
-    """ Gets the content of a file and returns it as a string
+def get_content(*filename:str) -> str:
+    """ Gets the content of a file or files and returns
+    it/them as a string
 
     Parameters
     ----------
     filename : (str)
-        Name of file to pull content from
+        Name of file or set of files to pull content from 
+        (comma delimited)
     
     Returns
     -------
     str:
-        Content from file
+        Content from the file or files
     """
     content = ""
     for file in filename:

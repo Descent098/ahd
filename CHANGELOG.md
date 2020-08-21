@@ -1,6 +1,6 @@
 # Changelog
 
-## V 0.5.0; TBD
+## V 0.5.0; August 20th 2020
 
 Focus for this release was to make it easier to understand how to use and contribute to ahd, to convert from configparser to PyYaml and finish the rest of the test suite.
 
@@ -23,7 +23,7 @@ Bug Fixes:
 - Inability to build from sdist due to missing files; Thanks to [thatch](https://github.com/thatch) for the fix
 - Fixed testing pipeline in github actions
 
-## V 0.4.0; February 10th
+## V 0.4.0; February 10th 2020
 
 Focus for this release was breaking up command line parsing into more testable chunks.
 
@@ -36,7 +36,7 @@ Documentation:
 
 - Created API documentation site: https://kieranwood.ca/ahd
 
-## V 0.3.0; February 6th
+## V 0.3.0; February 6th 2020
 
 Focus for this release was on building sustainable development pipelines (logging, testing etc.), and making the project more reliable in edge cases and error handling.
 

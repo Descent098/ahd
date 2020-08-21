@@ -5,14 +5,18 @@ Module Variables
 
 usage (str):
     Used by docopt to setup argument parsing;
-    Defines the actual command line interface.
+    Defines the actual command line interface
+
+config(dict):
+    The dictionary containing the current configuration
+    once deserialized from CONFIG_FILE_PATH
 
 CONFIG_FILE_PATH(str):
-    The path to the configuration file.
+    The path to the configuration file
 
 CURRENT_PATH(str):
     Used to keep track of users current directory
-    to cd back into it after script execution.
+    to cd back into it after script execution
 
 
 Documentation
@@ -27,7 +31,6 @@ import glob                           # Used to preprocess wildcard paths
 import logging                        # Used to log valueable logging info
 import webbrowser                     # Used to auto-launch the documentation link
 import subprocess                     # Used to run the dispatched commands
-from configparser import ConfigParser # Used to serialize and de-serialize config files
 
 
 # Internal dependencies
@@ -35,8 +38,9 @@ from .configuration import migrate_config, configure, register
 
 # Third-party dependencies
 import colored                        # Used to colour terminal output
+import yaml                           # Used to handle configuration serialization/deserialization
 from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
-import yaml
+
 
 
 usage = """Add-hoc dispatcher
@@ -62,15 +66,13 @@ Options:
                         imports the configuration file
     """
 
-config = {} # an empty dict that will become the config once deserialized
+config = {} # The dictionary containing the current configuration once deserialized from CONFIG_FILE_PATH
 
-# The default (and currently only) path to the configuration file
-CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
-
+CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml" # The path to the configuration file
 
 CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
 
-def main():
+def main() -> None:
     """The primary entrypoint for the ahd script.
     
     All primary business logic is within this function."""
@@ -153,26 +155,26 @@ def main():
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
                 dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'], config=config)
 
-def list_macros(verbose:bool = False, configuration:dict={}):
+def list_macros(verbose:bool = False, config:dict={}) -> None:
     """Lists commands currently in config
 
     Parameters
     ----------
-    configurations: (dict)
-        The dict that contains the current config
-
     verbose: (bool)
         When specified will print both the command name and
         associated commands + paths. Additionally the dictionary
         will only return when this flag is specified.
+    
+    config: (dict)
+        The dict that contains the current config
     """
 
     # Iterate over the config, and pull information about the macros
-    for count, macro in enumerate(configuration["macros"]):
+    for count, macro in enumerate(config["macros"]):
         if verbose:
             print(f"{colored.fg(6)}{macro}\n")
-            print(f"{colored.fg(100)}\tCommand = {configuration['macros'][macro]['command']}")
-            print(f"\tPaths = {configuration['macros'][macro]['paths']}{colored.fg(15)}")
+            print(f"{colored.fg(100)}\tCommand = {config['macros'][macro]['command']}")
+            print(f"\tPaths = {config['macros'][macro]['paths']}{colored.fg(15)}")
         else:
             print(f"\n{colored.fg(6)}{macro}{colored.fg(15)}")
     print(f"\n\n{count+1} macros detected")
@@ -207,8 +209,24 @@ def docs(api:bool = False, offline:bool = False) -> None:
                 # TODO Implement build local user docs.
                 print("Not yet implemented")
 
-def dispatch(name, command = False, paths = False, config:dict={}):
-    """Controls the dispatching of custom functions"""
+def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
+    """Controls the dispatching of macros
+    
+    Parameters
+    ----------
+    name: (str)
+        The name of the macro to dispatch
+
+    command: (str)
+        Used to override the macros configured command
+        when set to False, will pull from configuration
+    
+    paths: (str)
+        Used to override the macros configured paths
+        when set to False, will pull from configuration
+
+    config: (dict)
+        The dict that contains the current config"""
     if "register" == name:
                 print(usage)
                 exit()

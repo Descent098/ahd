@@ -1,3 +1,20 @@
+"""This file houses functions related to configuration management
+
+Module Variables
+----------------
+
+CONFIG_FILE_PATH(str):
+    The path to the configuration file
+
+CURRENT_PATH(str):
+    Used to keep track of users current directory
+    to cd back into it after script execution
+
+command_list(list[namedtuple]):
+    A list of all the root commands baked into
+    ahd for autocompletion generation
+
+"""
 import os                             # Used primarily to validate paths
 from configparser import ConfigParser # Used to serialize and de-serialize legacy config files
 
@@ -5,8 +22,8 @@ from configparser import ConfigParser # Used to serialize and de-serialize legac
 from .autocomplete import command, generate_bash_autocomplete
 
 # Third-party dependencies
-import yaml
 import colored                        # Used to colour terminal output
+import yaml                           # Used to handle configuration serialization/deserialization
 
 # The default (and currently only) path to the configuration file
 CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"
@@ -19,12 +36,10 @@ command_list =  [ # Used for autocompletion generation
     command("config", ["-e", "--export", "-i", "--import"])
 ]
 
-def migrate_config():
+def migrate_config() -> None:
     """Migrates pre V0.5.0 configs to the new standard"""
-
-    # Configuration file locations    
     OLD_CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}.ahdconfig"
-    if os.path.isfile(OLD_CONFIG_FILE_PATH):
+    if os.path.isfile(OLD_CONFIG_FILE_PATH): # Validate whether a legacy config exists
         print(f"{colored.fg(1)}Old Configuration file found in {OLD_CONFIG_FILE_PATH} automatically migrating to version 0.5.0+{colored.fg(15)}")
         with open(OLD_CONFIG_FILE_PATH, "r") as old_config_file:
             old_config = ConfigParser()
@@ -37,7 +52,7 @@ def migrate_config():
         new_config["macros"] = old_config
         with open(CONFIG_FILE_PATH, "w") as new_config_file:
             yaml.dump(new_config, new_config_file, default_flow_style=False)
-        del old_config
+        del old_config # HACK: Clean up configparser reference since it screws with file access
 
         valid = False
         while not valid:
@@ -55,7 +70,7 @@ def migrate_config():
     else: # If no legacy configs are present
         return False
 
-def configure(export:bool = False, import_config:bool = False, config:dict={}) -> None:
+def configure(export:bool=False, import_config:bool=False, config:dict={}) -> None:
     """Handles all the exporing and importing of configurations
 
     Parameters
@@ -65,6 +80,9 @@ def configure(export:bool = False, import_config:bool = False, config:dict={}) -
 
     import_config: (bool|str)
         False if no path, otherwise a string representation of path to config file.
+
+    config: (dict)
+        The dict that contains the current config
 
     Notes
     -----
@@ -93,7 +111,7 @@ def configure(export:bool = False, import_config:bool = False, config:dict={}) -
             print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
             print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")
 
-def register(macro_name, commands, paths, config):
+def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
     """Handles registering of custom commands, and autocompletion generation.
 
     Parameters
@@ -106,6 +124,9 @@ def register(macro_name, commands, paths, config):
     
     paths: (str)
         A string representation of the paths to execute the command with.
+
+    config: (dict)
+        The dict that contains the current config
 
     Notes
     -----

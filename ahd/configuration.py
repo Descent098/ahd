@@ -90,7 +90,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
     """
 
     if not export and not import_config:
-            print(usage)
+            print("Please provide either the export (-e or --export) or import (-i or --import) flag")
             return
     if export:
         with open(CONFIG_FILE_PATH) as config_file:
@@ -109,7 +109,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
             
         except PermissionError:
             print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
-            print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{arguments['--import']}\" ")
+            print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{import_config}\" ")
 
 def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
     """Handles registering of custom commands, and autocompletion generation.

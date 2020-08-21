@@ -168,6 +168,7 @@ def list_macros(verbose:bool = False, config:dict={}) -> None:
     """
 
     # Iterate over the config, and pull information about the macros
+    count = 0
     for count, macro in enumerate(config["macros"]):
         if verbose:
             print(f"{colored.fg(6)}{macro}\n")

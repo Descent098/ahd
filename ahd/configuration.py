@@ -44,7 +44,7 @@ def migrate_config() -> None:
         print(f"{colored.fg(1)}Old Configuration file found in {OLD_CONFIG_FILE_PATH} automatically migrating to version 0.5.0+{colored.fg(15)}")
         with open(OLD_CONFIG_FILE_PATH, "r") as old_config_file:
             old_config = ConfigParser()
-            old_config.readfp(old_config_file)
+            old_config.read_file(old_config_file)
             old_config = dict(old_config)
             del(old_config['DEFAULT'])
         for section in old_config:

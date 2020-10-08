@@ -14,7 +14,7 @@
     - [Roadmap](#roadmap)
   - [Example use cases](#example-use-cases)
 - [Why should I use ahd?](#why-should-I-use-ahd)
-- [Who is ahd for?](who-is-ahd-for?)
+- [Who is ahd for?](#who-is-ahd-for)
 - [Quick Start](#quick-start)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
@@ -27,7 +27,7 @@
     - [Docs](#docs)
     - [Config](#config)
 - [Contact/Contribute](#contact/contribute)
-- [Glossary](#https://ahd.readthedocs.io/en/latest/glossary/)
+- [Glossary](https://ahd.readthedocs.io/en/latest/glossary/)
 
 ## Additional Documentation
 

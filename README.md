@@ -1,4 +1,7 @@
-![ahd-logo](https://raw.githubusercontent.com/Descent098/ahd/master/docs/img/ahd-logo.png) [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/Descent098/ahd/?ref=repository-badge)
+![ahd-logo](https://raw.githubusercontent.com/Descent098/ahd/master/docs/img/ahd-logo.png) 
+
+[![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/Descent098/ahd/?ref=repository-badge)
+[![Downloads](https://pepy.tech/badge/ahd)](https://pepy.tech/project/ahd)
 
 # Ad-Hoc Dispatcher
 

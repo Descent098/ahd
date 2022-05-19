@@ -1,5 +1,33 @@
 # Changelog
 
+## V 0.6.0; TBD
+
+There are 3 primary focuses for this release:
+
+1. Improve developer/contributor documentation and infrastructure
+2. Enhance the autocomplete module to support additional shells
+3. Finalize some major features that make ahd more intuitive and simple to use
+
+Features:
+
+- Added spell-check for suggestions when input is close to a valid command
+- Added ZSH autocomplete
+- Added fish autocomplete
+- Added `-d` flag to display command details
+  - Added command metadata for usage details like how many times it's been run and when it was added (access using `ahd <command> -d`)
+  - Also will provide details like the current config for a given command
+- Updated testing to run on a schedule for quicker bug awareness
+- Updated testing for coverage of all modules
+
+Documentation:
+
+- Added documentation about removing migration for pre `V0.5.0` configurations
+
+Bug Fixes:
+
+- Fixed errors in testing pipeline
+- Fixed bugs with initializing a config file
+
 ## V 0.5.0; August 22nd 2020
 
 Focus for this release was to make it easier to understand how to use and contribute to ahd, to convert from configparser to PyYaml and cleanup some left over errors in deepsource.

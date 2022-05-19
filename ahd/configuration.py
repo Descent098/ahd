@@ -37,38 +37,6 @@ command_list = [  # Used for autocompletion generation
     command("config", ["-e", "--export", "-i", "--import"])
 ]
 
-def migrate_config() -> None:
-    """Migrates pre V0.5.0 configs to the new standard"""
-    OLD_CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}.ahdconfig"
-    if os.path.isfile(OLD_CONFIG_FILE_PATH):  # Validate whether a legacy config exists
-        print(f"{colored.fg(1)}Old Configuration file found in {OLD_CONFIG_FILE_PATH} automatically migrating to version 0.5.0+{colored.fg(15)}")
-        with open(OLD_CONFIG_FILE_PATH, "r") as old_config_file:
-            old_config = ConfigParser()
-            old_config.read_file(old_config_file)
-            old_config = dict(old_config)
-            del(old_config['DEFAULT'])
-        for section in old_config:
-            old_config[section] = {"command": old_config[section]["command"], "paths":old_config[section]["paths"]}
-        new_config = {}
-        new_config["macros"] = old_config
-        with open(CONFIG_FILE_PATH, "w") as new_config_file:
-            yaml.dump(new_config, new_config_file, default_flow_style=False)
-        del old_config  # HACK: Clean up configparser reference since it screws with file access
-
-        valid = False
-        while not valid:
-            remove_legacy = input("Would you like to remove the old configuration file (y or n)?")
-            if remove_legacy.lower().startswith("y"):
-                os.remove(OLD_CONFIG_FILE_PATH)
-                return True
-            elif remove_legacy.lower().startswith("n"):
-                return True
-            else:
-                print("Please enter Y to remove config or N to not")
-                continue
-
-    else:  # If no legacy configs are present
-        return False
 
 def configure(export:bool=False, import_config:bool=False, config:dict={}) -> None:
     """Handles all the exporing and importing of configurations

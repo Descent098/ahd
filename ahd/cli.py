@@ -34,7 +34,8 @@ import subprocess                     # Used to run the dispatched commands
 
 
 # Internal dependencies
-from .configuration import migrate_config, configure, register
+from .configuration import configure, register
+from .__init__ import __version__ as version
 
 # Third-party dependencies
 import colored                        # Used to colour terminal output
@@ -47,11 +48,11 @@ Create ad-hoc commands to be dispatched within their own namespace.
 
 Usage: 
     ahd list [-l]
-    ahd [-h] [-v] [-d]
+    ahd [-h] [-v]
     ahd docs [-a] [-o]
     ahd config [-e] [-i CONFIG_FILE_PATH]
     ahd register <name> [<command>] [<paths>]
-    ahd <name> [<command>] [<paths>]
+    ahd <name> [<command>] [<paths>] [-d]
 
 Options:
     -h, --help            show this help message and exit
@@ -62,6 +63,7 @@ Options:
     -e, --export          exports the configuration file
     -i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH 
                         imports the configuration file
+    -d, --details         prints the details of a command
     """
 
 config = {}  # The dictionary containing the current configuration once deserialized from CONFIG_FILE_PATH
@@ -76,14 +78,11 @@ def main() -> None:
     All primary business logic is within this function."""
 
     # Setup arguments for parsing
-    arguments = docopt(usage, version="ahd V 0.4.0")
+    arguments = docopt(usage, version=f"ahd V {version}")
 
     if len(sys.argv) == 1:
         print("\n", usage)
         sys.exit()
-
-    # Checks if a legacy config is available and if it is migrates to new standard
-    migrate_config()  # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         with open(CONFIG_FILE_PATH, "r") as config_file:

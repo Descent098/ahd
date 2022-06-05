@@ -48,6 +48,8 @@ setuptools.setup(
     "docopt", # Used for argument parsing
     "colored",# Used to color terminal output
     "pyyaml", # Used for configuration parsing
+    "fuzzywuzzy", # Used for fuzzy string matching
+    "python-Levenshtein" # Used to optimize string matching
         ],
     extras_require = {
         "dev" : ["nox",   # Used to run automated processes

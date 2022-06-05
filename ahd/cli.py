@@ -25,12 +25,12 @@ Docs website: https://ahd.readthedocs.io
 """
 
 # Standard lib dependencies
-import os                             # Used primarily to validate paths
-import sys                            # Used to check length of input arguments
-import glob                           # Used to preprocess wildcard paths
-import logging                        # Used to log valueable logging info
-import webbrowser                     # Used to auto-launch the documentation link
-import subprocess                     # Used to run the dispatched commands
+import os                                      # Used primarily to validate paths
+import sys                                     # Used to check length of input arguments
+import glob                                    # Used to preprocess wildcard paths
+import logging                                 # Used to log valueable logging info
+import webbrowser                              # Used to auto-launch the documentation link
+import subprocess                              # Used to run the dispatched commands
 
 
 # Internal dependencies
@@ -38,9 +38,10 @@ from .configuration import configure, register
 from .__init__ import __version__ as version
 
 # Third-party dependencies
-import colored                        # Used to colour terminal output
-import yaml                           # Used to handle configuration serialization/deserialization
-from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
+import colored                                 # Used to colour terminal output
+import yaml                                    # Used to handle configuration serialization/deserialization
+from docopt import docopt                      # Used to parse arguments and setup POSIX compliant usage info
+from fuzzywuzzy import process as suggest_word # Used to parse word similarity for incorrect spellings
 
 usage = """Add-hoc dispatcher
 
@@ -233,9 +234,25 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
     try: # Accessing stored information on the command
         config["macros"][name]
 
-    except KeyError: # TODO Find a way to suggest a similar command
-        print(f"{colored.fg(1)}Command not found in configuration validate spelling is correct.")
-        sys.exit()
+    except KeyError: # When command does not exist in config
+        commands = [current_command for current_command in config["macros"]] # Get list of commands in config
+        error_threshold = 60 # The percentage of likelyhood before similar words will throw out result
+        similar_words = suggest_word.extractBests(name, commands,score_cutoff=error_threshold , limit=3) # Generate word sugestions
+        if not similar_words: # If there are not similar commands that exist in the config
+            print(f"{colored.fg(1)}Could not find macro {colored.fg(15)}{name}{colored.fg(1)} or any valid suggestions with %{error_threshold} or higher likelyhood, please check spelling {colored.fg(15)}\n")
+            sys.exit(1)
+
+        # Suggestions found for similar commands
+        suggestions = ""
+        for index, word in enumerate(similar_words):
+            suggestions+= f"\t{index+1}. {colored.fg(3)}{word[0]}{colored.fg(15)}  | %{word[1]} likelyhood\n"
+        print(f"{colored.fg(1)}No command {name} found {colored.fg(15)} here are some suggestions: \n{suggestions}")
+        if not command:
+            command = ""
+        if not paths:
+            paths = ""
+        print(f"Most likely suggestion is {colored.fg(3)}{similar_words[0][0]}{colored.fg(15)} rerun using: \n\t> ahd {similar_words[0][0]} \"{command}\" \"{paths}\"")
+        sys.exit(1)
     
     if not command or command == ".":
         command = config["macros"][name]['command']

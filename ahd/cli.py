@@ -178,7 +178,7 @@ def list_macros(verbose:bool = False, config:dict={}) -> None:
             print(f"\n{colored.fg(6)}{macro}{colored.fg(15)}")
     print(f"\n\n{count+1} macros detected")
 
-def docs(api:bool = False, offline:bool = False) -> None:
+def docs(api:bool = False, offline:bool = False) -> None: # TODO: decide if this should be removed
     """Processes incoming arguments when the docs command is invoked
 
     Parameters

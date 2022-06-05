@@ -34,7 +34,8 @@ CURRENT_PATH = os.curdir  # Keeps track of current directory to return to after 
 command_list = [  # Used for autocompletion generation
     command("docs", ["-a", "--api", "-o", "--offline"]),
     command("register", []),
-    command("config", ["-e", "--export", "-i", "--import"])
+    command("config", ["-e", "--export", "-i", "--import"]),
+    command("list", ["-l", "--long"]),
 ]
 
 
@@ -101,6 +102,8 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
     - When passing paths to this function make sure they are preprocessed.
     """
     print(f"Registering macro {macro_name} \n\tCommand: {commands} \n\tPaths: {paths}")
+    if macro_name in ["docs", "register", "config", "list"]: # If macro name is reserved
+        raise ValueError(f"{macro_name} is a reserved macro name")
     try:
         config["macros"][macro_name] = {
             "command": commands,

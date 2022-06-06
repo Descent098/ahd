@@ -83,7 +83,7 @@ def main() -> None:
 
     All primary business logic is within this function."""
     # Setup arguments for parsing
-    arguments = docopt(usage, version=f"ahd V {version}")
+    arguments = docopt(usage, version=f"ahd V{version}")
 
     if len(sys.argv) == 1:
         print("\n", usage)

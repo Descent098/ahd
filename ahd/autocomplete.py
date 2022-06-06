@@ -7,6 +7,12 @@ command (namedtuple):
     Defines the schema for commands that is used
     to generate autocomplete files.
 
+Module Functions
+----------------
+generate_bash_autocomplete(commands:list, root:str = "ahd") -> str
+    Takes a list of commands (namedtuple type) and returns the text necessary
+    for a bash autocomplete file
+
 Examples
 --------
 
@@ -38,7 +44,24 @@ command = namedtuple("command", ["name", "arguments"])
 
 
 def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = "ahd") -> str:
-    """Generates the first portion of a bash autocomplete file"""
+    """Generates the first portion of a bash autocomplete file
+
+    Parameters
+    ----------
+    commands : (list[command])
+        The commands that can be used for the script i.e. ["docs", "register"]
+
+    arguments : (list), optional
+        The arguments for the command i.e. ["-a", "--api", "-o", "--offline"], by default []
+
+    root : (str), optional
+        The root name of the script for example if your script is `ahd` you would use 'ahd', by default "ahd"
+
+    Returns
+    -------
+    str
+        The text for the first portion of the autocomplete file
+    """    
     logging.info("Beginning bash root command autocomplete generation")
     arguments = _stringify_list(arguments)
 
@@ -73,7 +96,24 @@ def _generate_root_autocomplete(commands:list , arguments:list = [], root:str = 
     return root_template
 
 def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd") -> str:
-    """Generates a bash autocomplete section for a single command"""
+    """Generates a bash autocomplete section for a single command
+
+    Parameters
+    ----------
+    command : (str)
+        The name of the command i.e. "docs"
+
+    arguments : (list)
+        The list of the arguments for the command i.e. ["-a", "--api", "-o", "--offline"]
+
+    root : (str), optional
+        The root name of the script for example if your script is `ahd` you would use 'ahd', by default "ahd"
+
+    Returns
+    -------
+    str
+        The full text for the autocomplete for a single command
+    """    
     logging.info(f"Beginning command autocomplete generation for command {command} with arguments {arguments}")
 
     if arguments:
@@ -98,13 +138,30 @@ def _generate_command_autocomplete(command:str, arguments:list, root:str = "ahd"
 
 def _stringify_list(arguments:list) -> str:
     """Takes a list and stringifies it to a useable format for autocomplete files
+
+    Parameters
+    ----------
+    arguments : (list)
+        The list/tuple you want to stringify
+
+    Returns
+    -------
+    str
+        The string form of the lsit
+
+    Raises
+    ------
+    ValueError
+        Raised when the provided argument is not a list or tuple
     
     Examples
     --------
     ```
     >> _stringify_list(["-a", "--api", "-o", "--offline"]) # Returns: '-a --api -o --offline' 
     ```
-    """
+    """    
+
+
     logging.info(f"Beginning list ({arguments})  stringification")
     if not (type(arguments) == list or type(arguments) == tuple):
         raise ValueError("Expected list of arguments, got string instead")
@@ -129,7 +186,7 @@ def generate_bash_autocomplete(commands:list, root:str = "ahd") -> str:
         A list of the commands to generate the autocomplete file for
 
     root: (str)
-        The string signifying the base programs name, default is 'ahd'
+        The root name of the script for example if your script is `ahd` you would use 'ahd', by default "ahd"
     
     Examples
     --------
@@ -142,6 +199,16 @@ def generate_bash_autocomplete(commands:list, root:str = "ahd") -> str:
     >> # Output is too long to display in this docstring
     >> print(generate_bash_autocomplete(commands)) 
     ```
+
+    Returns
+    -------
+    str
+        The text of the bash autocomplete file
+
+    Raises
+    ------
+    ValueError
+        If the commands variable is not a list
     """
     logging.info("Beginning bash autocompletion generation")
 

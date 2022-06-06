@@ -1,5 +1,6 @@
 """Contains all the configuration for the package on pip"""
 import setuptools
+from ahd.__init__ import __version__ as version
 
 def get_content(*filename:str) -> str:
     """ Gets the content of a file or files and returns
@@ -24,7 +25,7 @@ def get_content(*filename:str) -> str:
 
 setuptools.setup(
     name = "ahd",
-    version = "0.5.0",
+    version = version,
     author = "Kieran Wood",
     author_email = "kieran@canadiancoding.ca",
     description = "Create ad-hoc macros to be dispatched in their own namespace.",
@@ -47,12 +48,15 @@ setuptools.setup(
     "docopt", # Used for argument parsing
     "colored",# Used to color terminal output
     "pyyaml", # Used for configuration parsing
+    "fuzzywuzzy", # Used for fuzzy string matching
+    "python-Levenshtein", # Used to optimize string matching
+    "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
+    "pdoc3", # Used for building API documentation
         ],
     extras_require = {
         "dev" : ["nox",   # Used to run automated processes
                 "pytest", # Used to run the test code in the tests directory
-                "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
-                "pdoc3"], # Used for building API documentation
+                ],
 
     },
     classifiers = [

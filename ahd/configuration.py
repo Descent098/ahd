@@ -14,10 +14,17 @@ command_list(list[namedtuple]):
     A list of all the root commands baked into
     ahd for autocompletion generation
 
+Module Functions
+----------------
+configure(export:bool=False, import_config:bool=False, config:dict={}):
+    Handles all the exporing and importing of configurations
+
+register(macro_name:str, commands:str, paths:str, config:dict={}):
+    Handles registering of custom commands, and autocompletion generation
 """
 import os                              # Used primarily to validate paths
 import sys                             # Used to safely exit interpreter session
-from configparser import ConfigParser  # Used to serialize and de-serialize legacy config files
+import datetime
 
 # Internal dependencies
 from .autocomplete import command, generate_bash_autocomplete
@@ -34,41 +41,10 @@ CURRENT_PATH = os.curdir  # Keeps track of current directory to return to after 
 command_list = [  # Used for autocompletion generation
     command("docs", ["-a", "--api", "-o", "--offline"]),
     command("register", []),
-    command("config", ["-e", "--export", "-i", "--import"])
+    command("config", ["-e", "--export", "-i", "--import"]),
+    command("list", ["-l", "--long"]),
 ]
 
-def migrate_config() -> None:
-    """Migrates pre V0.5.0 configs to the new standard"""
-    OLD_CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}.ahdconfig"
-    if os.path.isfile(OLD_CONFIG_FILE_PATH):  # Validate whether a legacy config exists
-        print(f"{colored.fg(1)}Old Configuration file found in {OLD_CONFIG_FILE_PATH} automatically migrating to version 0.5.0+{colored.fg(15)}")
-        with open(OLD_CONFIG_FILE_PATH, "r") as old_config_file:
-            old_config = ConfigParser()
-            old_config.read_file(old_config_file)
-            old_config = dict(old_config)
-            del(old_config['DEFAULT'])
-        for section in old_config:
-            old_config[section] = {"command": old_config[section]["command"], "paths":old_config[section]["paths"]}
-        new_config = {}
-        new_config["macros"] = old_config
-        with open(CONFIG_FILE_PATH, "w") as new_config_file:
-            yaml.dump(new_config, new_config_file, default_flow_style=False)
-        del old_config  # HACK: Clean up configparser reference since it screws with file access
-
-        valid = False
-        while not valid:
-            remove_legacy = input("Would you like to remove the old configuration file (y or n)?")
-            if remove_legacy.lower().startswith("y"):
-                os.remove(OLD_CONFIG_FILE_PATH)
-                return True
-            elif remove_legacy.lower().startswith("n"):
-                return True
-            else:
-                print("Please enter Y to remove config or N to not")
-                continue
-
-    else:  # If no legacy configs are present
-        return False
 
 def configure(export:bool=False, import_config:bool=False, config:dict={}) -> None:
     """Handles all the exporing and importing of configurations
@@ -76,7 +52,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
     Parameters
     ----------
     export: (bool)
-        When specified, shows API docs as opposed to user docs.
+        When specified will export the current configuration to the cwd
 
     import_config: (bool|str)
         False if no path, otherwise a string representation of path to config file.
@@ -91,8 +67,9 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
 
     if not export and not import_config:
         print("Please provide either the export (-e or --export) or import (-i or --import) flag")
-        return
+        sys.exit(1)
     if export:
+        print(f"Exporting configuration from {CONFIG_FILE_PATH} to {os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml")
         with open(CONFIG_FILE_PATH) as config_file:
             config = yaml.safe_load(config_file)
             with open(f"{os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml", "w") as export_file:
@@ -117,10 +94,10 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
     Parameters
     ----------
     macro_name: (str)
-        The name used to call the commands.
+        The name used to call the macro.
 
     commands: (str)
-        The set of commands to execute.
+        The set of commands the macro should execute.
     
     paths: (str)
         A string representation of the paths to execute the command with.
@@ -133,17 +110,33 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
     - When passing paths to this function make sure they are preprocessed.
     """
     print(f"Registering macro {macro_name} \n\tCommand: {commands} \n\tPaths: {paths}")
+    if macro_name in ["docs", "register", "config", "list"]: # If macro name is reserved
+        raise ValueError(f"{macro_name} is a reserved macro name")
     try:
         config["macros"][macro_name] = {
             "command": commands,
             "paths": paths,
+            "updated": str(datetime.datetime.now())[:10:]
         }
-    except TypeError:  # If the configuration is empty
+        if not config["macros"][macro_name].get("created", False):
+            config["macros"][macro_name]["created"] = str(datetime.datetime.now())[:10:]
+        if not config["macros"][macro_name].get("runs", False):
+            config["macros"][macro_name]["runs"] = 0
+        if not config["macros"][macro_name].get("last_run", False):
+            config["macros"][macro_name]["last_run"] = "never"
+    except KeyError:  # If the configuration is empty
         config["macros"] = {}
         config["macros"][macro_name] = {
             "command": commands,
             "paths": paths,
+            "updated": str(datetime.datetime.now())[:10:]
         }
+        if not config["macros"][macro_name].get("created", False):
+            config["macros"][macro_name]["created"] = str(datetime.datetime.now())[:10:]
+        if not config["macros"][macro_name].get("runs", False):
+            config["macros"][macro_name]["runs"] = 0
+        if not config["macros"][macro_name].get("last_run", False):
+            config["macros"][macro_name]["last_run"] = "never"
 
     try:
         print(f"Begin writing config file to {CONFIG_FILE_PATH}")
@@ -160,11 +153,13 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
 
         autocomplete_file_text = generate_bash_autocomplete(command_list)
         try:
-            with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
+            with open("/etc/bash_completion.d/ahd.sh", "w+") as autocomplete_file:
                 autocomplete_file.write(autocomplete_file_text)
             print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
         except PermissionError:
             print(f"{colored.fg(1)}Unable to write bash autocompletion file are you sudo?")
+        except FileNotFoundError:
+            print(f"{colored.fg(1)}Unable to write bash autocompletion file, file was not found")
 
     # Since executing commands requires changing directories, make sure to return after
     os.chdir(CURRENT_PATH)

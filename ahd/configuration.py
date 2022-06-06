@@ -14,6 +14,13 @@ command_list(list[namedtuple]):
     A list of all the root commands baked into
     ahd for autocompletion generation
 
+Module Functions
+----------------
+configure(export:bool=False, import_config:bool=False, config:dict={}):
+    Handles all the exporing and importing of configurations
+
+register(macro_name:str, commands:str, paths:str, config:dict={}):
+    Handles registering of custom commands, and autocompletion generation
 """
 import os                              # Used primarily to validate paths
 import sys                             # Used to safely exit interpreter session

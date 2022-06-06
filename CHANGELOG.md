@@ -2,11 +2,13 @@
 
 ## V 1.0.0; TBD
 
+**The version was bumped to a major release because pre V0.5.0 configs have been fully deprecated, if you are using an old config see migration steps below**
+
 There are 3 primary focuses for this release:
 
 1. Improve developer/contributor documentation and infrastructure
 2. Add metadata to configs so you can review how you use ahd
-3. Finalize some major features that make ahd more intuitive and simple to use
+3. Finalize some features that make ahd more intuitive and simple to use
 
 Features:
 
@@ -33,6 +35,12 @@ Bug Fixes:
 - Fixed errors in testing pipeline
 - Fixed bugs with initializing a config file
 - Added missing reserved commands to autocomplete
+
+Migrating old configs:
+
+in order to migrate old configs install ahd v0.5.0 `pip install --upgrade ahd==0.5.0` then follow guide here (ignore step 1): [Migrating from Pre v0.5.0 configs - Ad-Hoc Dispatcher (ahd.readthedocs.io)](https://ahd.readthedocs.io/en/v0.5.0/migration/)
+
+Once updated to new config reinstall latest version using `pip install --upgrade ahd`
 
 ## V 0.5.0; August 22nd 2020
 

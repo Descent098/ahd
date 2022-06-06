@@ -7,6 +7,12 @@ command (namedtuple):
     Defines the schema for commands that is used
     to generate autocomplete files.
 
+Module Functions
+----------------
+generate_bash_autocomplete(commands:list, root:str = "ahd") -> str
+    Takes a list of commands (namedtuple type) and returns the text necessary
+    for a bash autocomplete file
+
 Examples
 --------
 

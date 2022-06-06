@@ -18,10 +18,30 @@ CURRENT_PATH(str):
     Used to keep track of users current directory
     to cd back into it after script execution
 
+Module Functions
+----------------
+main():
+    The primary entrypoint for the ahd script handles argument parsing
+
+list_macros(verbose:bool = False, config:dict={}):
+    Lists commands currently in config
+
+docs(api:bool = False, offline:bool = False):
+    Processes incoming arguments when the docs command is invoked
+
+dispatch(name, command:str=False, paths:str=False, config:dict={}):
+    Controls the dispatching of macros
+
+Notes
+-----
+While you an invoke functions directly it is recommended to use the CLI 
 
 Documentation
 -------------
-Docs website: https://ahd.readthedocs.io
+User docs website: https://ahd.readthedocs.io
+API Docs website: https://kieranwood.ca/ahd
+Source Code: https://github.com/Descent098/ahd
+Roadmap: https://github.com/Descent098/ahd/projects
 """
 
 # Standard lib dependencies
@@ -38,14 +58,12 @@ import subprocess                              # Used to run the dispatched comm
 from .configuration import configure, register
 from .__init__ import __version__ as version
 
+
 # Third-party dependencies
 import colored                                 # Used to colour terminal output
 import yaml                                    # Used to handle configuration serialization/deserialization
 from docopt import docopt                      # Used to parse arguments and setup POSIX compliant usage info
 from fuzzywuzzy import process as suggest_word # Used to parse word similarity for incorrect spellings
-from mkdocs.commands import serve
-
-
 
 
 usage = """Add-hoc dispatcher
@@ -79,7 +97,7 @@ CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"  # The path to 
 CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
 
 def main() -> None:
-    """The primary entrypoint for the ahd script.
+    """The primary entrypoint for the ahd script handles argument parsing
 
     All primary business logic is within this function."""
     # Setup arguments for parsing
@@ -174,6 +192,7 @@ def main() -> None:
                 arguments['<paths>'] = _postprocess_paths(arguments['<paths>'])
                 dispatch(arguments['<name>'], paths = arguments['<paths>'], command = arguments['<command>'], config=config)
 
+
 def list_macros(verbose:bool = False, config:dict={}) -> None:
     """Lists commands currently in config
 
@@ -207,6 +226,7 @@ def list_macros(verbose:bool = False, config:dict={}) -> None:
             print(f"\n{colored.fg(6)}{macro}{colored.fg(15)}")
     print(f"\n\n{count+1} macros detected")
 
+
 def docs(api:bool = False, offline:bool = False) -> None: # TODO: decide if this should be removed
     """Processes incoming arguments when the docs command is invoked
 
@@ -227,6 +247,7 @@ def docs(api:bool = False, offline:bool = False) -> None: # TODO: decide if this
         webbrowser.open_new("https://ahd.readthedocs.io")
     else:
         if offline and not api:
+            from mkdocs.commands import serve # Used to serve the user documentation locally
             print("Docs available at http://localhost:8000/")
             webbrowser.open_new("http://localhost:8000/")
             serve.serve()
@@ -236,7 +257,7 @@ def docs(api:bool = False, offline:bool = False) -> None: # TODO: decide if this
                 webbrowser.open_new("https://kieranwood.ca/ahd")
             else:
                 # Simulates `pdoc --http : ahd`
-                from pdoc.cli import main as pdoc_main
+                from pdoc.cli import main as pdoc_main # Used to serve the api documentation locally
                 sys.argv[1] = "--http"
                 sys.argv[2] = ":"
                 sys.argv[3] = "ahd"
@@ -326,7 +347,7 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
         elif os.path.isfile(current_path):
             print(f"Running: {command} {current_path}".replace("\'",""))
             subprocess.Popen(f"{command} {current_path}".replace("\'",""), shell=True)
-    
+
 
 def _preprocess_paths(paths:str) -> str:
     """Preprocesses paths from input and splits + formats them
@@ -365,6 +386,7 @@ def _preprocess_paths(paths:str) -> str:
     result = ",".join(result)
 
     return result
+
 
 def _postprocess_paths(paths:str) -> list:
     """Postprocesses existing paths to be used by dispatcher.

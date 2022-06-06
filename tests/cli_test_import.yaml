@@ -1,0 +1,4 @@
+macros:
+  testing1:
+    commands: "echo"
+    paths: "."

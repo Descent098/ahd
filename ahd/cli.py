@@ -55,7 +55,7 @@ import subprocess                              # Used to run the dispatched comm
 
 
 # Internal dependencies
-from .configuration import configure, register
+from .configuration import configure, register, CONFIG_FILE_PATH
 from .__init__ import __version__ as version
 
 
@@ -91,8 +91,6 @@ Options:
     """
 
 config = {}  # The dictionary containing the current configuration once deserialized from CONFIG_FILE_PATH
-
-CONFIG_FILE_PATH = f"{os.path.dirname(__file__)}{os.sep}ahd.yml"  # The path to the configuration file
 
 CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
 
@@ -212,8 +210,12 @@ def list_macros(verbose:bool = False, config:dict={}) -> None:
     for count, macro in enumerate(config["macros"]):
         if verbose:
             print(f"{colored.fg(6)}{macro}{colored.fg(15)}\n")
-            print(f"\tCommand = {config['macros'][macro]['command']}")
-            print(f"\tPaths = {config['macros'][macro]['paths']}")
+            try:
+                print(f"\tCommand = {config['macros'][macro]['command']}")
+                print(f"\tPaths = {config['macros'][macro]['paths']}")
+            except KeyError:
+                print(f"Macro {macro} is not configured correctly, check the command and paths variables")
+                sys.exit(1)
             if config['macros'][macro].get("runs", False):
                 print(f"\tRuns = {config['macros'][macro]['runs']}")
             if config['macros'][macro].get("created", False):
@@ -227,7 +229,7 @@ def list_macros(verbose:bool = False, config:dict={}) -> None:
     print(f"\n\n{count+1} macros detected")
 
 
-def docs(api:bool = False, offline:bool = False) -> None: # TODO: decide if this should be removed
+def docs(api:bool = False, offline:bool = False) -> None:
     """Processes incoming arguments when the docs command is invoked
 
     Parameters
@@ -258,9 +260,7 @@ def docs(api:bool = False, offline:bool = False) -> None: # TODO: decide if this
             else:
                 # Simulates `pdoc --http : ahd`
                 from pdoc.cli import main as pdoc_main # Used to serve the api documentation locally
-                sys.argv[1] = "--http"
-                sys.argv[2] = ":"
-                sys.argv[3] = "ahd"
+                sys.argv = [sys.argv[0], "--http", ":", "ahd"]
                 webbrowser.open_new("http://localhost:8080/ahd")
                 pdoc_main()
 
@@ -300,6 +300,9 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
             yaml.dump(config, config_file, default_flow_style=False) # Update config file with new metadata
 
     except KeyError: # When command does not exist in config
+        if not config.get("macros", False):
+            print(f"{colored.fg(1)}No macros found in current config {colored.fg(15)}\n")
+            sys.exit(1)
         commands = [current_command for current_command in config["macros"]] # Get list of commands in config
         error_threshold = 60 # The percentage of likelyhood before similar words will throw out result
         similar_words = suggest_word.extractBests(name, commands,score_cutoff=error_threshold , limit=3) # Generate word sugestions
@@ -339,6 +342,7 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
 
     else: # if only a single path is specified instead of a 'list' of them
         if os.name == "nt":
+            current_path = paths[0]
             current_path = current_path.replace("~", os.getenv('USERPROFILE'))
             current_path = current_path.replace("/", f"{os.sep}")
         if os.path.isdir(current_path):

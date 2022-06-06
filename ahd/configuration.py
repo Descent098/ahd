@@ -52,7 +52,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
     Parameters
     ----------
     export: (bool)
-        When specified, shows API docs as opposed to user docs.
+        When specified will export the current configuration to the cwd
 
     import_config: (bool|str)
         False if no path, otherwise a string representation of path to config file.
@@ -67,7 +67,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
 
     if not export and not import_config:
         print("Please provide either the export (-e or --export) or import (-i or --import) flag")
-        return
+        sys.exit(1)
     if export:
         print(f"Exporting configuration from {CONFIG_FILE_PATH} to {os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml")
         with open(CONFIG_FILE_PATH) as config_file:
@@ -94,10 +94,10 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
     Parameters
     ----------
     macro_name: (str)
-        The name used to call the commands.
+        The name used to call the macro.
 
     commands: (str)
-        The set of commands to execute.
+        The set of commands the macro should execute.
     
     paths: (str)
         A string representation of the paths to execute the command with.
@@ -124,7 +124,7 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
             config["macros"][macro_name]["runs"] = 0
         if not config["macros"][macro_name].get("last_run", False):
             config["macros"][macro_name]["last_run"] = "never"
-    except TypeError:  # If the configuration is empty
+    except KeyError:  # If the configuration is empty
         config["macros"] = {}
         config["macros"][macro_name] = {
             "command": commands,

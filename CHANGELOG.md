@@ -1,6 +1,6 @@
 # Changelog
 
-## V 1.0.0; June 7th 2022
+## V 1.0.0; June 6th 2022
 
 **The version was bumped to a major release because pre V0.5.0 configs have been fully deprecated, if you are using an old config see migration steps below**
 

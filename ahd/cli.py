@@ -265,13 +265,20 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
             if os.name == "nt":
                 current_path = current_path.replace("/", f"{os.sep}")
                 current_path = current_path.replace("~", os.getenv('USERPROFILE'))
-            print(f"Running: cd {current_path} && {command} ".replace("\'",""))
-            subprocess.Popen(f"cd {current_path} && {command} ".replace("\'",""), shell=True)
+            if os.path.isdir(current_path):
+                print(f"Running: cd {current_path} && {command} ".replace("\'",""))
+                subprocess.Popen(f"cd {current_path} && {command} ".replace("\'",""), shell=True)
+            elif os.path.isfile(current_path):
+                print(f"Running: {command} {current_path}".replace("\'",""))
+                subprocess.Popen(f"{command} {current_path}".replace("\'",""), shell=True)
 
     else: # if only a single path is specified instead of a 'list' of them
-        print(f"Running: cd {paths[0]} && {command} ".replace("\'",""))
-        subprocess.Popen(f"cd {paths[0]} && {command} ".replace("\'",""), shell=True)
-    pass
+        if os.path.isdir(current_path):
+            print(f"Running: cd {paths[0]} && {command} ".replace("\'",""))
+            subprocess.Popen(f"cd {paths[0]} && {command} ".replace("\'",""), shell=True)
+        elif os.path.isfile(current_path):
+            print(f"Running: {command} {current_path}".replace("\'",""))
+            subprocess.Popen(f"{command} {current_path}".replace("\'",""), shell=True)
 
 def _preprocess_paths(paths:str) -> str:
     """Preprocesses paths from input and splits + formats them
@@ -350,15 +357,11 @@ def _postprocess_paths(paths:str) -> list:
             else:
                 directory = directory.replace("~", f"{os.getenv('HOME')}")
 
-        if "*" in directory:
+        wildcard_paths = glob.glob(directory.strip())
 
-            wildcard_paths = glob.glob(directory.strip())
-
-            for wildcard_directory in wildcard_paths:
-                wildcard_directory = wildcard_directory.replace("\\", "/")
-                result.append(wildcard_directory)
-        else:
-            result.append(directory)
+        for wildcard_directory in wildcard_paths:
+            wildcard_directory = wildcard_directory.replace("\\", "/")
+            result.append(wildcard_directory)
 
     logging.debug(f"Result: {result}")
     return result

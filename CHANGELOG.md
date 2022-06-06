@@ -18,6 +18,8 @@ Features:
   - Also will provide details like the current config for a given command
 - Updated testing to run on a schedule for quicker bug awareness
 - Updated testing for coverage of all modules
+- Allowed for globbing paths with files
+  - for example you can run a command over all files by extension in a path using `ahd register <command name> "<command>" "/path/*.<extension>"`
 
 Documentation:
 
@@ -27,6 +29,7 @@ Bug Fixes:
 
 - Fixed errors in testing pipeline
 - Fixed bugs with initializing a config file
+- Added missing reserved commands to autocomplete
 
 ## V 0.5.0; August 22nd 2020
 

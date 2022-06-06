@@ -17,7 +17,7 @@ command_list(list[namedtuple]):
 """
 import os                              # Used primarily to validate paths
 import sys                             # Used to safely exit interpreter session
-from configparser import ConfigParser  # Used to serialize and de-serialize legacy config files
+import datetime
 
 # Internal dependencies
 from .autocomplete import command, generate_bash_autocomplete
@@ -109,13 +109,27 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
         config["macros"][macro_name] = {
             "command": commands,
             "paths": paths,
+            "updated": str(datetime.datetime.now())[:10:]
         }
+        if not config["macros"][macro_name].get("created", False):
+            config["macros"][macro_name]["created"] = str(datetime.datetime.now())[:10:]
+        if not config["macros"][macro_name].get("runs", False):
+            config["macros"][macro_name]["runs"] = 0
+        if not config["macros"][macro_name].get("last_run", False):
+            config["macros"][macro_name]["last_run"] = "never"
     except TypeError:  # If the configuration is empty
         config["macros"] = {}
         config["macros"][macro_name] = {
             "command": commands,
             "paths": paths,
+            "updated": str(datetime.datetime.now())[:10:]
         }
+        if not config["macros"][macro_name].get("created", False):
+            config["macros"][macro_name]["created"] = str(datetime.datetime.now())[:10:]
+        if not config["macros"][macro_name].get("runs", False):
+            config["macros"][macro_name]["runs"] = 0
+        if not config["macros"][macro_name].get("last_run", False):
+            config["macros"][macro_name]["last_run"] = "never"
 
     try:
         print(f"Begin writing config file to {CONFIG_FILE_PATH}")

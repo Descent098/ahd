@@ -5,17 +5,20 @@
 There are 3 primary focuses for this release:
 
 1. Improve developer/contributor documentation and infrastructure
-2. Enhance the autocomplete module to support additional shells
+2. Add metadata to configs so you can review how you use ahd
 3. Finalize some major features that make ahd more intuitive and simple to use
 
 Features:
 
 - Added spell-check for suggestions when input is close to a valid command
-- Added ZSH autocomplete
-- Added fish autocomplete
+- Added additional metadata to config file for each entry:
+  - `updated`: The datestamp when the command was updated (will update on re-registering)
+  - `created`: The datestamp when the command was created (will not update on re-registering)
+  - `runs`: The number of times a command has been run
+  - `last_run`: The datestamp when the command was last run (initially "never")
 - Added `-d` flag to display command details
   - Added command metadata for usage details like how many times it's been run and when it was added (access using `ahd <command> -d`)
-  - Also will provide details like the current config for a given command
+  - Also will provide details like the current config for a given command, similar to `ahd list` but for a single command
 - Updated testing to run on a schedule for quicker bug awareness
 - Updated testing for coverage of all modules
 - Allowed for globbing paths with files

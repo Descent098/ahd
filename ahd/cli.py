@@ -25,6 +25,7 @@ Docs website: https://ahd.readthedocs.io
 """
 
 # Standard lib dependencies
+import datetime
 import os                                      # Used primarily to validate paths
 import sys                                     # Used to check length of input arguments
 import glob                                    # Used to preprocess wildcard paths
@@ -48,8 +49,8 @@ usage = """Add-hoc dispatcher
 Create ad-hoc commands to be dispatched within their own namespace.
 
 Usage: 
-    ahd list [-l]
     ahd [-h] [-v]
+    ahd list [-l]
     ahd docs [-a] [-o]
     ahd config [-e] [-i CONFIG_FILE_PATH]
     ahd register <name> [<command>] [<paths>]
@@ -134,6 +135,23 @@ def main() -> None:
     # ========= User command argument parsing =========
 
     if arguments['<name>']:
+        if arguments["--details"]:
+            try:
+                config['macros'][arguments['<name>']] # Force a KeyError if the macro does not exist
+                print(f"{colored.fg(6)}{arguments['<name>']}{colored.fg(15)}\n")
+                print(f"\tCommand = {config['macros'][arguments['<name>']]['command']}")
+                print(f"\tPaths = {config['macros'][arguments['<name>']]['paths']}")
+                if config['macros'][arguments['<name>']].get("runs", False):
+                    print(f"\tRuns = {config['macros'][arguments['<name>']]['runs']}")
+                if config['macros'][arguments['<name>']].get("created", False):
+                    print(f"\tCreated = {config['macros'][arguments['<name>']]['created']}")
+                if config['macros'][arguments['<name>']].get("updated", False):
+                    print(f"\tUpdated = {config['macros'][arguments['<name>']]['updated']}")
+                if config['macros'][arguments['<name>']].get("last_run", False):
+                    print(f"\tLast Run = {config['macros'][arguments['<name>']]['last_run']}")
+                exit()
+            except KeyError:
+                ... # If the command is not registered, do nothing and let the dispatch spellchecker find it                
         if not arguments['<paths>'] and not arguments['<command>']:
             dispatch(arguments['<name>'], config=config)
 
@@ -171,9 +189,17 @@ def list_macros(verbose:bool = False, config:dict={}) -> None:
     count = 0
     for count, macro in enumerate(config["macros"]):
         if verbose:
-            print(f"{colored.fg(6)}{macro}\n")
-            print(f"{colored.fg(100)}\tCommand = {config['macros'][macro]['command']}")
-            print(f"\tPaths = {config['macros'][macro]['paths']}{colored.fg(15)}")
+            print(f"{colored.fg(6)}{macro}{colored.fg(15)}\n")
+            print(f"\tCommand = {config['macros'][macro]['command']}")
+            print(f"\tPaths = {config['macros'][macro]['paths']}")
+            if config['macros'][macro].get("runs", False):
+                print(f"\tRuns = {config['macros'][macro]['runs']}")
+            if config['macros'][macro].get("created", False):
+                print(f"\tCreated = {config['macros'][macro]['created']}")
+            if config['macros'][macro].get("updated", False):
+                print(f"\tUpdated = {config['macros'][macro]['updated']}")
+            if config['macros'][macro].get("last_run", False):
+                print(f"\tLast Run = {config['macros'][macro]['last_run']}")
         else:
             print(f"\n{colored.fg(6)}{macro}{colored.fg(15)}")
     print(f"\n\n{count+1} macros detected")
@@ -233,6 +259,14 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
 
     try: # Accessing stored information on the command
         config["macros"][name]
+        if not config["macros"][name].get("runs", False):
+            config["macros"][name]["runs"] = 1
+        else:
+            config["macros"][name]["runs"] += 1
+        config["macros"][name]["last_run"] = str(datetime.datetime.now())[:10:]
+
+        with open(CONFIG_FILE_PATH, "w+") as config_file:
+            yaml.dump(config, config_file, default_flow_style=False) # Update config file with new metadata
 
     except KeyError: # When command does not exist in config
         commands = [current_command for current_command in config["macros"]] # Get list of commands in config
@@ -282,6 +316,7 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
         elif os.path.isfile(current_path):
             print(f"Running: {command} {current_path}".replace("\'",""))
             subprocess.Popen(f"{command} {current_path}".replace("\'",""), shell=True)
+    
 
 def _preprocess_paths(paths:str) -> str:
     """Preprocesses paths from input and splits + formats them

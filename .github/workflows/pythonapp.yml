@@ -1,6 +1,12 @@
 name: Python application
 
-on: [push]
+on: 
+  push:
+    branches:
+    - '**'
+  schedule:
+    # Run at 12:00 AM, on day 10 of the month, every 2 months
+    - cron:  '0 0 10 */2 *'
 
 jobs:
   test:

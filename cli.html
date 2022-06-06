@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ahd.cli API documentation</title>
 <meta name="description" content="This file houses the primary entrypoint, and main business logic of ahd …" />
-<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
-<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
 <main>
@@ -33,8 +35,22 @@ The path to the configuration file</p>
 <p>CURRENT_PATH(str):
 Used to keep track of users current directory
 to cd back into it after script execution</p>
+<h2 id="module-functions">Module Functions</h2>
+<p>main():
+The primary entrypoint for the ahd script handles argument parsing</p>
+<p>list_macros(verbose:bool = False, config:dict={}):
+Lists commands currently in config</p>
+<p>docs(api:bool = False, offline:bool = False):
+Processes incoming arguments when the docs command is invoked</p>
+<p>dispatch(name, command:str=False, paths:str=False, config:dict={}):
+Controls the dispatching of macros</p>
+<h2 id="notes">Notes</h2>
+<p>While you an invoke functions directly it is recommended to use the CLI </p>
 <h2 id="documentation">Documentation</h2>
-<p>Docs website: <a href="https://ahd.readthedocs.io">https://ahd.readthedocs.io</a></p>
+<p>User docs website: <a href="https://ahd.readthedocs.io">https://ahd.readthedocs.io</a>
+API Docs website: <a href="https://kieranwood.ca/ahd">https://kieranwood.ca/ahd</a>
+Source Code: <a href="https://github.com/Descent098/ahd">https://github.com/Descent098/ahd</a>
+Roadmap: <a href="https://github.com/Descent098/ahd/projects">https://github.com/Descent098/ahd/projects</a></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -59,40 +75,65 @@ CURRENT_PATH(str):
     Used to keep track of users current directory
     to cd back into it after script execution
 
+Module Functions
+----------------
+main():
+    The primary entrypoint for the ahd script handles argument parsing
+
+list_macros(verbose:bool = False, config:dict={}):
+    Lists commands currently in config
+
+docs(api:bool = False, offline:bool = False):
+    Processes incoming arguments when the docs command is invoked
+
+dispatch(name, command:str=False, paths:str=False, config:dict={}):
+    Controls the dispatching of macros
+
+Notes
+-----
+While you an invoke functions directly it is recommended to use the CLI 
 
 Documentation
 -------------
-Docs website: https://ahd.readthedocs.io
+User docs website: https://ahd.readthedocs.io
+API Docs website: https://kieranwood.ca/ahd
+Source Code: https://github.com/Descent098/ahd
+Roadmap: https://github.com/Descent098/ahd/projects
 &#34;&#34;&#34;
 
 # Standard lib dependencies
-import os                             # Used primarily to validate paths
-import sys                            # Used to check length of input arguments
-import glob                           # Used to preprocess wildcard paths
-import logging                        # Used to log valueable logging info
-import webbrowser                     # Used to auto-launch the documentation link
-import subprocess                     # Used to run the dispatched commands
+import datetime
+import os                                      # Used primarily to validate paths
+import sys                                     # Used to check length of input arguments
+import glob                                    # Used to preprocess wildcard paths
+import logging                                 # Used to log valueable logging info
+import webbrowser                              # Used to auto-launch the documentation link
+import subprocess                              # Used to run the dispatched commands
 
 
 # Internal dependencies
-from .configuration import migrate_config, configure, register
+from .configuration import configure, register, CONFIG_FILE_PATH
+from .__init__ import __version__ as version
+
 
 # Third-party dependencies
-import colored                        # Used to colour terminal output
-import yaml                           # Used to handle configuration serialization/deserialization
-from docopt import docopt             # Used to parse arguments and setup POSIX compliant usage info
+import colored                                 # Used to colour terminal output
+import yaml                                    # Used to handle configuration serialization/deserialization
+from docopt import docopt                      # Used to parse arguments and setup POSIX compliant usage info
+from fuzzywuzzy import process as suggest_word # Used to parse word similarity for incorrect spellings
+
 
 usage = &#34;&#34;&#34;Add-hoc dispatcher
 
 Create ad-hoc commands to be dispatched within their own namespace.
 
 Usage: 
+    ahd [-h] [-v]
     ahd list [-l]
-    ahd [-h] [-v] [-d]
     ahd docs [-a] [-o]
     ahd config [-e] [-i CONFIG_FILE_PATH]
     ahd register &lt;name&gt; [&lt;command&gt;] [&lt;paths&gt;]
-    ahd &lt;name&gt; [&lt;command&gt;] [&lt;paths&gt;]
+    ahd &lt;name&gt; [&lt;command&gt;] [&lt;paths&gt;] [-d]
 
 Options:
     -h, --help            show this help message and exit
@@ -103,28 +144,23 @@ Options:
     -e, --export          exports the configuration file
     -i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH 
                         imports the configuration file
+    -d, --details         prints the details of a command
     &#34;&#34;&#34;
 
 config = {}  # The dictionary containing the current configuration once deserialized from CONFIG_FILE_PATH
 
-CONFIG_FILE_PATH = f&#34;{os.path.dirname(__file__)}{os.sep}ahd.yml&#34;  # The path to the configuration file
-
 CURRENT_PATH = os.curdir # Keeps track of current directory to return to after executing commands
 
 def main() -&gt; None:
-    &#34;&#34;&#34;The primary entrypoint for the ahd script.
+    &#34;&#34;&#34;The primary entrypoint for the ahd script handles argument parsing
 
     All primary business logic is within this function.&#34;&#34;&#34;
-
     # Setup arguments for parsing
-    arguments = docopt(usage, version=&#34;ahd V 0.4.0&#34;)
+    arguments = docopt(usage, version=f&#34;ahd V{version}&#34;)
 
     if len(sys.argv) == 1:
         print(&#34;\n&#34;, usage)
         sys.exit()
-
-    # Checks if a legacy config is available and if it is migrates to new standard
-    migrate_config()  # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         with open(CONFIG_FILE_PATH, &#34;r&#34;) as config_file:
@@ -135,7 +171,7 @@ def main() -&gt; None:
         print(f&#34;{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}&#34;)
         with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
             config_file.write(&#34;macros:&#34;)
-            sys.exit()
+            config = {&#34;macros&#34;: {}}
 
     # Begin argument parsing
 
@@ -175,6 +211,23 @@ def main() -&gt; None:
     # ========= User command argument parsing =========
 
     if arguments[&#39;&lt;name&gt;&#39;]:
+        if arguments[&#34;--details&#34;]:
+            try:
+                config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]] # Force a KeyError if the macro does not exist
+                print(f&#34;{colored.fg(6)}{arguments[&#39;&lt;name&gt;&#39;]}{colored.fg(15)}\n&#34;)
+                print(f&#34;\tCommand = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;command&#39;]}&#34;)
+                print(f&#34;\tPaths = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;paths&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;runs&#34;, False):
+                    print(f&#34;\tRuns = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;runs&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;created&#34;, False):
+                    print(f&#34;\tCreated = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;created&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;updated&#34;, False):
+                    print(f&#34;\tUpdated = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;updated&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;last_run&#34;, False):
+                    print(f&#34;\tLast Run = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;last_run&#39;]}&#34;)
+                exit()
+            except KeyError:
+                ... # If the command is not registered, do nothing and let the dispatch spellchecker find it                
         if not arguments[&#39;&lt;paths&gt;&#39;] and not arguments[&#39;&lt;command&gt;&#39;]:
             dispatch(arguments[&#39;&lt;name&gt;&#39;], config=config)
 
@@ -194,6 +247,7 @@ def main() -&gt; None:
                 arguments[&#39;&lt;paths&gt;&#39;] = _postprocess_paths(arguments[&#39;&lt;paths&gt;&#39;])
                 dispatch(arguments[&#39;&lt;name&gt;&#39;], paths = arguments[&#39;&lt;paths&gt;&#39;], command = arguments[&#39;&lt;command&gt;&#39;], config=config)
 
+
 def list_macros(verbose:bool = False, config:dict={}) -&gt; None:
     &#34;&#34;&#34;Lists commands currently in config
 
@@ -212,12 +266,25 @@ def list_macros(verbose:bool = False, config:dict={}) -&gt; None:
     count = 0
     for count, macro in enumerate(config[&#34;macros&#34;]):
         if verbose:
-            print(f&#34;{colored.fg(6)}{macro}\n&#34;)
-            print(f&#34;{colored.fg(100)}\tCommand = {config[&#39;macros&#39;][macro][&#39;command&#39;]}&#34;)
-            print(f&#34;\tPaths = {config[&#39;macros&#39;][macro][&#39;paths&#39;]}{colored.fg(15)}&#34;)
+            print(f&#34;{colored.fg(6)}{macro}{colored.fg(15)}\n&#34;)
+            try:
+                print(f&#34;\tCommand = {config[&#39;macros&#39;][macro][&#39;command&#39;]}&#34;)
+                print(f&#34;\tPaths = {config[&#39;macros&#39;][macro][&#39;paths&#39;]}&#34;)
+            except KeyError:
+                print(f&#34;Macro {macro} is not configured correctly, check the command and paths variables&#34;)
+                sys.exit(1)
+            if config[&#39;macros&#39;][macro].get(&#34;runs&#34;, False):
+                print(f&#34;\tRuns = {config[&#39;macros&#39;][macro][&#39;runs&#39;]}&#34;)
+            if config[&#39;macros&#39;][macro].get(&#34;created&#34;, False):
+                print(f&#34;\tCreated = {config[&#39;macros&#39;][macro][&#39;created&#39;]}&#34;)
+            if config[&#39;macros&#39;][macro].get(&#34;updated&#34;, False):
+                print(f&#34;\tUpdated = {config[&#39;macros&#39;][macro][&#39;updated&#39;]}&#34;)
+            if config[&#39;macros&#39;][macro].get(&#34;last_run&#34;, False):
+                print(f&#34;\tLast Run = {config[&#39;macros&#39;][macro][&#39;last_run&#39;]}&#34;)
         else:
             print(f&#34;\n{colored.fg(6)}{macro}{colored.fg(15)}&#34;)
     print(f&#34;\n\n{count+1} macros detected&#34;)
+
 
 def docs(api:bool = False, offline:bool = False) -&gt; None:
     &#34;&#34;&#34;Processes incoming arguments when the docs command is invoked
@@ -239,15 +306,21 @@ def docs(api:bool = False, offline:bool = False) -&gt; None:
         webbrowser.open_new(&#34;https://ahd.readthedocs.io&#34;)
     else:
         if offline and not api:
-            # TODO Implement build local user docs.
-            print(&#34;Not yet implemented&#34;)
+            from mkdocs.commands import serve # Used to serve the user documentation locally
+            print(&#34;Docs available at http://localhost:8000/&#34;)
+            webbrowser.open_new(&#34;http://localhost:8000/&#34;)
+            serve.serve()
 
         elif api:
             if not offline:
                 webbrowser.open_new(&#34;https://kieranwood.ca/ahd&#34;)
             else:
-                # TODO Implement build local user docs.
-                print(&#34;Not yet implemented&#34;)
+                # Simulates `pdoc --http : ahd`
+                from pdoc.cli import main as pdoc_main # Used to serve the api documentation locally
+                sys.argv = [sys.argv[0], &#34;--http&#34;, &#34;:&#34;, &#34;ahd&#34;]
+                webbrowser.open_new(&#34;http://localhost:8080/ahd&#34;)
+                pdoc_main()
+
 
 def dispatch(name, command:str=False, paths:str=False, config:dict={}) -&gt; None:
     &#34;&#34;&#34;Controls the dispatching of macros
@@ -274,10 +347,37 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -&gt; Non
 
     try: # Accessing stored information on the command
         config[&#34;macros&#34;][name]
+        if not config[&#34;macros&#34;][name].get(&#34;runs&#34;, False):
+            config[&#34;macros&#34;][name][&#34;runs&#34;] = 1
+        else:
+            config[&#34;macros&#34;][name][&#34;runs&#34;] += 1
+        config[&#34;macros&#34;][name][&#34;last_run&#34;] = str(datetime.datetime.now())[:10:]
 
-    except KeyError: # TODO Find a way to suggest a similar command
-        print(f&#34;{colored.fg(1)}Command not found in configuration validate spelling is correct.&#34;)
-        sys.exit()
+        with open(CONFIG_FILE_PATH, &#34;w+&#34;) as config_file:
+            yaml.dump(config, config_file, default_flow_style=False) # Update config file with new metadata
+
+    except KeyError: # When command does not exist in config
+        if not config.get(&#34;macros&#34;, False):
+            print(f&#34;{colored.fg(1)}No macros found in current config {colored.fg(15)}\n&#34;)
+            sys.exit(1)
+        commands = [current_command for current_command in config[&#34;macros&#34;]] # Get list of commands in config
+        error_threshold = 60 # The percentage of likelyhood before similar words will throw out result
+        similar_words = suggest_word.extractBests(name, commands,score_cutoff=error_threshold , limit=3) # Generate word sugestions
+        if not similar_words: # If there are not similar commands that exist in the config
+            print(f&#34;{colored.fg(1)}Could not find macro {colored.fg(15)}{name}{colored.fg(1)} or any valid suggestions with %{error_threshold} or higher likelyhood, please check spelling {colored.fg(15)}\n&#34;)
+            sys.exit(1)
+
+        # Suggestions found for similar commands
+        suggestions = &#34;&#34;
+        for index, word in enumerate(similar_words):
+            suggestions+= f&#34;\t{index+1}. {colored.fg(3)}{word[0]}{colored.fg(15)}  | %{word[1]} likelyhood\n&#34;
+        print(f&#34;{colored.fg(1)}No command {name} found {colored.fg(15)} here are some suggestions: \n{suggestions}&#34;)
+        if not command:
+            command = &#34;&#34;
+        if not paths:
+            paths = &#34;&#34;
+        print(f&#34;Most likely suggestion is {colored.fg(3)}{similar_words[0][0]}{colored.fg(15)} rerun using: \n\t&gt; ahd {similar_words[0][0]} \&#34;{command}\&#34; \&#34;{paths}\&#34;&#34;)
+        sys.exit(1)
     
     if not command or command == &#34;.&#34;:
         command = config[&#34;macros&#34;][name][&#39;command&#39;]
@@ -288,15 +388,27 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -&gt; Non
     if len(paths) &gt; 1:
         for current_path in paths:
             if os.name == &#34;nt&#34;:
-                current_path = current_path.replace(&#34;/&#34;, f&#34;{os.sep}&#34;)
                 current_path = current_path.replace(&#34;~&#34;, os.getenv(&#39;USERPROFILE&#39;))
-            print(f&#34;Running: cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
-            subprocess.Popen(f&#34;cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
+                current_path = current_path.replace(&#34;/&#34;, f&#34;{os.sep}&#34;)
+            if os.path.isdir(current_path):
+                print(f&#34;Running: cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+                subprocess.Popen(f&#34;cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
+            elif os.path.isfile(current_path):
+                print(f&#34;Running: {command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+                subprocess.Popen(f&#34;{command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
 
     else: # if only a single path is specified instead of a &#39;list&#39; of them
-        print(f&#34;Running: cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
-        subprocess.Popen(f&#34;cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
-    pass
+        current_path = paths[0]
+        if os.name == &#34;nt&#34;:
+            current_path = current_path.replace(&#34;~&#34;, os.getenv(&#39;USERPROFILE&#39;))
+            current_path = current_path.replace(&#34;/&#34;, f&#34;{os.sep}&#34;)
+        if os.path.isdir(current_path):
+            print(f&#34;Running: cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+            subprocess.Popen(f&#34;cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
+        elif os.path.isfile(current_path):
+            print(f&#34;Running: {command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+            subprocess.Popen(f&#34;{command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
+
 
 def _preprocess_paths(paths:str) -&gt; str:
     &#34;&#34;&#34;Preprocesses paths from input and splits + formats them
@@ -319,7 +431,7 @@ def _preprocess_paths(paths:str) -&gt; str:
         logging.debug(f&#34;Directory: {directory}&#34;)
         if directory.startswith(&#34;.&#34;) and (len(directory) &gt; 1):
             directory = os.path.abspath(directory)
-        if not &#34;~&#34; in directory:
+        if &#34;~&#34; not in directory:
             if os.name == &#34;nt&#34;:
                 directory = directory.replace(os.getenv(&#39;USERPROFILE&#39;),&#34;~&#34;)
 
@@ -335,6 +447,7 @@ def _preprocess_paths(paths:str) -&gt; str:
     result = &#34;,&#34;.join(result)
 
     return result
+
 
 def _postprocess_paths(paths:str) -&gt; list:
     &#34;&#34;&#34;Postprocesses existing paths to be used by dispatcher.
@@ -374,7 +487,6 @@ def _postprocess_paths(paths:str) -&gt; list:
                 directory = directory.replace(&#34;~&#34;,f&#34;{os.getenv(&#39;USERPROFILE&#39;)}&#34;)
             else:
                 directory = directory.replace(&#34;~&#34;, f&#34;{os.getenv(&#39;HOME&#39;)}&#34;)
-
         if &#34;*&#34; in directory:
 
             wildcard_paths = glob.glob(directory.strip())
@@ -401,23 +513,23 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="ahd.cli.dispatch"><code class="name flex">
-<span>def <span class="ident">dispatch</span></span>(<span>name, command=False, paths=False, config={})</span>
+<span>def <span class="ident">dispatch</span></span>(<span>name, command: str = False, paths: str = False, config: dict = {}) ‑> None</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Controls the dispatching of macros</p>
+<div class="desc"><p>Controls the dispatching of macros</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>name</code></strong> :&ensp;(<code>str</code>)</dt>
+<dt><strong><code>name</code></strong> :&ensp;<code>(str)</code></dt>
 <dd>The name of the macro to dispatch</dd>
-<dt><strong><code>command</code></strong> :&ensp;(<code>str</code>)</dt>
+<dt><strong><code>command</code></strong> :&ensp;<code>(str)</code></dt>
 <dd>Used to override the macros configured command
 when set to False, will pull from configuration</dd>
-<dt><strong><code>paths</code></strong> :&ensp;(<code>str</code>)</dt>
+<dt><strong><code>paths</code></strong> :&ensp;<code>(str)</code></dt>
 <dd>Used to override the macros configured paths
 when set to False, will pull from configuration</dd>
-<dt><strong><code>config</code></strong> :&ensp;(<code>dict</code>)</dt>
+<dt><strong><code>config</code></strong> :&ensp;<code>(dict)</code></dt>
 <dd>The dict that contains the current config</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -447,10 +559,37 @@ when set to False, will pull from configuration</dd>
 
     try: # Accessing stored information on the command
         config[&#34;macros&#34;][name]
+        if not config[&#34;macros&#34;][name].get(&#34;runs&#34;, False):
+            config[&#34;macros&#34;][name][&#34;runs&#34;] = 1
+        else:
+            config[&#34;macros&#34;][name][&#34;runs&#34;] += 1
+        config[&#34;macros&#34;][name][&#34;last_run&#34;] = str(datetime.datetime.now())[:10:]
 
-    except KeyError: # TODO Find a way to suggest a similar command
-        print(f&#34;{colored.fg(1)}Command not found in configuration validate spelling is correct.&#34;)
-        sys.exit()
+        with open(CONFIG_FILE_PATH, &#34;w+&#34;) as config_file:
+            yaml.dump(config, config_file, default_flow_style=False) # Update config file with new metadata
+
+    except KeyError: # When command does not exist in config
+        if not config.get(&#34;macros&#34;, False):
+            print(f&#34;{colored.fg(1)}No macros found in current config {colored.fg(15)}\n&#34;)
+            sys.exit(1)
+        commands = [current_command for current_command in config[&#34;macros&#34;]] # Get list of commands in config
+        error_threshold = 60 # The percentage of likelyhood before similar words will throw out result
+        similar_words = suggest_word.extractBests(name, commands,score_cutoff=error_threshold , limit=3) # Generate word sugestions
+        if not similar_words: # If there are not similar commands that exist in the config
+            print(f&#34;{colored.fg(1)}Could not find macro {colored.fg(15)}{name}{colored.fg(1)} or any valid suggestions with %{error_threshold} or higher likelyhood, please check spelling {colored.fg(15)}\n&#34;)
+            sys.exit(1)
+
+        # Suggestions found for similar commands
+        suggestions = &#34;&#34;
+        for index, word in enumerate(similar_words):
+            suggestions+= f&#34;\t{index+1}. {colored.fg(3)}{word[0]}{colored.fg(15)}  | %{word[1]} likelyhood\n&#34;
+        print(f&#34;{colored.fg(1)}No command {name} found {colored.fg(15)} here are some suggestions: \n{suggestions}&#34;)
+        if not command:
+            command = &#34;&#34;
+        if not paths:
+            paths = &#34;&#34;
+        print(f&#34;Most likely suggestion is {colored.fg(3)}{similar_words[0][0]}{colored.fg(15)} rerun using: \n\t&gt; ahd {similar_words[0][0]} \&#34;{command}\&#34; \&#34;{paths}\&#34;&#34;)
+        sys.exit(1)
     
     if not command or command == &#34;.&#34;:
         command = config[&#34;macros&#34;][name][&#39;command&#39;]
@@ -461,34 +600,45 @@ when set to False, will pull from configuration</dd>
     if len(paths) &gt; 1:
         for current_path in paths:
             if os.name == &#34;nt&#34;:
-                current_path = current_path.replace(&#34;/&#34;, f&#34;{os.sep}&#34;)
                 current_path = current_path.replace(&#34;~&#34;, os.getenv(&#39;USERPROFILE&#39;))
-            print(f&#34;Running: cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
-            subprocess.Popen(f&#34;cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
+                current_path = current_path.replace(&#34;/&#34;, f&#34;{os.sep}&#34;)
+            if os.path.isdir(current_path):
+                print(f&#34;Running: cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+                subprocess.Popen(f&#34;cd {current_path} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
+            elif os.path.isfile(current_path):
+                print(f&#34;Running: {command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+                subprocess.Popen(f&#34;{command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
 
     else: # if only a single path is specified instead of a &#39;list&#39; of them
-        print(f&#34;Running: cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
-        subprocess.Popen(f&#34;cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
-    pass</code></pre>
+        current_path = paths[0]
+        if os.name == &#34;nt&#34;:
+            current_path = current_path.replace(&#34;~&#34;, os.getenv(&#39;USERPROFILE&#39;))
+            current_path = current_path.replace(&#34;/&#34;, f&#34;{os.sep}&#34;)
+        if os.path.isdir(current_path):
+            print(f&#34;Running: cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+            subprocess.Popen(f&#34;cd {paths[0]} &amp;&amp; {command} &#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)
+        elif os.path.isfile(current_path):
+            print(f&#34;Running: {command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;))
+            subprocess.Popen(f&#34;{command} {current_path}&#34;.replace(&#34;\&#39;&#34;,&#34;&#34;), shell=True)</code></pre>
 </details>
 </dd>
 <dt id="ahd.cli.docs"><code class="name flex">
-<span>def <span class="ident">docs</span></span>(<span>api=False, offline=False)</span>
+<span>def <span class="ident">docs</span></span>(<span>api: bool = False, offline: bool = False) ‑> None</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Processes incoming arguments when the docs command is invoked</p>
+<div class="desc"><p>Processes incoming arguments when the docs command is invoked</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>api</code></strong> :&ensp;(<code>bool</code>)</dt>
+<dt><strong><code>api</code></strong> :&ensp;<code>(bool)</code></dt>
 <dd>When specified, shows API docs as opposed to user docs.</dd>
-<dt><strong><code>offline</code></strong> :&ensp;(<code>bool</code>)</dt>
+<dt><strong><code>offline</code></strong> :&ensp;<code>(bool)</code></dt>
 <dd>When specified will build local copy of docs instead of going to website</dd>
 </dl>
 <h2 id="notes">Notes</h2>
 <ul>
 <li>By Default user documentation is selected</li>
 <li>By default the online documentation is selected</li>
-</ul></section>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -513,31 +663,36 @@ when set to False, will pull from configuration</dd>
         webbrowser.open_new(&#34;https://ahd.readthedocs.io&#34;)
     else:
         if offline and not api:
-            # TODO Implement build local user docs.
-            print(&#34;Not yet implemented&#34;)
+            from mkdocs.commands import serve # Used to serve the user documentation locally
+            print(&#34;Docs available at http://localhost:8000/&#34;)
+            webbrowser.open_new(&#34;http://localhost:8000/&#34;)
+            serve.serve()
 
         elif api:
             if not offline:
                 webbrowser.open_new(&#34;https://kieranwood.ca/ahd&#34;)
             else:
-                # TODO Implement build local user docs.
-                print(&#34;Not yet implemented&#34;)</code></pre>
+                # Simulates `pdoc --http : ahd`
+                from pdoc.cli import main as pdoc_main # Used to serve the api documentation locally
+                sys.argv = [sys.argv[0], &#34;--http&#34;, &#34;:&#34;, &#34;ahd&#34;]
+                webbrowser.open_new(&#34;http://localhost:8080/ahd&#34;)
+                pdoc_main()</code></pre>
 </details>
 </dd>
 <dt id="ahd.cli.list_macros"><code class="name flex">
-<span>def <span class="ident">list_macros</span></span>(<span>verbose=False, config={})</span>
+<span>def <span class="ident">list_macros</span></span>(<span>verbose: bool = False, config: dict = {}) ‑> None</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Lists commands currently in config</p>
+<div class="desc"><p>Lists commands currently in config</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>verbose</code></strong> :&ensp;(<code>bool</code>)</dt>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>(bool)</code></dt>
 <dd>When specified will print both the command name and
 associated commands + paths. Additionally the dictionary
 will only return when this flag is specified.</dd>
-<dt><strong><code>config</code></strong> :&ensp;(<code>dict</code>)</dt>
+<dt><strong><code>config</code></strong> :&ensp;<code>(dict)</code></dt>
 <dd>The dict that contains the current config</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -560,38 +715,46 @@ will only return when this flag is specified.</dd>
     count = 0
     for count, macro in enumerate(config[&#34;macros&#34;]):
         if verbose:
-            print(f&#34;{colored.fg(6)}{macro}\n&#34;)
-            print(f&#34;{colored.fg(100)}\tCommand = {config[&#39;macros&#39;][macro][&#39;command&#39;]}&#34;)
-            print(f&#34;\tPaths = {config[&#39;macros&#39;][macro][&#39;paths&#39;]}{colored.fg(15)}&#34;)
+            print(f&#34;{colored.fg(6)}{macro}{colored.fg(15)}\n&#34;)
+            try:
+                print(f&#34;\tCommand = {config[&#39;macros&#39;][macro][&#39;command&#39;]}&#34;)
+                print(f&#34;\tPaths = {config[&#39;macros&#39;][macro][&#39;paths&#39;]}&#34;)
+            except KeyError:
+                print(f&#34;Macro {macro} is not configured correctly, check the command and paths variables&#34;)
+                sys.exit(1)
+            if config[&#39;macros&#39;][macro].get(&#34;runs&#34;, False):
+                print(f&#34;\tRuns = {config[&#39;macros&#39;][macro][&#39;runs&#39;]}&#34;)
+            if config[&#39;macros&#39;][macro].get(&#34;created&#34;, False):
+                print(f&#34;\tCreated = {config[&#39;macros&#39;][macro][&#39;created&#39;]}&#34;)
+            if config[&#39;macros&#39;][macro].get(&#34;updated&#34;, False):
+                print(f&#34;\tUpdated = {config[&#39;macros&#39;][macro][&#39;updated&#39;]}&#34;)
+            if config[&#39;macros&#39;][macro].get(&#34;last_run&#34;, False):
+                print(f&#34;\tLast Run = {config[&#39;macros&#39;][macro][&#39;last_run&#39;]}&#34;)
         else:
             print(f&#34;\n{colored.fg(6)}{macro}{colored.fg(15)}&#34;)
     print(f&#34;\n\n{count+1} macros detected&#34;)</code></pre>
 </details>
 </dd>
 <dt id="ahd.cli.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
 <dd>
-<section class="desc"><p>The primary entrypoint for the ahd script.</p>
-<p>All primary business logic is within this function.</p></section>
+<div class="desc"><p>The primary entrypoint for the ahd script handles argument parsing</p>
+<p>All primary business logic is within this function.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def main() -&gt; None:
-    &#34;&#34;&#34;The primary entrypoint for the ahd script.
+    &#34;&#34;&#34;The primary entrypoint for the ahd script handles argument parsing
 
     All primary business logic is within this function.&#34;&#34;&#34;
-
     # Setup arguments for parsing
-    arguments = docopt(usage, version=&#34;ahd V 0.4.0&#34;)
+    arguments = docopt(usage, version=f&#34;ahd V{version}&#34;)
 
     if len(sys.argv) == 1:
         print(&#34;\n&#34;, usage)
         sys.exit()
-
-    # Checks if a legacy config is available and if it is migrates to new standard
-    migrate_config()  # TODO: Remove in V0.6.0
 
     if os.path.exists(CONFIG_FILE_PATH): # If the file already exists
         with open(CONFIG_FILE_PATH, &#34;r&#34;) as config_file:
@@ -602,7 +765,7 @@ will only return when this flag is specified.</dd>
         print(f&#34;{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}&#34;)
         with open(CONFIG_FILE_PATH, &#34;w&#34;) as config_file:
             config_file.write(&#34;macros:&#34;)
-            sys.exit()
+            config = {&#34;macros&#34;: {}}
 
     # Begin argument parsing
 
@@ -642,6 +805,23 @@ will only return when this flag is specified.</dd>
     # ========= User command argument parsing =========
 
     if arguments[&#39;&lt;name&gt;&#39;]:
+        if arguments[&#34;--details&#34;]:
+            try:
+                config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]] # Force a KeyError if the macro does not exist
+                print(f&#34;{colored.fg(6)}{arguments[&#39;&lt;name&gt;&#39;]}{colored.fg(15)}\n&#34;)
+                print(f&#34;\tCommand = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;command&#39;]}&#34;)
+                print(f&#34;\tPaths = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;paths&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;runs&#34;, False):
+                    print(f&#34;\tRuns = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;runs&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;created&#34;, False):
+                    print(f&#34;\tCreated = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;created&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;updated&#34;, False):
+                    print(f&#34;\tUpdated = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;updated&#39;]}&#34;)
+                if config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]].get(&#34;last_run&#34;, False):
+                    print(f&#34;\tLast Run = {config[&#39;macros&#39;][arguments[&#39;&lt;name&gt;&#39;]][&#39;last_run&#39;]}&#34;)
+                exit()
+            except KeyError:
+                ... # If the command is not registered, do nothing and let the dispatch spellchecker find it                
         if not arguments[&#39;&lt;paths&gt;&#39;] and not arguments[&#39;&lt;command&gt;&#39;]:
             dispatch(arguments[&#39;&lt;name&gt;&#39;], config=config)
 
@@ -672,6 +852,8 @@ will only return when this flag is specified.</dd>
 <div class="toc">
 <ul>
 <li><a href="#module-variables">Module Variables</a></li>
+<li><a href="#module-functions">Module Functions</a></li>
+<li><a href="#notes">Notes</a></li>
 <li><a href="#documentation">Documentation</a></li>
 </ul>
 </div>
@@ -693,9 +875,7 @@ will only return when this flag is specified.</dd>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad()</script>
 </body>
 </html>

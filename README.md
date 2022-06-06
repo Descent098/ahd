@@ -127,23 +127,24 @@ Run ```pip install ahd``` or ```sudo pip3 install ahd``` (need a network connect
 ### Usage
 
 ```bash
-Usage:
+Usage: 
+    ahd [-h] [-v]
     ahd list [-l]
-    ahd [-h] [-v] [-d]
     ahd docs [-a] [-o]
     ahd config [-e] [-i CONFIG_FILE_PATH]
     ahd register <name> [<command>] [<paths>]
-    ahd <name> [<command>] [<paths>]
+    ahd <name> [<command>] [<paths>] [-d]
 
 Options:
--h, --help            show this help message and exit
--v, --version         show program's version number and exit
--l, --long            Shows all commands in configuration with paths and commands
--a, --api             shows the local API docs
--o, --offline         shows the local User docs instead of live ones
--e, --export          exports the configuration file
--i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH
-                    imports the configuration file
+    -h, --help            show this help message and exit
+    -v, --version         show program's version number and exit
+    -l, --long            Shows all commands in configuration with paths and commands
+    -a, --api             shows the local API docs
+    -o, --offline         shows the local User docs instead of live ones
+    -e, --export          exports the configuration file
+    -i CONFIG_FILE_PATH, --import CONFIG_FILE_PATH 
+                        imports the configuration file
+    -d, --details         prints the details of a command
 ```
 
 #### Register

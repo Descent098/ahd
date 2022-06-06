@@ -35,6 +35,8 @@ Bug Fixes:
 - Fixed errors in testing pipeline
 - Fixed bugs with initializing a config file
 - Added missing reserved commands to autocomplete
+- Fixed bugs on *nix installs without bash
+- Fixed several bugs with escaping on *nix systems
 
 Migrating old configs:
 

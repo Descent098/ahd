@@ -153,11 +153,13 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
 
         autocomplete_file_text = generate_bash_autocomplete(command_list)
         try:
-            with open("/etc/bash_completion.d/ahd.sh", "w") as autocomplete_file:
+            with open("/etc/bash_completion.d/ahd.sh", "w+") as autocomplete_file:
                 autocomplete_file.write(autocomplete_file_text)
             print("Bash autocompletion file written to /etc/bash_completion.d/ahd.sh \nPlease restart shell for autocomplete to update")
         except PermissionError:
             print(f"{colored.fg(1)}Unable to write bash autocompletion file are you sudo?")
+        except FileNotFoundError:
+            print(f"{colored.fg(1)}Unable to write bash autocompletion file, file was not found")
 
     # Since executing commands requires changing directories, make sure to return after
     os.chdir(CURRENT_PATH)

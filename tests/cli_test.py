@@ -65,19 +65,21 @@ def test_postprocess_paths():
 
 def test_list(capsys):
     """Tests the list command"""
-    CONFIG_FILE_PATH = "tests/cli_test.yaml"
+    import ahd
+    ahd.cli.CONFIG_FILE_PATH = "tests/cli_test.yaml"
+    ahd.configuration.CONFIG_FILE_PATH = "tests/cli_test.yaml"
     config = {"macros": {"test": {"command": ".", "paths": "."}}}
     bad_config = {"macros": {"test": {"command": "."}}}
     bad_config_2 = {"macros": {"test": {"paths": "."}}}
     list_macros(False, config)
     captured = capsys.readouterr()
-    assert captured.out == "\n\x1b[38;5;6mtest\x1b[38;5;15m\n\n\n1 macros detected\n"
+    assert captured.out == "\n\x1b[38;5;6mtest\x1b[38;5;15m\n\n\n1 macros detected\n" or captured.out == "\ntest\n\n\n1 macros detected\n"
     list_macros(False, bad_config) # Won't error out because incorrect values are never used
     captured = capsys.readouterr()
-    assert captured.out == "\n\x1b[38;5;6mtest\x1b[38;5;15m\n\n\n1 macros detected\n"
+    assert captured.out == "\n\x1b[38;5;6mtest\x1b[38;5;15m\n\n\n1 macros detected\n" or captured.out == "\ntest\n\n\n1 macros detected\n"
     list_macros(False, bad_config_2) # Won't error out because incorrect values are never used
     captured = capsys.readouterr()
-    assert captured.out == "\n\x1b[38;5;6mtest\x1b[38;5;15m\n\n\n1 macros detected\n"
+    assert captured.out == "\n\x1b[38;5;6mtest\x1b[38;5;15m\n\n\n1 macros detected\n" or captured.out == "\ntest\n\n\n1 macros detected\n"
     list_macros(True, config)
     try:
         list_macros(True, bad_config)

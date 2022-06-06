@@ -341,8 +341,8 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
                 subprocess.Popen(f"{command} {current_path}".replace("\'",""), shell=True)
 
     else: # if only a single path is specified instead of a 'list' of them
+        current_path = paths[0]
         if os.name == "nt":
-            current_path = paths[0]
             current_path = current_path.replace("~", os.getenv('USERPROFILE'))
             current_path = current_path.replace("/", f"{os.sep}")
         if os.path.isdir(current_path):

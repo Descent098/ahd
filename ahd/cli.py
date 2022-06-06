@@ -374,7 +374,7 @@ def _preprocess_paths(paths:str) -> str:
         logging.debug(f"Directory: {directory}")
         if directory.startswith(".") and (len(directory) > 1):
             directory = os.path.abspath(directory)
-        if not "~" in directory:
+        if "~" not in directory:
             if os.name == "nt":
                 directory = directory.replace(os.getenv('USERPROFILE'),"~")
 

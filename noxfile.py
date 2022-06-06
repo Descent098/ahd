@@ -41,7 +41,7 @@ def release(session):
 @nox.session(python=["3.5", "3.6", "3.7", "3.8", "3.9", "3.10"])
 def test(session):
     """Runs tests defined in tests folder against all installed versions
-       of python from 3.5-3.8"""
+        of python from 3.5-3.8"""
     session.install('pytest')
     session.install('.')
     session.run('pytest', "-vv")

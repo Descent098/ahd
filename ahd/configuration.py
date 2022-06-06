@@ -62,6 +62,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
         print("Please provide either the export (-e or --export) or import (-i or --import) flag")
         return
     if export:
+        print(f"Exporting configuration from {CONFIG_FILE_PATH} to {os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml")
         with open(CONFIG_FILE_PATH) as config_file:
             config = yaml.safe_load(config_file)
             with open(f"{os.path.abspath(CURRENT_PATH)}{os.sep}ahd.yml", "w") as export_file:

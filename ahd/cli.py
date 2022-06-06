@@ -94,7 +94,7 @@ def main() -> None:
         print(f"{colored.fg(1)}Could not locate valid config file creating new one at {CONFIG_FILE_PATH} {colored.fg(15)}")
         with open(CONFIG_FILE_PATH, "w") as config_file:
             config_file.write("macros:")
-            sys.exit()
+            config = {"macros": {}}
 
     # Begin argument parsing
 

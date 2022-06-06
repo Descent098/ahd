@@ -43,6 +43,10 @@ import colored                                 # Used to colour terminal output
 import yaml                                    # Used to handle configuration serialization/deserialization
 from docopt import docopt                      # Used to parse arguments and setup POSIX compliant usage info
 from fuzzywuzzy import process as suggest_word # Used to parse word similarity for incorrect spellings
+from mkdocs.commands import serve
+
+
+
 
 usage = """Add-hoc dispatcher
 
@@ -78,7 +82,6 @@ def main() -> None:
     """The primary entrypoint for the ahd script.
 
     All primary business logic is within this function."""
-
     # Setup arguments for parsing
     arguments = docopt(usage, version=f"ahd V {version}")
 
@@ -224,15 +227,22 @@ def docs(api:bool = False, offline:bool = False) -> None: # TODO: decide if this
         webbrowser.open_new("https://ahd.readthedocs.io")
     else:
         if offline and not api:
-            # TODO Implement build local user docs.
-            print("Not yet implemented")
+            print("Docs available at http://localhost:8000/")
+            webbrowser.open_new("http://localhost:8000/")
+            serve.serve()
 
         elif api:
             if not offline:
                 webbrowser.open_new("https://kieranwood.ca/ahd")
             else:
-                # TODO Implement build local user docs.
-                print("Not yet implemented")
+                # Simulates `pdoc --http : ahd`
+                from pdoc.cli import main as pdoc_main
+                sys.argv[1] = "--http"
+                sys.argv[2] = ":"
+                sys.argv[3] = "ahd"
+                webbrowser.open_new("http://localhost:8080/ahd")
+                pdoc_main()
+
 
 def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
     """Controls the dispatching of macros

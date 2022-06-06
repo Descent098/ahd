@@ -49,13 +49,14 @@ setuptools.setup(
     "colored",# Used to color terminal output
     "pyyaml", # Used for configuration parsing
     "fuzzywuzzy", # Used for fuzzy string matching
-    "python-Levenshtein" # Used to optimize string matching
+    "python-Levenshtein", # Used to optimize string matching
+    "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
+    "pdoc3", # Used for building API documentation
         ],
     extras_require = {
         "dev" : ["nox",   # Used to run automated processes
                 "pytest", # Used to run the test code in the tests directory
-                "mkdocs", # Used to create HTML versions of the markdown docs in the docs directory
-                "pdoc3"], # Used for building API documentation
+                ],
 
     },
     classifiers = [

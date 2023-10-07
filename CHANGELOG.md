@@ -1,5 +1,19 @@
 # Changelog
 
+## V1.1.0; TBD
+
+There are 3 major focuses for this release: 
+
+1. Dispatching based on OS
+2. Macro parameters & environment variables (arguments for commands)
+3. Process spawning and management improvements
+
+
+Documentation:
+
+- Made usage of term macro more consistent
+- Added 
+
 ## V 1.0.0; June 6th 2022
 
 **The version was bumped to a major release because pre V0.5.0 configs have been fully deprecated, if you are using an old config see migration steps below**

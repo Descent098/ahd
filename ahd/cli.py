@@ -76,11 +76,12 @@ Usage:
     ahd docs [-a] [-o]
     ahd config [-e] [-i CONFIG_FILE_PATH]
     ahd register <name> [<command>] [<paths>]
-    ahd <name> [<command>] [<paths>] [-d]
+    ahd <name> [<command>] [<paths>] [-d] [-ar]
 
 Options:
     -h, --help            show this help message and exit
     -v, --version         show program's version number and exit
+    -ar, --arguments      The arguments to pass to a command
     -l, --long            Shows all commands in configuration with paths and commands
     -a, --api             shows the local API docs
     -o, --offline         shows the local User docs instead of live ones

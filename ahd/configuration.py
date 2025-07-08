@@ -112,8 +112,8 @@ def register(macro_name:str, commands:str, paths:str, config:dict=dict()) -> Non
     print(f"Registering macro {macro_name} \n\tCommand: {commands} \n\tPaths: {paths}")
     if macro_name in ["docs", "register", "config", "list"]: # If macro name is reserved
         raise ValueError(f"{macro_name} is a reserved macro name")
-    if config["macros"] == None:
-        config["macros"] == dict()
+    if config["macros"] is None:
+        config["macros"] = dict()
     try:
         config["macros"][macro_name] = {
             "command": commands,

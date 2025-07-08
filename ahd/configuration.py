@@ -46,7 +46,7 @@ command_list = [  # Used for autocompletion generation
 ]
 
 
-def configure(export:bool=False, import_config:bool=False, config:dict={}) -> None:
+def configure(export:bool=False, import_config:bool=False, config:dict=dict()) -> None:
     """Handles all the exporing and importing of configurations
 
     Parameters
@@ -88,7 +88,7 @@ def configure(export:bool=False, import_config:bool=False, config:dict={}) -> No
             print(f"{colored.fg(1)} Unable to import configuration file, are you sudo?")
             print(f"{colored.fg(15)}\tTry running: sudo ahd config -i \"{import_config}\" ")
 
-def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
+def register(macro_name:str, commands:str, paths:str, config:dict=dict()) -> None:
     """Handles registering of custom commands, and autocompletion generation.
 
     Parameters
@@ -112,6 +112,8 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
     print(f"Registering macro {macro_name} \n\tCommand: {commands} \n\tPaths: {paths}")
     if macro_name in ["docs", "register", "config", "list"]: # If macro name is reserved
         raise ValueError(f"{macro_name} is a reserved macro name")
+    if config["macros"] == None:
+        config["macros"] == dict()
     try:
         config["macros"][macro_name] = {
             "command": commands,
@@ -125,7 +127,7 @@ def register(macro_name:str, commands:str, paths:str, config:dict={}) -> None:
         if not config["macros"][macro_name].get("last_run", False):
             config["macros"][macro_name]["last_run"] = "never"
     except KeyError:  # If the configuration is empty
-        config["macros"] = {}
+        config["macros"] = dict()
         config["macros"][macro_name] = {
             "command": commands,
             "paths": paths,

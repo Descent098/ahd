@@ -266,7 +266,7 @@ def docs(api:bool = False, offline:bool = False) -> None:
                 pdoc_main()
 
 
-def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
+def dispatch(name, command:str=False, paths:str=False, config:dict=dict()) -> None:
     """Controls the dispatching of macros
 
     Parameters
@@ -288,8 +288,9 @@ def dispatch(name, command:str=False, paths:str=False, config:dict={}) -> None:
                 print(usage)
                 sys.exit()
     logging.info(f"Beggining execution of {name}")
-
-    try: # Accessing stored information on the command
+    if config["macros"] is None:
+        config["macros"] = dict()
+    try: # Accessing stored information on the commands
         config["macros"][name]
         if not config["macros"][name].get("runs", False):
             config["macros"][name]["runs"] = 1

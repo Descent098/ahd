@@ -14,6 +14,10 @@ Documentation:
 - Made usage of term macro more consistent
 - Added 
 
+Bug fixes:
+
+- Fixed a bug with YAML parsing that would cause uninitialized configs to error out
+
 ## V 1.0.0; June 6th 2022
 
 **The version was bumped to a major release because pre V0.5.0 configs have been fully deprecated, if you are using an old config see migration steps below**
